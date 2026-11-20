@@ -45,7 +45,7 @@ It type-checks, lints, runs locally (`npm run dev`) against the hosted Supabase 
 
 # Repo layout note
 
-The Next.js project root is `client/` (this folder). All spec paths (`supabase/`, `messages/`, `src/`, `extension/`, `scripts/`, `data/s04/`, `models/`) are relative to `client/`. The spec lives at `client/docs/SPEC.md`.
+The Next.js project root is `client/` (this folder). All spec paths (`supabase/`, `messages/`, `src/`, `extension/`, `scripts/`, `data/s04/`, `models/`) are relative to `client/`. The spec lives at `client/docs/SPEC.md`. The Phishing Intelligence Scanner module (`src/server/phishing-intel`, `/api/phishing-intelligence`) has its own spec in `client/docs/PHISHING-INTEL.md`.
 
 # No Docker
 

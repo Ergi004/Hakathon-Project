@@ -1,4 +1,3 @@
-import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
@@ -15,6 +14,7 @@ import type { Locale } from "@/i18n/routing";
 import { fmtDateTime } from "@/lib/format";
 import { requireUser } from "@/server/auth";
 import { PUBLIC_STATUS_ORDER } from "@/server/reports";
+import { BackLink } from "@/components/layout/back-link";
 
 type Params = Promise<{ locale: string; id: string }>;
 
@@ -60,13 +60,8 @@ async function Detail({ params }: { params: Params }) {
 export default function Page({ params }: { params: Params }) {
   return (
     <div className="space-y-4">
-      <Suspense fallback={null}><Back params={params} /></Suspense>
+      <BackLink href="/citizen/reports" namespace="cit.reports" label="back" />
       <Suspense fallback={<Skeleton className="h-96 w-full" />}><Detail params={params} /></Suspense>
     </div>
   );
-}
-async function Back({ params }: { params: Params }) {
-  const { locale } = await params;
-  const t = await getTranslations({ locale: locale as Locale, namespace: "cit.reports" });
-  return <Button asChild variant="ghost" size="sm" className="-ml-2"><Link href="/citizen/reports"><ArrowLeft className="size-4" aria-hidden="true" />{t("back")}</Link></Button>;
 }

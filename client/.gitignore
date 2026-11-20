@@ -41,3 +41,10 @@ yarn-error.log*
 next-env.d.ts
 
 !.env.example
+
+# browser extension build output
+/extension/dist/
+/extension/node_modules/
+
+# extension packages copied by npm run ext:build
+/public/downloads/

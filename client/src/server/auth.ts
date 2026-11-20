@@ -2,6 +2,7 @@ import "server-only";
 
 import type { SupabaseClient, User } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
+import { connection } from "next/server";
 import { getLocale } from "next-intl/server";
 import { cache } from "react";
 import { redirect } from "@/i18n/navigation";
@@ -50,6 +51,9 @@ export function hasMinRole(role: PlatformRole, min: PlatformRole): boolean {
  * Cached per request.
  */
 export const getSessionUser = cache(async (): Promise<Ctx | null> => {
+  // Signed-in pages are per-request. Declaring it (cacheComponents) lets code that runs
+  // after any guard read the clock (Date.now, "x minutes ago") without a prerender error.
+  await connection();
   let supabase: SupabaseClient<Database>;
   try {
     supabase = await createClient();
