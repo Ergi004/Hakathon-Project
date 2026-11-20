@@ -6,6 +6,7 @@ import { redirect as localeRedirect } from "@/i18n/navigation";
 import { signInSchema } from "@/lib/schemas/auth";
 import type { ActionResult } from "@/lib/result";
 import { getSessionUser, homePathFor } from "@/server/auth";
+import { finalizeBusinessSignup } from "@/server/onboarding";
 import { createClient, SupabaseNotConfiguredError } from "@/server/supabase/server";
 
 export type SignInError = "invalidInput" | "invalidCredentials" | "unavailable" | "generic";
@@ -22,13 +23,16 @@ export async function signIn(input: unknown): Promise<ActionResult<undefined, Si
     return { ok: false, error: "generic" };
   }
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email: parsed.data.email,
     password: parsed.data.password,
   });
   if (error) {
     return { ok: false, error: error.status === 400 ? "invalidCredentials" : "unavailable" };
   }
+
+  // Retry a business sign-up whose organization was not created yet.
+  if (data.user) await finalizeBusinessSignup(data.user);
 
   // Area layouts re-check roles, so `next` only decides where to land.
   if (parsed.data.next) redirect(parsed.data.next);

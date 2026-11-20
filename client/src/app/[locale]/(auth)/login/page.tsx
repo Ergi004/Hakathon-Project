@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { LoginForm } from "./login-form";
 
@@ -12,9 +13,11 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return { title: t("title"), robots: { index: false } };
 }
 
-async function LoginFormWithNext({ searchParams }: { searchParams: Promise<{ next?: string | string[] }> }) {
-  const { next } = await searchParams;
-  return <LoginForm next={typeof next === "string" ? next : undefined} />;
+type LoginSearch = Promise<{ next?: string | string[]; error?: string | string[] }>;
+
+async function LoginFormWithNext({ searchParams }: { searchParams: LoginSearch }) {
+  const { next, error } = await searchParams;
+  return <LoginForm next={typeof next === "string" ? next : undefined} confirmFailed={error === "confirm"} />;
 }
 
 export default async function LoginPage({
@@ -22,7 +25,7 @@ export default async function LoginPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ next?: string | string[] }>;
+  searchParams: LoginSearch;
 }) {
   const { locale } = await params;
   setRequestLocale(locale as Locale);
@@ -38,6 +41,12 @@ export default async function LoginPage({
         <Suspense fallback={<Skeleton className="h-52 w-full" />}>
           <LoginFormWithNext searchParams={searchParams} />
         </Suspense>
+        <p className="mt-6 text-center text-sm text-muted-foreground">
+          {t("noAccount")}{" "}
+          <Link href="/register" className="font-medium text-foreground underline underline-offset-2">
+            {t("createAccount")}
+          </Link>
+        </p>
       </CardContent>
     </Card>
   );

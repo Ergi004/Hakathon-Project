@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { signInSchema, type SignInInput } from "@/lib/schemas/auth";
 import { signIn, type SignInError } from "./actions";
 
-export function LoginForm({ next }: { next?: string }) {
+export function LoginForm({ next, confirmFailed = false }: { next?: string; confirmFailed?: boolean }) {
   const t = useTranslations("auth");
   const [serverError, setServerError] = useState<SignInError | null>(null);
   const [pending, startTransition] = useTransition();
@@ -30,6 +30,11 @@ export function LoginForm({ next }: { next?: string }) {
 
   return (
     <form onSubmit={onSubmit} noValidate className="space-y-4">
+      {confirmFailed && !serverError && (
+        <Alert variant="destructive" aria-live="polite">
+          <AlertDescription>{t("login.confirmFailed")}</AlertDescription>
+        </Alert>
+      )}
       {serverError && (
         <Alert variant="destructive" aria-live="polite">
           <AlertDescription>{t(`errors.${serverError}`)}</AlertDescription>

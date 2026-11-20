@@ -86,12 +86,57 @@
       "email": "Email",
       "password": "Password",
       "submit": "Sign in",
-      "submitting": "Signing in…"
+      "submitting": "Signing in…",
+      "noAccount": "No account yet?",
+      "createAccount": "Create an account",
+      "confirmFailed": "The confirmation link is invalid or has expired. Try signing in, or sign up again."
     },
     "errors": {
       "invalidInput": "Check your email and password.",
       "invalidCredentials": "The email or password is incorrect.",
       "unavailable": "Sign-in is not available right now. Try again later.",
+      "generic": "Something went wrong. Try again."
+    },
+    "register": {
+      "title": "Create an account",
+      "description": "Checking and reporting messages work without an account. An account adds history, alerts and tools for businesses.",
+      "accountType": "Account type",
+      "citizen": "Citizen",
+      "citizenHint": "Your check history, your reports and alerts.",
+      "business": "Business",
+      "businessHint": "Protect your brand from lookalike domains and messages.",
+      "fullName": "Full name",
+      "fullNameOptional": "Name (optional)",
+      "email": "Email",
+      "workEmail": "Work email",
+      "password": "Password",
+      "passwordHint": "At least 8 characters.",
+      "confirmPassword": "Repeat password",
+      "orgName": "Organization name",
+      "orgHint": "You will be its owner. You can invite your team later.",
+      "acceptTerms": "I accept the <terms>terms of use</terms> and the <privacy>privacy policy</privacy>.",
+      "submit": "Create account",
+      "submitting": "Creating…",
+      "haveAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "checkEmailTitle": "Check your email",
+      "checkEmailBody": "If this email can be used, we sent a confirmation link to {email}. Open it to finish signing up.",
+      "checkEmailBusiness": "Your organization is created as soon as you confirm your email.",
+      "backToLogin": "Back to sign in"
+    },
+    "fieldErrors": {
+      "required": "This field is required.",
+      "email": "Enter a valid email.",
+      "passwordShort": "Password must be at least 8 characters.",
+      "mismatch": "Passwords do not match.",
+      "terms": "You need to accept the terms to continue."
+    },
+    "signUpErrors": {
+      "invalidInput": "Check the highlighted fields.",
+      "weakPassword": "This password is too weak or too common. Choose another one.",
+      "rateLimited": "Too many attempts. Try again in a little while.",
+      "signupDisabled": "Sign-up is turned off right now.",
+      "unavailable": "Sign-up is not available right now. Try again later.",
       "generic": "Something went wrong. Try again."
     }
   },

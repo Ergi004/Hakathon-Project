@@ -86,12 +86,57 @@
       "email": "Email",
       "password": "Fjalëkalimi",
       "submit": "Hyr",
-      "submitting": "Duke hyrë…"
+      "submitting": "Duke hyrë…",
+      "noAccount": "Nuk ke llogari?",
+      "createAccount": "Krijo një llogari",
+      "confirmFailed": "Lidhja e konfirmimit nuk është e vlefshme ose ka skaduar. Provo të hysh ose regjistrohu përsëri."
     },
     "errors": {
       "invalidInput": "Kontrollo emailin dhe fjalëkalimin.",
       "invalidCredentials": "Emaili ose fjalëkalimi nuk është i saktë.",
       "unavailable": "Shërbimi i hyrjes nuk është i disponueshëm tani. Provo përsëri më vonë.",
+      "generic": "Diçka shkoi keq. Provo përsëri."
+    },
+    "register": {
+      "title": "Krijo një llogari",
+      "description": "Kontrolli i mesazheve dhe raportimi funksionojnë edhe pa llogari. Llogaria shton historikun, njoftimet dhe mjetet për biznesin.",
+      "accountType": "Lloji i llogarisë",
+      "citizen": "Qytetar",
+      "citizenHint": "Historiku i kontrolleve, raportet e tua dhe njoftime.",
+      "business": "Biznes",
+      "businessHint": "Mbro markën tënde nga domenet dhe mesazhet imituese.",
+      "fullName": "Emri dhe mbiemri",
+      "fullNameOptional": "Emri (opsional)",
+      "email": "Email",
+      "workEmail": "Email-i i punës",
+      "password": "Fjalëkalimi",
+      "passwordHint": "Të paktën 8 karaktere.",
+      "confirmPassword": "Përsërit fjalëkalimin",
+      "orgName": "Emri i organizatës",
+      "orgHint": "Do të jesh pronari i saj. Mund të ftosh ekipin më vonë.",
+      "acceptTerms": "Pranoj <terms>kushtet e përdorimit</terms> dhe <privacy>politikën e privatësisë</privacy>.",
+      "submit": "Krijo llogarinë",
+      "submitting": "Duke krijuar…",
+      "haveAccount": "Ke tashmë llogari?",
+      "signIn": "Hyr",
+      "checkEmailTitle": "Kontrollo email-in",
+      "checkEmailBody": "Nëse ky email mund të përdoret, të dërguam një lidhje konfirmimi në {email}. Hap lidhjen për të përfunduar regjistrimin.",
+      "checkEmailBusiness": "Organizata jote krijohet sapo të konfirmosh email-in.",
+      "backToLogin": "Kthehu te hyrja"
+    },
+    "fieldErrors": {
+      "required": "Kjo fushë kërkohet.",
+      "email": "Shkruaj një email të vlefshëm.",
+      "passwordShort": "Fjalëkalimi duhet të ketë të paktën 8 karaktere.",
+      "mismatch": "Fjalëkalimet nuk përputhen.",
+      "terms": "Duhet të pranosh kushtet për të vazhduar."
+    },
+    "signUpErrors": {
+      "invalidInput": "Kontrollo fushat e shënuara.",
+      "weakPassword": "Ky fjalëkalim është shumë i dobët ose i njohur. Zgjidh një tjetër.",
+      "rateLimited": "Shumë përpjekje. Provo përsëri pas pak.",
+      "signupDisabled": "Regjistrimi është i çaktivizuar për momentin.",
+      "unavailable": "Regjistrimi nuk është i disponueshëm tani. Provo përsëri më vonë.",
       "generic": "Diçka shkoi keq. Provo përsëri."
     }
   },
