@@ -360,7 +360,12 @@
       "grid": "Grid",
       "table": "Table",
       "empty": "No campaigns.",
-      "noInstitution": "No institution"
+      "noInstitution": "No institution",
+      "scamType": "Scam type",
+      "brand": "Impersonated brand",
+      "patternSize": "Checks",
+      "patternSizeCount": "{count} checks",
+      "firstSeen": "First seen"
     },
     "campaign": {
       "tabs": {
@@ -390,7 +395,22 @@
       "noMessages": "No messages.",
       "noNotices": "No takedown notices.",
       "createAdvisory": "Create advisory from this campaign",
-      "severity": "Severity"
+      "severity": "Severity",
+      "patternTitle": "Classification",
+      "scamType": "Scam type",
+      "brand": "Impersonated brand",
+      "patternSize": "Classified checks",
+      "firstSeen": "First seen",
+      "lastSeen": "Last seen",
+      "confidence": "Confidence",
+      "confidenceValue": "{value}%",
+      "hostingCountry": "Hosting country",
+      "claimedPlace": "Place named in the lure",
+      "signal": "Signal",
+      "weight": "Weight",
+      "evidence": "Evidence",
+      "noPattern": "No classified checks are linked to this campaign yet.",
+      "noSignals": "This check has no matched signals."
     },
     "domains": {
       "class": "Class",
@@ -1121,6 +1141,55 @@
     "telecom": "Telecom",
     "police": "Police",
     "other": "Other"
+  },
+  "scamType": {
+    "fake_institution_login": "Fake institution login",
+    "parcel_postal_fee": "Parcel or postal fee",
+    "fine_or_tax_refund": "Fine or tax refund",
+    "fake_bank": "Fake bank",
+    "fake_app": "Fake app",
+    "other": "Other"
+  },
+  "brandCategory": {
+    "e_albania": "e-Albania",
+    "tax": "Tax authority",
+    "postal": "Postal service",
+    "municipality": "Municipality",
+    "bank": "Bank",
+    "police": "Police",
+    "utility": "Utility",
+    "telecom": "Telecom",
+    "other": "Other"
+  },
+  "signalCode": {
+    "lookalike": "Lookalike domain",
+    "young_domain": "Domain under 30 days",
+    "odd_tld": "Unusual domain ending",
+    "punycode": "Punycode domain",
+    "shortener": "Link shortener",
+    "urgency": "Urgency",
+    "payment": "Payment request",
+    "threat": "Threat",
+    "secrets": "Asks for secrets",
+    "exfil_telegram": "Telegram link",
+    "exfil_webhook": "Webhook link",
+    "exfil_php": "PHP endpoint",
+    "brand_mention": "Brand mention",
+    "theme_parcel": "Parcel theme",
+    "theme_tax_refund": "Tax or refund theme",
+    "theme_login": "Login theme",
+    "theme_app": "App theme"
+  },
+  "aggregates": {
+    "title": "Check patterns",
+    "note": "Counts from recent checks. A region is listed only after at least 3 checks. Victim location is not stored.",
+    "scamType": "Scam type",
+    "brand": "Impersonated brand",
+    "week": "Week",
+    "regions": "Regions",
+    "hostingCountry": "Hosting country",
+    "claimedPlace": "Place named in the lure",
+    "regionItem": "{kind}: {name}"
   },
   "domainClass": {
     "typosquat": "Typosquat",

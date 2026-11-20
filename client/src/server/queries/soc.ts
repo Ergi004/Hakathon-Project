@@ -1,6 +1,8 @@
 import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
+import type { MatchedSignal } from "@/server/detection/pattern";
+import { readClaimedPlace, readHostingCountry, readMatchedSignals } from "@/server/detection/stored-features";
 import type { Database, Enums } from "@/types/database";
 
 type DB = SupabaseClient<Database>;
@@ -156,6 +158,102 @@ export async function getReportDetail(db: DB, id: string) {
 }
 
 /* ---------------------------------------------------------------- A4/A5 campaigns */
+
+export interface CampaignPattern {
+  scamType: string | null;
+  brand: string | null;
+  size: number;
+  firstSeen: string | null;
+  lastSeen: string | null;
+  confidence: number | null;
+  hostingCountry: string | null;
+  claimedPlace: string | null;
+  matchedSignals: MatchedSignal[];
+}
+
+function mode(values: (string | null | undefined)[]): string | null {
+  const counts = new Map<string, number>();
+  for (const value of values) {
+    if (!value) continue;
+    counts.set(value, (counts.get(value) ?? 0) + 1);
+  }
+  let best: string | null = null;
+  let bestCount = 0;
+  for (const [value, count] of counts) {
+    if (count > bestCount) {
+      best = value;
+      bestCount = count;
+    }
+  }
+  return best;
+}
+
+function readConfidence(value: number | string | null | undefined): number | null {
+  if (value === null || value === undefined || value === "") return null;
+  const parsed = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+/** Classified checks linked to each campaign. Size and dates come from those rows. */
+export async function getCampaignPatternMap(db: DB, campaignIds: string[]): Promise<Map<string, CampaignPattern>> {
+  const map = new Map<string, CampaignPattern>();
+  if (!campaignIds.length) return map;
+  const { data } = await db
+    .from("checks")
+    .select("campaign_id, scam_type, impersonated_brand, confidence, features, created_at")
+    .in("campaign_id", campaignIds)
+    .not("scam_type", "is", null)
+    .order("created_at", { ascending: false })
+    .limit(2000);
+  const grouped = new Map<string, NonNullable<typeof data>>();
+  for (const row of data ?? []) {
+    if (!row.campaign_id) continue;
+    const list = grouped.get(row.campaign_id) ?? [];
+    list.push(row);
+    grouped.set(row.campaign_id, list);
+  }
+  for (const [campaignId, rows] of grouped) {
+    const newest = rows[0];
+    const times = rows.map((row) => row.created_at).sort();
+    map.set(campaignId, {
+      scamType: mode(rows.map((row) => row.scam_type)),
+      brand: mode(rows.map((row) => row.impersonated_brand)),
+      size: rows.length,
+      firstSeen: times[0] ?? null,
+      lastSeen: times[times.length - 1] ?? null,
+      confidence: readConfidence(newest?.confidence),
+      hostingCountry: mode(rows.map((row) => readHostingCountry(row.features))),
+      claimedPlace: mode(rows.map((row) => readClaimedPlace(row.features))),
+      matchedSignals: readMatchedSignals(newest?.features),
+    });
+  }
+  return map;
+}
+
+/** One campaign: exact classified-check count, plus signals from the newest stored features. */
+export async function getCampaignPattern(db: DB, campaignId: string): Promise<CampaignPattern | null> {
+  const [count, newest, oldest, sample] = await Promise.all([
+    db.from("checks").select("id", { count: "exact", head: true }).eq("campaign_id", campaignId).not("scam_type", "is", null),
+    db.from("checks").select("created_at, confidence, features").eq("campaign_id", campaignId).not("scam_type", "is", null).order("created_at", { ascending: false }).limit(1).maybeSingle(),
+    db.from("checks").select("created_at").eq("campaign_id", campaignId).not("scam_type", "is", null).order("created_at", { ascending: true }).limit(1).maybeSingle(),
+    db.from("checks").select("scam_type, impersonated_brand, features").eq("campaign_id", campaignId).not("scam_type", "is", null).order("created_at", { ascending: false }).limit(200),
+  ]);
+  const rows = sample.data ?? [];
+  const size = count.count ?? rows.length;
+  if (!size) return null;
+  const latest = newest.data;
+  return {
+    scamType: mode(rows.map((row) => row.scam_type)),
+    brand: mode(rows.map((row) => row.impersonated_brand)),
+    size,
+    firstSeen: oldest.data?.created_at ?? null,
+    lastSeen: latest?.created_at ?? null,
+    confidence: readConfidence(latest?.confidence),
+    hostingCountry: mode(rows.map((row) => readHostingCountry(row.features))),
+    claimedPlace: mode(rows.map((row) => readClaimedPlace(row.features))),
+    matchedSignals: readMatchedSignals(latest?.features),
+  };
+}
 
 export async function getCampaigns(db: DB, f: { status?: Enums<"campaign_status">; q?: string } = {}) {
   let q = db

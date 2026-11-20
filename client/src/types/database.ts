@@ -601,6 +601,10 @@ export type Database = {
           campaign_id: string | null;
           model_version: string | null;
           created_at: string;
+          features: Json | null;
+          scam_type: string | null;
+          impersonated_brand: string | null;
+          confidence: number | null;
         };
         Insert: {
           id?: string;
@@ -612,6 +616,10 @@ export type Database = {
           campaign_id?: string | null;
           model_version?: string | null;
           created_at?: string;
+          features?: Json | null;
+          scam_type?: string | null;
+          impersonated_brand?: string | null;
+          confidence?: number | null;
         };
         Update: {
           id?: string;
@@ -623,6 +631,10 @@ export type Database = {
           campaign_id?: string | null;
           model_version?: string | null;
           created_at?: string;
+          features?: Json | null;
+          scam_type?: string | null;
+          impersonated_brand?: string | null;
+          confidence?: number | null;
         };
         Relationships: [
           {

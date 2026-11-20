@@ -36,6 +36,15 @@ export const openapi = {
           matchedInstitution: { type: "object", properties: { id: { type: "string" }, name: { type: "string" } } },
           iocs: { type: "array", items: { type: "object", properties: { type: { type: "string" }, value: { type: "string", description: "defanged" } } } },
           modelVersion: { type: "string" },
+          classification: {
+            type: "object",
+            properties: {
+              scamType: { type: "string" },
+              impersonatedBrand: { type: "string" },
+              confidence: { type: "number", minimum: 0, maximum: 1 },
+              matchedSignals: { type: "array", items: { type: "object", properties: { code: { type: "string" }, weight: { type: "number" }, evidence: { type: "string", nullable: true } } } },
+            },
+          },
           checkId: { type: "string", format: "uuid" },
         },
       },

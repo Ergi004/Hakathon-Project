@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { foldText } from "./normalize";
+import { foldText, hostOf } from "./normalize";
 
 /**
  * TF-IDF + logistic regression exported to JSON by scripts/train-classifier.ts
@@ -20,13 +20,26 @@ export interface TextModel {
 }
 
 const URL_TOKEN = "__url__";
+const URL_IN_TEXT = /\b(?:https?|hxxps?):\/\/\S+|\S+\[\.\]\S+/g;
+
+/** Hostname labels kept so a trained model can see the site, not only that a link existed. */
+function hostLabels(url: string): string[] {
+  const host = hostOf(url);
+  if (!host) return [];
+  return host.split(".").filter((part) => part.length > 1 && part !== "www");
+}
 
 /** Word unigrams, word bigrams and character 3-5 grams over folded text. */
 export function features(text: string): Map<string, number> {
-  const folded = foldText(text).replace(/\b(?:https?|hxxps?):\/\/\S+|\S+\[\.\]\S+/g, ` ${URL_TOKEN} `);
+  const hosts: string[] = [];
+  const folded = foldText(text).replace(URL_IN_TEXT, (url) => {
+    hosts.push(...hostLabels(url));
+    return ` ${URL_TOKEN} `;
+  });
   const words = folded.split(/[^\p{L}\p{N}_]+/u).filter((w) => w.length > 1 || w === URL_TOKEN);
   const counts = new Map<string, number>();
   const add = (t: string) => counts.set(t, (counts.get(t) ?? 0) + 1);
+  for (const label of hosts) add(`w:${label}`);
   for (let i = 0; i < words.length; i++) {
     add(`w:${words[i]}`);
     if (i + 1 < words.length) add(`b:${words[i]} ${words[i + 1]}`);
@@ -75,7 +88,7 @@ const LEXICON: [RegExp, number][] = [
   [/\b(?:bllok\w*|pezull\w*|blocked|suspend\w*)\b/, 0.9],
   [/\b(?:rimburs\w*|refund\w*|kthim)\b/, 0.9],
   [/\b(?:fitu\w*|prize|won|shperblim\w*)\b/, 1.0],
-  [/\b(?:dergese|dergesa|pako|parcel|package|delivery)\b/, 0.7],
+  [/\b(?:derges(?:e|a|en|es)?|pako(?:ja|n|s)?|parcel|package|delivery)\b/, 0.7],
   [/\b(?:kart\w*|card|cvv|otp|pin|kod\w*|code)\b/, 0.7],
   [/\b(?:llogari\w*|account)\b/, 0.5],
   [/\b(?:sot|today|brenda|within|afat\w*)\b/, 0.4],
@@ -104,8 +117,37 @@ export function loadModel(): TextModel | null {
   return cached;
 }
 
-export function classify(text: string, model: TextModel | null = loadModel()): { probability: number; version: string } {
-  if (!text.trim()) return { probability: 0, version: model ? `${model.name}@${model.version}` : "lexicon-v0" };
-  if (model) return { probability: predictWith(model, text), version: `${model.name}@${model.version}` };
+/** Same token the public-dataset trainer prepends, so inference matches training. */
+export function channelToken(channel: string): string {
+  switch (channel) {
+    case "sms":
+      return "channel_sms";
+    case "email":
+      return "channel_email";
+    case "web":
+    case "qr":
+      return "channel_url";
+    default:
+      return "channel_other";
+  }
+}
+
+export function classify(
+  text: string,
+  model: TextModel | null = loadModel(),
+  extra?: { channel?: string; urls?: string[] },
+): { probability: number; version: string } {
+  if (model) {
+    const joined = [extra?.channel ? channelToken(extra.channel) : "", text, ...(extra?.urls ?? [])].filter(Boolean).join("\n");
+    if (!joined.trim()) return { probability: 0, version: `${model.name}@${model.version}` };
+    const learned = predictWith(model, joined);
+    // The trained set is mostly English. When it is unsure, Albanian cue words still count.
+    const lexicon = text.trim() ? predictLexicon(text) : 0;
+    if (lexicon > learned && lexicon >= 0.5) {
+      return { probability: lexicon, version: `${model.name}@${model.version}+lexicon` };
+    }
+    return { probability: learned, version: `${model.name}@${model.version}` };
+  }
+  if (!text.trim()) return { probability: 0, version: "lexicon-v0" };
   return { probability: predictLexicon(text), version: "lexicon-v0" };
 }

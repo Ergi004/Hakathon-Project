@@ -3,11 +3,14 @@ import "server-only";
 import type { Enums, Json } from "@/types/database";
 import type { ReportInput } from "@/lib/schemas/analysis";
 import { analyze } from "./detection";
+import { fillMissingDomainAges, submittedHosts } from "./detection/domain-age";
+import { reviewWithGemini } from "./detection/gemini-review";
 import { loadContext } from "./detection/load-context";
 import { maskText } from "./detection/masks";
 import { defang, extractUrls, foldText, hostOf } from "./detection/normalize";
 import { audit } from "./audit";
 import { tryAdmin } from "./db";
+import { generateText } from "./llm";
 import { randomToken, sha256 } from "./hash";
 import { recomputeSafetyScore } from "./badges";
 import { notifyWatchMatches } from "./watchlist";
@@ -38,9 +41,11 @@ export async function createReport(
   const sender = input.sender ? maskText(input.sender) : undefined;
   const urls = [...new Set([...(input.url ? [input.url] : []), ...extractUrls(input.text ?? "")])];
   const ctx = await loadContext();
+  await fillMissingDomainAges(ctx, submittedHosts({ kind: input.text ? "text" : "url", urls, text: input.text, sender: input.sender }));
   const result = await analyze(
     { kind: input.text ? "text" : "url", text: masked || undefined, urls, sender: input.sender, channel: input.channel, locale: input.locale },
     ctx,
+    { gemini: (body, linkHosts) => reviewWithGemini(body, generateText, undefined, linkHosts) },
   );
 
   try {
