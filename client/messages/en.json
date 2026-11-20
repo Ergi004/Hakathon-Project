@@ -29,7 +29,21 @@
     "placeholderTitle": "Under construction",
     "placeholderBody": "This page will be built in a later phase of the project.",
     "activeOrg": "Active organization",
-    "noOrg": "No organization"
+    "noOrg": "No organization",
+    "navGroups": {
+      "activity": "Activity",
+      "protection": "Protection",
+      "account": "Account",
+      "monitor": "Monitor",
+      "respond": "Respond",
+      "people": "People",
+      "setup": "Setup",
+      "operations": "Operations",
+      "investigate": "Investigate",
+      "manage": "Manage"
+    },
+    "accountMenu": "Account menu",
+    "settings": "Settings"
   },
   "flags": {
     "green": "Safe",
@@ -68,7 +82,15 @@
     },
     "footer": {
       "rights": "Synthetic data for demonstration.",
-      "legal": "Legal"
+      "legal": "Legal",
+      "helpTitle": "Already paid or shared your card details?",
+      "helpBody": "Call your bank right away to block the card and change your passwords. Then report the scam so others are warned.",
+      "promise": "We never open the links you check. We keep a fingerprint, not your text.",
+      "groups": {
+        "tools": "Protect yourself",
+        "learn": "Stay informed",
+        "about": "Help and legal"
+      }
     }
   },
   "auth": {
@@ -888,7 +910,31 @@
     "storedNote": "This page shows the result, not what was checked.",
     "checkedAt": "Checked on {date}",
     "notFound": "This result does not exist or has expired.",
-    "summary": "Short explanation"
+    "summary": "Short explanation",
+    "tabHints": {
+      "link": "A web address from a message or site",
+      "message": "The text of an SMS, email or chat",
+      "phone": "A number that called or texted you",
+      "qr": "A photo of a QR sticker or code"
+    },
+    "howTo": {
+      "link": "Press and hold the link, choose Copy link, then paste it here. We never open it.",
+      "message": "Copy the whole message, including any link. Add the sender if you know it.",
+      "phone": "Type the number as you saw it, with the country code if there was one.",
+      "qr": "Take a clear photo of the code. It is read on your device and never uploaded."
+    },
+    "askTitle": "What do you want to check?",
+    "scale": {
+      "title": "Risk score",
+      "explain": "{score} out of 100. The higher the score, the more likely it is a scam.",
+      "low": "Low risk",
+      "high": "High risk"
+    },
+    "trust": [
+      "We never open the link you send",
+      "No account needed",
+      "We keep a fingerprint, not your text"
+    ]
   },
   "home": {
     "eyebrow": "National anti-fraud platform",
@@ -1010,6 +1056,19 @@
       "body": "Check, report and help others avoid falling for it.",
       "check": "Check now",
       "report": "Report a scam"
+    },
+    "specimen": {
+      "label": "Example of a fake parcel SMS",
+      "sender": "POSTA-AL",
+      "received": "Received today",
+      "body": "Your parcel is held at customs. <pay>Pay 150 ALL</pay> <urgent>within 24 hours</urgent> or it will be returned: <link>hxxps://posta-al-dogana[.]example/pay</link>",
+      "notes": {
+        "pay": "Asks you to pay through a link",
+        "urgent": "Pressure to act fast",
+        "link": "Lookalike domain, not the official Post"
+      },
+      "caption": "Every check explains what it found, in plain words.",
+      "headerCta": "Check a message"
     }
   },
   "report": {
@@ -1057,6 +1116,36 @@
     "trackNow": "Track report",
     "another": "Report something else",
     "signedInNote": "You are signed in: the report will also appear under “My reports”.",
+    "nextTitle": "What happens after you report",
+    "nextSteps": [
+      {
+        "title": "You get a protocol number",
+        "body": "Plus a private code to follow your report. No account needed."
+      },
+      {
+        "title": "Our team reviews it",
+        "body": "Analysts check it and link it to known scam campaigns."
+      },
+      {
+        "title": "We act on it",
+        "body": "Dangerous domains are blocked and takedowns are requested."
+      },
+      {
+        "title": "You follow the status",
+        "body": "Use your code on the Track page at any time."
+      }
+    ],
+    "urgentTitle": "Paid or shared card details?",
+    "urgentBody": "Call your bank right away to block the card, then finish this report.",
+    "privacyTitle": "Your privacy",
+    "privacyBody": "Phones, emails, IBANs, ID numbers and names are masked before anything is stored.",
+    "edit": "Edit",
+    "summaryCategory": "About",
+    "summaryChannel": "Arrived by",
+    "summaryContent": "Content",
+    "summaryContact": "Contact",
+    "noContact": "No email, you will track it with your code",
+    "tokenWarning": "This code is shown only once. Copy it now.",
     "region": {
       "legend": "Where are you? (optional)",
       "hint": "Only county and municipality, if you want. We never use GPS, your address or your IP.",
@@ -1095,7 +1184,32 @@
     "count": "{count} campaigns",
     "empty": "No campaigns match these filters.",
     "feedNote": "Data comes from the public feed and refreshes every minute.",
-    "rss": "Feed API"
+    "rss": "Feed API",
+    "statusAll": "All",
+    "filterStatus": "Status",
+    "view": {
+      "label": "View",
+      "grid": "Cards",
+      "table": "Table"
+    },
+    "clear": "Clear filters",
+    "stats": {
+      "total": "Campaigns",
+      "active": "Active now",
+      "takedown": "Being taken down",
+      "resolved": "Resolved"
+    },
+    "cols": {
+      "code": "ID",
+      "institution": "Imitates",
+      "tactic": "Tactic",
+      "status": "Status",
+      "messages": "Messages",
+      "lastSeen": "Last seen",
+      "domains": "Domains"
+    },
+    "filtersTitle": "Filter campaigns",
+    "lastSeen": "Last seen {date}"
   },
   "campaign": {
     "back": "All threats",
@@ -1125,7 +1239,16 @@
       "Report the message so we can block it."
     ],
     "checkCta": "Check a message",
-    "reportCta": "Report"
+    "reportCta": "Report",
+    "progress": "Campaign progress",
+    "statusHelp": {
+      "monitoring": "We are watching for new messages.",
+      "confirmed": "Our team confirmed it is a scam.",
+      "takedown_in_progress": "We asked for the domains to be taken down.",
+      "resolved": "The campaign is no longer active."
+    },
+    "received": "Received by people in Albania",
+    "weeklyHint": "Messages reported per week"
   },
   "learn": {
     "title": "Learn to spot scams",
@@ -1146,7 +1269,27 @@
     "retry": "Try again",
     "allGuides": "All guides",
     "from": "From",
-    "progressSaved": "Progress saved to your profile."
+    "progressSaved": "Progress saved to your profile.",
+    "rulesTitle": "Three rules that stop most scams",
+    "rules": [
+      {
+        "title": "Never share codes",
+        "body": "Banks and institutions never ask for codes, passwords or card details by SMS, email or phone."
+      },
+      {
+        "title": "Type the address yourself",
+        "body": "Do not use links in messages. Open the official site or app the way you normally do."
+      },
+      {
+        "title": "Pause before you pay",
+        "body": "Scams rush you. If a message says today or within 24 hours, stop and check it first."
+      }
+    ],
+    "guidesTitle": "Guides",
+    "signsCount": "{count} warning signs",
+    "quizQuestions": "{count} quiz questions",
+    "checkTitle": "Got a message right now?",
+    "checkBody": "Paste it and get a verdict with the reasons in seconds."
   },
   "quiz": {
     "title": "Spot the scam",
@@ -1168,7 +1311,17 @@
     "low": "Scammers are clever. The guides will help you.",
     "again": "Play again",
     "best": "Best score: {score}",
-    "empty": "The quiz has no messages right now. Try the guides."
+    "empty": "The quiz has no messages right now. Try the guides.",
+    "prompt": "Is this message a scam?",
+    "scoreLabel": "Score",
+    "keysHint": "Tip: press ← for Scam and → for Legit.",
+    "recap": "Your answers",
+    "answerN": "Message {n}: {result}",
+    "correctShort": "correct",
+    "wrongShort": "wrong",
+    "from": "Arrived by {channel}",
+    "youSaid": "You answered: {choice}",
+    "legitNote": "This was a real message. Real messages can contain links too, so check the sender before you decide."
   },
   "institutions": {
     "title": "Institutions directory",
@@ -1185,8 +1338,14 @@
       "email": "Email"
     },
     "empty": "No institution matches your search.",
-    "count": "{count} institutions",
-    "verifyHint": "You can also verify through the API: /api/v1/institutions/verify"
+    "count": "{count, plural, one {# institution} other {# institutions}}",
+    "verifyHint": "You can also verify through the API: /api/v1/institutions/verify",
+    "verified": "Official",
+    "tipTitle": "Not on this list?",
+    "tipBody": "Treat the link, sender or number as suspicious and check it before you reply or click.",
+    "allSectors": "All",
+    "clearSearch": "Clear search",
+    "noContacts": "No official contacts listed yet. Verify directly with the institution."
   },
   "apiDocs": {
     "title": "Public API",
@@ -1252,7 +1411,25 @@
       "activeTab and scripting: read the open email only when you click",
       "Access only to mail.google.com, outlook.live.com, outlook.office.com and the Mburoja API"
     ],
-    "manage": "Manage the extension from your account"
+    "manage": "Manage the extension from your account",
+    "worksWith": "Works in Chrome with Gmail and Outlook",
+    "howInstall": "How to install",
+    "mock": {
+      "label": "Example of the extension scanning an email",
+      "from": "Posta Shqiptare",
+      "address": "njoftime@posta-al-dogana[.]example",
+      "subject": "Your parcel is waiting: pay the customs fee",
+      "scan": "Scan with Mburoja",
+      "reason1": "The sender domain imitates the Post",
+      "reason2": "Asks for a payment through a link"
+    },
+    "consentIntro": "Auto-submit is off until you give a one-time consent in the extension popup. After consent:",
+    "colResult": "Result",
+    "colSent": "What is sent",
+    "sendReport": "A masked signal report",
+    "sendIndicators": "Indicators only (domains), no text",
+    "sendNothing": "Nothing",
+    "deleteWindow": "You can delete any report within 10 minutes."
   },
   "legal": {
     "lastUpdated": "Last updated {date}",
@@ -1427,6 +1604,131 @@
       "notificationsHint": "One per line.",
       "retention": "Data retention (days)",
       "plan": "Plan"
+    },
+    "pages": {
+      "overview": "How your brand is being imitated right now, and what needs your attention.",
+      "onboarding": "Tell us what belongs to your brand. We use it to find domains and messages that imitate you.",
+      "alerts": "Lookalike domains and campaigns detected against your brand. Acknowledge, escalate or resolve each one.",
+      "campaigns": "Scam campaigns that imitate your brand, with takedown status and what to tell customers.",
+      "domains": "Domains that look like yours, ranked by risk. Request a takedown or allowlist your own variants.",
+      "reports": "What citizens reported about your brand. Anonymised: only masked text and status are shown.",
+      "notices": "Ready-to-use warnings for your customers, in Albanian and English. Edit and copy them.",
+      "training": "Test your staff with simulated phishing emails and see who clicks and who reports.",
+      "api": "Keys for the scan API, usage over the last 30 days and code to get started.",
+      "team": "Who has access to your brand dashboard and what they can do.",
+      "export": "A monthly report of incidents and takedown times for audits and regulators.",
+      "settings": "Your organization profile, who gets notified and how long we keep data."
+    },
+    "ov": {
+      "hello": "{org}",
+      "viewAll": "View all",
+      "quick": "Quick actions",
+      "quickSetup": "Brand setup",
+      "quickNotice": "Warn customers",
+      "quickExport": "Monthly report",
+      "quickDomains": "Lookalike domains",
+      "last30": "Last 30 days"
+    },
+    "al": {
+      "stats": {
+        "new": "New",
+        "acknowledged": "Acknowledged",
+        "escalated": "Escalated",
+        "resolved": "Resolved"
+      },
+      "emptyBody": "When we detect a lookalike domain or campaign against your brand, it shows up here.",
+      "campaign": "Campaign {code}",
+      "filterStatus": "Status"
+    },
+    "cp": {
+      "emptyBody": "Once your domains are verified and linked, campaigns imitating you appear here.",
+      "openPublic": "Public page",
+      "messages": "{count, plural, one {# message} other {# messages}}"
+    },
+    "dm": {
+      "stats": {
+        "total": "Lookalikes found",
+        "threat": "Confirmed threats",
+        "watching": "Watching",
+        "takenDown": "Taken down"
+      },
+      "filter": "Show",
+      "filters": {
+        "all": "All",
+        "threat": "Threats",
+        "watching": "Watching",
+        "allowlisted": "Allowlisted"
+      },
+      "noneInFilter": "No domains in this view."
+    },
+    "rp": {
+      "stats": {
+        "total": "Reports",
+        "week": "Last 7 days",
+        "confirmed": "Confirmed"
+      },
+      "campaign": "Campaign",
+      "emptyBody": "Reports citizens send about scams imitating you will appear here, anonymised."
+    },
+    "nt": {
+      "setup": "Set up the notice",
+      "channelHint": "Pick where you will publish it.",
+      "sms": "160 characters fit in one SMS."
+    },
+    "tr": {
+      "create": "Create a simulation",
+      "stats": {
+        "sims": "Simulations",
+        "sent": "Emails sent",
+        "clickRate": "Click rate",
+        "reportRate": "Report rate"
+      },
+      "emptyBody": "Create a simulation, add employee emails and launch it to see who clicks."
+    },
+    "ap": {
+      "keys": "Keys",
+      "calls": "Calls (30 days)",
+      "activeKeys": "Active keys",
+      "created": "Created {date}",
+      "docs": "API documentation"
+    },
+    "tm": {
+      "members": "{count, plural, one {# member} other {# members}}",
+      "rolesTitle": "What each role can do",
+      "roles": {
+        "owner": "Everything, including billing and deleting the organization.",
+        "admin": "Everything except deleting the organization.",
+        "security": "Alerts, domains, reports and simulations.",
+        "comms": "Customer notices and campaigns.",
+        "finance": "Compliance exports.",
+        "viewer": "Read-only overview.",
+        "contact": "Receives escalations from the SOC."
+      }
+    },
+    "ex": {
+      "formTitle": "Generate a report",
+      "includes": [
+        "Incidents and alerts in the month",
+        "Time from detection to takedown",
+        "Campaigns and lookalike domains",
+        "Trend compared to the previous month"
+      ],
+      "includesTitle": "What the report contains"
+    },
+    "st": {
+      "profileHint": "The name customers and the SOC see.",
+      "planTitle": "Plan",
+      "planHint": "Your current subscription.",
+      "notifHint": "Who gets an email when a new alert arrives.",
+      "retentionHint": "How long alerts and reports are kept. 30 to 1825 days.",
+      "days": "days",
+      "unsaved": "You have unsaved changes."
+    },
+    "ob": {
+      "progress": "{done} of {total} steps done",
+      "why": "Why this matters",
+      "whyBody": "The more we know about your official domains, senders and accounts, the faster we spot imitations. Verified domains also let the SOC link your brand to campaigns.",
+      "count": "{count, plural, =0 {Nothing added} one {# added} other {# added}}"
     }
   },
   "sim": {
@@ -1462,7 +1764,21 @@
       "noWarnings": "No active campaigns for the institutions you follow.",
       "streak": "Day streak",
       "streakHint": "Days with at least one check, report or lesson.",
-      "badges": "Badges"
+      "badges": "Badges",
+      "hello": "Hi, {name}",
+      "helloAnon": "Welcome back",
+      "subtitle": "Here is how protected you are and what to do next.",
+      "checkNow": "Check a message",
+      "report": "Report a scam",
+      "setupTitle": "Get fully protected",
+      "setupProgress": "{done} of {total} done",
+      "go": "Start",
+      "viewAll": "View all",
+      "manageFollows": "Choose institutions",
+      "badgesHint": "Earn badges as you check, report and learn.",
+      "locked": "Not earned yet",
+      "streakDays": "{count, plural, one {# day} other {# days}}",
+      "quiet": "All quiet"
     },
     "badges": {
       "first_check": "First check",
@@ -1488,7 +1804,27 @@
         "phone": "Phone",
         "qr": "QR",
         "email_signals": "Email"
-      }
+      },
+      "title": "My checks",
+      "subtitle": "Every link, message and number you checked, with its result.",
+      "checkNow": "Check a message",
+      "stats": {
+        "total": "Checks saved",
+        "risky": "Flagged as risky",
+        "safe": "Looked safe"
+      },
+      "filter": "Show",
+      "filters": {
+        "all": "All",
+        "risky": "Risky",
+        "safe": "Safe"
+      },
+      "noneInFilter": "No checks in this view.",
+      "emptyBody": "Check a suspicious link or message and the result will be saved here.",
+      "historyOff": "History is off, so new checks are not saved here.",
+      "confirmTitle": "Delete all saved checks?",
+      "confirmBody": "This removes {count, plural, one {# check} other {# checks}} from your history. The results stay anonymous on our side. This cannot be undone.",
+      "cancel": "Cancel"
     },
     "reports": {
       "empty": "You have not sent any reports.",
@@ -1500,7 +1836,28 @@
       "campaign": "Public campaign",
       "takedown": "Takedown",
       "back": "My reports",
-      "notFound": "Report not found."
+      "notFound": "Report not found.",
+      "title": "My reports",
+      "subtitle": "Follow what happens to every scam you reported.",
+      "newReport": "Report a scam",
+      "stats": {
+        "total": "Reports sent",
+        "open": "In progress",
+        "confirmed": "Confirmed scams",
+        "takenDown": "Taken down"
+      },
+      "filter": "Show",
+      "filters": {
+        "all": "All",
+        "open": "In progress",
+        "closed": "Closed"
+      },
+      "noneInFilter": "No reports in this view.",
+      "emptyBody": "When you report a scam it shows up here, so you can follow it until it is taken down.",
+      "details": "View details",
+      "sentAt": "Sent {date}",
+      "via": "via {channel}",
+      "linked": "Part of campaign {code}"
     },
     "alerts": {
       "markRead": "Mark as read",
@@ -1509,7 +1866,21 @@
       "follow": "Institutions you follow",
       "followHint": "Get warnings when campaigns imitate them.",
       "unread": "{count} unread",
-      "live": "Updates automatically"
+      "live": "Updates automatically",
+      "title": "Alerts",
+      "subtitle": "Warnings about scams that imitate the institutions you use, and matches from your watchlist.",
+      "inbox": "Notifications",
+      "tabAll": "All",
+      "tabUnread": "Unread",
+      "emptyTitle": "Nothing here yet",
+      "emptyUnread": "You are all caught up.",
+      "followSearch": "Search institutions",
+      "following": "{count, plural, =0 {Not following anyone} one {Following # institution} other {Following # institutions}}",
+      "noFollows": "Follow the banks, post and public services you use. We warn you when a scam imitates them.",
+      "noMatch": "No institution matches your search.",
+      "unfollow": "Stop following {name}",
+      "followAction": "Follow {name}",
+      "open": "Open"
     },
     "watch": {
       "intro": "Add phone numbers, emails or names to monitor. We store them only as hashes; we cannot read them.",
@@ -1524,14 +1895,61 @@
       "added": "Added to your watchlist.",
       "empty": "Your watchlist is empty.",
       "lastMatch": "Last match",
-      "never": "No matches"
+      "never": "No matches",
+      "title": "Watchlist",
+      "addTitle": "Add something to watch",
+      "addHint": "Your own phone number or email works best.",
+      "placeholders": {
+        "phone": "+355 69 123 4567",
+        "email": "name@example.test",
+        "name": "First and last name"
+      },
+      "watching": "{count, plural, =0 {Nothing watched yet} one {Watching # item} other {Watching # items}}",
+      "matched": "Seen in a report {ago}",
+      "safe": "No matches so far",
+      "howTitle": "How it works",
+      "how": [
+        {
+          "title": "You add a number, email or name",
+          "body": "Only you can see the masked hint shown here."
+        },
+        {
+          "title": "We keep a fingerprint, not the value",
+          "body": "It is stored as a one-way hash. Nobody, including us, can read it back."
+        },
+        {
+          "title": "We alert you on a match",
+          "body": "When a new scam report contains it, you get an alert right away."
+        }
+      ],
+      "emptyBody": "Add your phone number or email to find out if scammers are using it."
     },
     "learn": {
       "progress": "{done} of {total} guides completed",
       "score": "Quiz: {score}%",
       "notStarted": "Not started",
       "open": "Open",
-      "quiz": "Play the general quiz"
+      "quiz": "Play the general quiz",
+      "title": "Learning path",
+      "subtitle": "Six short guides on the scams most common in Albania. Read one, take its quiz, move on.",
+      "avgScore": "Average quiz score",
+      "noScore": "No quizzes yet",
+      "continueTitle": "Up next",
+      "allDoneTitle": "Path complete",
+      "allDoneBody": "You finished every guide. Play the general quiz to stay sharp.",
+      "start": "Start guide",
+      "continue": "Continue",
+      "review": "Review",
+      "stepN": "Guide {n}",
+      "status": {
+        "done": "Completed",
+        "progress": "In progress",
+        "next": "Up next",
+        "todo": "Not started"
+      },
+      "quizTitle": "Spot the scam",
+      "quizBody": "Ten real-looking messages. Decide which are scams.",
+      "badgesHint": "Earn badges as you check, report and learn."
     },
     "extension": {
       "intro": "The extension scans only the email you choose. Here you see what was sent and manage consent.",
@@ -1564,7 +1982,24 @@
         "extension_auto_submit": "Extension auto-submit",
         "notify_email": "Email notifications",
         "terms": "Terms"
-      }
+      },
+      "title": "Privacy centre",
+      "subtitle": "See what Mburoja keeps about you, download it, or delete it.",
+      "keepTitle": "What we keep about you",
+      "keep": {
+        "checks": "Saved checks",
+        "reports": "Reports",
+        "watch": "Watchlist items",
+        "consents": "Consent records"
+      },
+      "neverTitle": "What we never keep",
+      "never": [
+        "The text of messages you check",
+        "Your watchlist values (only a one-way hash)",
+        "Phone numbers, IBANs and names in reports (masked)"
+      ],
+      "dangerTitle": "Danger zone",
+      "consentsHint": "Every time you turn a data setting on or off."
     },
     "settings": {
       "name": "Name",
@@ -1573,7 +2008,82 @@
       "notifyEmail": "Email notifications",
       "notifyInApp": "In-app notifications",
       "methods": "Sign-in methods",
-      "saved": "Settings saved."
+      "saved": "Settings saved.",
+      "title": "Settings",
+      "subtitle": "Your profile, language and how we notify you.",
+      "profile": "Profile",
+      "profileHint": "Shown on your dashboard. Optional.",
+      "prefs": "Preferences",
+      "prefsHint": "The language for the site and emails.",
+      "notificationsHint": "Choose where scam warnings reach you.",
+      "notifyEmailHint": "A short email when a campaign imitates an institution you follow.",
+      "notifyInAppHint": "Alerts in the bell at the top of your dashboard.",
+      "account": "Account",
+      "accountHint": "How you sign in.",
+      "email": "Email",
+      "privacyLink": "Download or delete your data in the Privacy centre",
+      "unsaved": "You have unsaved changes."
+    }
+  },
+  "socx": {
+    "pages": {
+      "command": "Live picture of incoming reports, campaigns and what needs a decision now.",
+      "inbox": "Every report waiting for a decision. J/K to move, Enter to open, 1–5 to set a status.",
+      "campaigns": "Reports grouped into scam campaigns, with status, severity and owner.",
+      "domains": "Lookalike and suspicious domains found by the scanners, ranked by risk.",
+      "takedowns": "Notices to registrars, hosts and platforms, from draft to takedown.",
+      "threatMap": "Who is being imitated, how, from where, and when attacks peak.",
+      "search": "Search reports, campaigns, domains, indicators and message text at once.",
+      "advisories": "Public warnings in Albanian and English, written from confirmed campaigns.",
+      "blocklist": "Indicators shared with partners and the browser extension.",
+      "quality": "How well the detection model is doing, and where it got it wrong.",
+      "alerts": "Rules that warn the team when report volume spikes.",
+      "admin": "Staff, institutions, templates, recipients, settings and the audit log."
+    },
+    "quick": "Quick actions",
+    "filters": "Filters",
+    "results": "{count, plural, one {# result} other {# results}}",
+    "td": {
+      "open": "Being prepared",
+      "waiting": "Waiting for reply",
+      "overdue": "Overdue",
+      "done": "Taken down"
+    },
+    "bl": {
+      "total": "Entries",
+      "active": "Active",
+      "expired": "Expired",
+      "add": "Add an entry",
+      "list": "Entries"
+    },
+    "al": {
+      "rules": "Rules",
+      "active": "Active rules",
+      "fired": "Fired (last 50)",
+      "add": "New rule",
+      "list": "Rules",
+      "noRules": "No rules yet. Add one above."
+    },
+    "adv": {
+      "drafts": "Drafts",
+      "review": "In review",
+      "published": "Published",
+      "write": "Write an advisory",
+      "list": "All advisories"
+    },
+    "q": {
+      "fp": "False positives",
+      "fn": "False negatives",
+      "labels": "Labels (last 200)"
+    },
+    "cmd": {
+      "volumeHint": "Reports per day, split by flag",
+      "live": "Live"
+    },
+    "det": {
+      "workspace": "Report workspace",
+      "overview": "Overview",
+      "exports": "Export indicators"
     }
   },
   "intel": {

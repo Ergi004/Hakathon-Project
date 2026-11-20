@@ -1,7 +1,7 @@
 "use client";
 
 import jsQR from "jsqr";
-import { Fingerprint, ImageUp, Link2, Loader2, MessageSquareText, Phone, QrCode, ScanSearch } from "lucide-react";
+import { Fingerprint, ImageUp, Info, Link2, Loader2, MessageSquareText, Phone, QrCode, ScanSearch } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRef, useState, useTransition } from "react";
 import { reportFromCheck, checkAction, type CheckError } from "@/app/[locale]/(public)/check/actions";
@@ -129,41 +129,54 @@ export function CheckBox({ examples = [], hero = false }: { examples?: CheckExam
       <form
         onSubmit={submit}
         className={cn(
-          "glass-card relative rounded-2xl p-3 md:p-4",
+          "glass-card relative rounded-3xl p-4 md:p-6",
           hero && "shadow-[0_0_80px_-20px_var(--glow)] ring-1 ring-primary/20",
         )}
         aria-busy={pending}
       >
         <Tabs value={tab} onValueChange={(v) => { setTab(v as Tab); setError(null); }}>
-          <TabsList className="grid w-full grid-cols-4">
+          <p id="chk-ask" className="mb-1 font-display text-base font-medium md:text-lg">{t("askTitle")}</p>
+          <TabsList aria-labelledby="chk-ask" className="grid w-full grid-cols-2 gap-2 bg-transparent p-0 group-data-horizontal/tabs:h-auto sm:grid-cols-4">
             {(Object.keys(TAB_ICON) as Tab[]).map((k) => {
               const Icon = TAB_ICON[k];
               return (
-                <TabsTrigger key={k} value={k} className="gap-1.5">
-                  <Icon className="size-4" aria-hidden="true" />
-                  <span className="text-xs sm:text-sm">{t(`tabs.${k}`)}</span>
+                <TabsTrigger
+                  key={k}
+                  value={k}
+                  className="h-full flex-col items-start justify-start gap-1 rounded-xl border-border bg-background/60 px-3.5 py-3 text-left whitespace-normal text-muted-foreground data-active:border-primary data-active:bg-primary/10 data-active:text-foreground dark:border-border dark:data-active:border-primary dark:data-active:bg-primary/10"
+                >
+                  <span className="flex items-center gap-2 text-sm font-semibold text-foreground md:text-base">
+                    <Icon className="size-4 text-primary md:size-5" aria-hidden="true" />
+                    {t(`tabs.${k}`)}
+                  </span>
+                  <span className="hidden text-xs leading-snug font-normal sm:block">{t(`tabHints.${k}`)}</span>
                 </TabsTrigger>
               );
             })}
           </TabsList>
 
+          <p className="mt-3 flex gap-2 rounded-lg bg-muted/60 px-3 py-2 text-sm text-muted-foreground">
+            <Info className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />
+            {t(`howTo.${tab}`)}
+          </p>
+
           <div className="mt-3 space-y-3">
             <TabsContent value="link" className="mt-0 space-y-1.5">
               <Label htmlFor="chk-link" className="sr-only">{t("labels.link")}</Label>
-              <Input id="chk-link" value={values.link} onChange={(e) => setValue(e.target.value)} placeholder={t("placeholders.link")} inputMode="url" autoComplete="off" spellCheck={false} className="h-12 font-mono text-base" />
+              <Input id="chk-link" value={values.link} onChange={(e) => setValue(e.target.value)} placeholder={t("placeholders.link")} inputMode="url" autoComplete="off" spellCheck={false} className="h-14 rounded-xl px-4 font-mono text-base md:text-lg" />
             </TabsContent>
             <TabsContent value="message" className="mt-0 space-y-3">
               <Label htmlFor="chk-msg" className="sr-only">{t("labels.message")}</Label>
-              <Textarea id="chk-msg" value={values.message} onChange={(e) => setValue(e.target.value)} placeholder={t("placeholders.message")} rows={4} className="min-h-28 text-base" />
+              <Textarea id="chk-msg" value={values.message} onChange={(e) => setValue(e.target.value)} placeholder={t("placeholders.message")} rows={6} className="min-h-40 rounded-xl px-4 py-3 text-base md:text-lg" />
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="space-y-1.5">
                   <Label htmlFor="chk-sender">{t("labels.sender")}</Label>
-                  <Input id="chk-sender" value={sender} onChange={(e) => setSender(e.target.value)} placeholder={t("placeholders.sender")} autoComplete="off" />
+                  <Input id="chk-sender" value={sender} onChange={(e) => setSender(e.target.value)} placeholder={t("placeholders.sender")} autoComplete="off" className="h-11 rounded-xl" />
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="chk-channel">{t("labels.channel")}</Label>
                   <Select value={channel} onValueChange={(v) => setChannel(v as typeof channel)}>
-                    <SelectTrigger id="chk-channel" className="w-full"><SelectValue /></SelectTrigger>
+                    <SelectTrigger id="chk-channel" className="h-11 w-full rounded-xl data-[size=default]:h-11"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       {CHANNELS.filter((c) => c !== "qr").map((c) => (
                         <SelectItem key={c} value={c}>{tc(c)}</SelectItem>
@@ -175,13 +188,13 @@ export function CheckBox({ examples = [], hero = false }: { examples?: CheckExam
             </TabsContent>
             <TabsContent value="phone" className="mt-0">
               <Label htmlFor="chk-phone" className="sr-only">{t("labels.phone")}</Label>
-              <Input id="chk-phone" value={values.phone} onChange={(e) => setValue(e.target.value)} placeholder={t("placeholders.phone")} inputMode="tel" autoComplete="off" className="h-12 font-mono text-base" />
+              <Input id="chk-phone" value={values.phone} onChange={(e) => setValue(e.target.value)} placeholder={t("placeholders.phone")} inputMode="tel" autoComplete="off" className="h-14 rounded-xl px-4 font-mono text-base md:text-lg" />
             </TabsContent>
             <TabsContent value="qr" className="mt-0 space-y-2">
-              <Label htmlFor="chk-qr" className="flex cursor-pointer flex-col items-center gap-2 rounded-xl border border-dashed border-border p-6 text-center text-sm hover:bg-accent focus-within:ring-2 focus-within:ring-ring">
-                <ImageUp className="size-6 text-muted-foreground" aria-hidden="true" />
-                <span>{t("labels.qr")}</span>
-                <span className="text-xs text-muted-foreground">{t("qrHint")}</span>
+              <Label htmlFor="chk-qr" className="flex cursor-pointer flex-col items-center gap-2 rounded-xl border-2 border-dashed border-border p-8 text-center text-base hover:border-primary/50 hover:bg-accent focus-within:ring-2 focus-within:ring-ring">
+                <ImageUp className="size-8 text-primary" aria-hidden="true" />
+                <span className="font-medium">{t("labels.qr")}</span>
+                <span className="text-sm text-muted-foreground">{t("qrHint")}</span>
                 <input id="chk-qr" type="file" accept="image/*" capture="environment" className="sr-only" onChange={(e) => onQrFile(e.target.files?.[0])} />
               </Label>
               {values.qr && (
@@ -194,13 +207,13 @@ export function CheckBox({ examples = [], hero = false }: { examples?: CheckExam
           </div>
         </Tabs>
 
-        <div className="mt-3 flex flex-col-reverse items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-4 flex flex-col-reverse items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="inline-flex items-center gap-2 text-xs text-muted-foreground">
             <Fingerprint className="size-4 shrink-0" aria-hidden="true" />
             {t("privacyNote")}
           </p>
-          <Button type="submit" size="lg" disabled={pending} className="sm:min-w-36">
-            {pending ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : <ScanSearch className="size-4" aria-hidden="true" />}
+          <Button type="submit" size="lg" disabled={pending} className="h-12 rounded-xl text-base sm:min-w-44">
+            {pending ? <Loader2 className="size-5 animate-spin" aria-hidden="true" /> : <ScanSearch className="size-5" aria-hidden="true" />}
             {pending ? t("checking") : t("submit")}
           </Button>
         </div>

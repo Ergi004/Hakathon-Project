@@ -13,7 +13,8 @@ const NONE = "__none";
  * No GPS, no browser geolocation, no IP lookup, no address.
  */
 export function RegionSelect({ county, municipality, onChange }: { county: string; municipality: string; onChange: (v: { county: string; municipality: string }) => void }) {
-  const t = useTranslations("report.region");
+  const tr = useTranslations("report");
+  const t = (key: "legend" | "hint" | "county" | "municipality" | "preferNot" | "pickMunicipality") => tr(`region.${key}`);
   const locale = useLocale();
   const counties = [...COUNTIES].sort((a, b) => regionName(a.code, locale).localeCompare(regionName(b.code, locale), locale));
   return (

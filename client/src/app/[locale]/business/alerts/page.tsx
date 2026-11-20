@@ -1,55 +1,105 @@
 import type { Metadata } from "next";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
-import { PageHeader } from "@/components/layout/page-header";
-import { Skeleton } from "@/components/ui/skeleton";
-import type { Locale } from "@/i18n/routing";
-import { guardOrRedirect, requireActiveOrg } from "@/server/auth";
+import { BellRing, CheckCheck, Eye, Send, ShieldCheck } from "lucide-react";
 import { AlertActions } from "@/components/business/forms";
-import { EmptyState } from "@/components/layout/empty-state";
+import { DashPage, EmptyPanel, StatCard } from "@/components/layout/dash";
 import { DefangedText } from "@/components/shared/defanged-text";
 import { SeverityDot } from "@/components/shared/severity-dot";
 import { UrlSelect } from "@/components/shared/url-select";
-import { Badge } from "@/components/ui/badge";
+import { UrlToggle } from "@/components/shared/url-toggle";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import type { Locale } from "@/i18n/routing";
 import { fmtAgo, fmtDate } from "@/lib/format";
+import { cn } from "@/lib/utils";
+import { guardOrRedirect, requireActiveOrg } from "@/server/auth";
+
+const STATUSES = ["new", "acknowledged", "escalated", "resolved"] as const;
+const SEVERITIES = ["critical", "high", "medium", "low"] as const;
+const SEV_EDGE: Record<string, string> = { critical: "border-l-flag-darkred", high: "border-l-flag-red", medium: "border-l-flag-orange", low: "border-l-flag-yellow" };
+const STATUS_TONE: Record<string, string> = {
+  new: "border-primary/40 bg-primary/10 text-primary",
+  acknowledged: "border-flag-yellow/40 bg-flag-yellow/10",
+  escalated: "border-flag-orange/40 bg-flag-orange/10",
+  resolved: "border-flag-green/40 bg-flag-green/10",
+};
+
+type SP = { severity?: string; status?: string };
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   return { title: (await getTranslations({ locale: locale as Locale, namespace: "business.nav" }))("alerts") };
 }
 
-async function Content({ searchParams }: { searchParams: Promise<{ severity?: string; status?: string }> }) {
+async function Content({ searchParams }: { searchParams: Promise<SP> }) {
   const sp = await searchParams;
   const ctx = await guardOrRedirect(() => requireActiveOrg(["owner", "admin", "security"]));
-  const [t, ts, td, tu, locale] = await Promise.all([getTranslations("biz.alerts"), getTranslations("severity"), getTranslations("soc.domains"), getTranslations("ui"), getLocale()]);
-  let q = ctx.supabase.from("brand_alerts").select("id, title, severity, status, created_at, domains(domain, registrar, hosting_country, age_days, registered_at, class), campaigns(code)").eq("org_id", ctx.org.id).order("created_at", { ascending: false }).limit(200);
-  if (["low", "medium", "high", "critical"].includes(sp.severity ?? "")) q = q.eq("severity", sp.severity as "low");
-  if (["new", "acknowledged", "escalated", "resolved"].includes(sp.status ?? "")) q = q.eq("status", sp.status!);
-  const { data } = await q;
+  const [t, tb, ts, td, tu, locale] = await Promise.all([getTranslations("biz.alerts"), getTranslations("biz"), getTranslations("severity"), getTranslations("soc.domains"), getTranslations("ui"), getLocale()]);
+  const { data } = await ctx.supabase
+    .from("brand_alerts")
+    .select("id, title, severity, status, created_at, domains(domain, registrar, hosting_country, age_days, registered_at, class), campaigns(code)")
+    .eq("org_id", ctx.org.id)
+    .order("created_at", { ascending: false })
+    .limit(300);
+  const all = data ?? [];
+  const status = STATUSES.includes(sp.status as "new") ? sp.status : undefined;
+  const severity = SEVERITIES.includes(sp.severity as "low") ? sp.severity : undefined;
+  const shown = all.filter((a) => (!status || a.status === status) && (!severity || a.severity === severity));
+  const count = (s: string) => all.filter((a) => a.status === s).length;
+  const statIcon = { new: BellRing, acknowledged: Eye, escalated: Send, resolved: CheckCheck } as const;
+  const statTone = { new: "text-primary", acknowledged: "text-flag-yellow", escalated: "text-flag-orange", resolved: "text-flag-green" } as const;
+
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col gap-3 sm:flex-row">
-        <UrlSelect name="severity" label={t("severity")} anyLabel={tu("all")} options={(["critical", "high", "medium", "low"] as const).map((s) => ({ value: s, label: ts(s) }))} />
-        <UrlSelect name="status" label={t("status")} anyLabel={tu("all")} options={(["new", "acknowledged", "escalated", "resolved"] as const).map((s) => ({ value: s, label: t(`statuses.${s}`) }))} />
+    <div className="space-y-6">
+      <ul className="grid grid-cols-2 gap-3 xl:grid-cols-4">
+        {STATUSES.map((s) => (
+          <li key={s}><StatCard icon={statIcon[s]} tone={statTone[s]} label={tb(`al.stats.${s}`)} value={count(s)} /></li>
+        ))}
+      </ul>
+
+      <div className="flex flex-wrap items-end gap-4">
+        <UrlToggle name="status" label={tb("al.filterStatus")} options={[{ value: "all", label: tu("all") }, ...STATUSES.map((s) => ({ value: s, label: t(`statuses.${s}`) }))]} />
+        <div className="w-48">
+          <UrlSelect name="severity" label={t("severity")} anyLabel={tu("all")} options={SEVERITIES.map((s) => ({ value: s, label: ts(s) }))} />
+        </div>
       </div>
-      {!data?.length ? <EmptyState title={t("empty")} /> : (
+
+      {!shown.length ? (
+        <Card><CardContent><EmptyPanel icon={ShieldCheck} tone="text-flag-green" title={t("empty")} body={all.length ? undefined : tb("al.emptyBody")} /></CardContent></Card>
+      ) : (
         <ul className="space-y-3">
-          {data.map((a) => {
+          {shown.map((a) => {
             const d = a.domains as { domain: string; registrar: string | null; hosting_country: string | null; age_days: number | null; registered_at: string | null; class: string } | null;
+            const code = (a.campaigns as { code: string } | null)?.code;
             return (
-              <li key={a.id} className="glass-card space-y-3 rounded-xl p-4">
-                <div className="flex flex-wrap items-center gap-2"><SeverityDot severity={a.severity} /><Badge variant="outline">{t(`statuses.${a.status as "new"}`)}</Badge><span className="font-medium">{a.title}</span><span className="ml-auto text-xs text-muted-foreground">{fmtAgo(a.created_at, locale)}</span></div>
-                {d && (
-                  <details className="text-sm"><summary className="cursor-pointer text-muted-foreground">{t("evidence")}</summary>
-                    <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
-                      <dt className="text-muted-foreground">{td("domain")}</dt><dd><DefangedText value={d.domain} /></dd>
-                      <dt className="text-muted-foreground">{td("registrar")}</dt><dd>{d.registrar ?? "—"}</dd>
-                      <dt className="text-muted-foreground">{td("hosting")}</dt><dd>{d.hosting_country ?? "—"}</dd>
-                      <dt className="text-muted-foreground">{td("age")}</dt><dd>{d.registered_at ? fmtDate(d.registered_at, locale) : "—"}{d.age_days !== null ? ` · ${td("ageDays", { count: d.age_days })}` : ""}</dd>
-                    </dl>
-                  </details>
-                )}
-                <AlertActions id={a.id} status={a.status} canAct />
+              <li key={a.id}>
+                <Card className={cn("gap-4 border-l-4 py-5", SEV_EDGE[a.severity] ?? "border-l-border", a.status === "resolved" && "opacity-75")}>
+                  <CardContent className="space-y-4 px-5">
+                    <div className="flex flex-wrap items-start gap-3">
+                      <div className="min-w-0 flex-1 space-y-1.5">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <SeverityDot severity={a.severity} />
+                          <span className={cn("rounded-full border px-2.5 py-0.5 text-xs font-medium", STATUS_TONE[a.status])}>{t(`statuses.${a.status as "new"}`)}</span>
+                          {code && <span className="font-mono text-xs text-muted-foreground">{tb("al.campaign", { code })}</span>}
+                        </div>
+                        <p className="font-display text-lg leading-snug font-medium">{a.title}</p>
+                      </div>
+                      <time dateTime={a.created_at} className="text-xs text-muted-foreground">{fmtAgo(a.created_at, locale)}</time>
+                    </div>
+
+                    {d && (
+                      <dl className="grid gap-x-6 gap-y-3 rounded-xl bg-muted/40 p-4 text-sm sm:grid-cols-2 xl:grid-cols-4">
+                        <div className="min-w-0"><dt className="text-xs text-muted-foreground">{td("domain")}</dt><dd className="mt-0.5"><DefangedText value={d.domain} /></dd></div>
+                        <div><dt className="text-xs text-muted-foreground">{td("registrar")}</dt><dd className="mt-0.5">{d.registrar ?? "—"}</dd></div>
+                        <div><dt className="text-xs text-muted-foreground">{td("hosting")}</dt><dd className="mt-0.5">{d.hosting_country ?? "—"}</dd></div>
+                        <div><dt className="text-xs text-muted-foreground">{td("age")}</dt><dd className="mt-0.5">{d.registered_at ? fmtDate(d.registered_at, locale) : "—"}{d.age_days !== null ? ` · ${td("ageDays", { count: d.age_days })}` : ""}</dd></div>
+                      </dl>
+                    )}
+
+                    <AlertActions id={a.id} status={a.status} canAct />
+                  </CardContent>
+                </Card>
               </li>
             );
           })}
@@ -59,13 +109,12 @@ async function Content({ searchParams }: { searchParams: Promise<{ severity?: st
   );
 }
 
-export default async function Page({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ severity?: string; status?: string }> }) {
+export default async function Page({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<SP> }) {
   setRequestLocale((await params).locale as Locale);
-  const t = await getTranslations("business.nav");
+  const [t, tb] = await Promise.all([getTranslations("business.nav"), getTranslations("biz")]);
   return (
-    <div className="space-y-6">
-      <PageHeader title={t("alerts")} />
-      <Suspense fallback={<Skeleton className="h-96 w-full" />}><Content searchParams={searchParams} /></Suspense>
-    </div>
+    <DashPage title={t("alerts")} subtitle={tb("pages.alerts")}>
+      <Suspense fallback={<Skeleton className="h-96 w-full rounded-xl" />}><Content searchParams={searchParams} /></Suspense>
+    </DashPage>
   );
 }

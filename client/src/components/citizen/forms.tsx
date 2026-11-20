@@ -1,24 +1,21 @@
 "use client";
 
-import { Bell, Check, Download, Plus, Trash2, Unplug } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useState, useTransition } from "react";
+import { AtSign, Download, History, Phone, UserRound, Plus, Trash2, Unplug } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import {
-  addReportDetail, addWatchItem, deleteCheckLinks, deleteMyAccount, exportMyData, markNotificationsRead, removeWatchItem, revokeExtension,
-  saveCitizenSettings, setExtensionAutoSubmit, setFollow, setSaveHistory,
+  addReportDetail, addWatchItem, deleteCheckLinks, deleteMyAccount, exportMyData, removeWatchItem, revokeExtension,
+  saveCitizenSettings, setExtensionAutoSubmit, setSaveHistory,
 } from "@/app/[locale]/citizen/_actions";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { Link, useRouter } from "@/i18n/navigation";
-import { fmtAgo } from "@/lib/format";
+import { useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
-import { createBrowserClient } from "@/server/supabase/client";
 
 type R = { ok: boolean; error?: string; message?: string };
 function useRun() {
@@ -32,20 +29,44 @@ export function SaveHistoryToggle({ on }: { on: boolean }) {
   const t = useTranslations("cit.checks");
   const { pending, run } = useRun();
   return (
-    <label className="glass-card flex items-start gap-3 rounded-xl p-4">
-      <Switch checked={on} disabled={pending} onCheckedChange={(v) => run(() => setSaveHistory({ on: v }))} className="mt-0.5" />
-      <span><span className="block font-medium">{t("saveHistory")}</span><span className="text-sm text-muted-foreground">{t("saveHistoryHint")}</span></span>
+    <label htmlFor="save-history" className={cn("flex cursor-pointer items-center gap-4 rounded-xl border p-4 transition-colors", on ? "border-border bg-card" : "border-flag-yellow/40 bg-flag-yellow/5")}>
+      <span className={cn("grid size-10 shrink-0 place-items-center rounded-xl", on ? "bg-primary/12 text-primary" : "bg-flag-yellow/15 text-flag-yellow")}>
+        <History className="size-5" aria-hidden="true" />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block font-medium">{t("saveHistory")}</span>
+        <span className="block text-sm text-muted-foreground">{on ? t("saveHistoryHint") : t("historyOff")}</span>
+      </span>
+      <Switch id="save-history" checked={on} disabled={pending} onCheckedChange={(v) => run(() => setSaveHistory({ on: v }))} />
     </label>
   );
 }
 
-export function DeleteCheckButton({ id, all = false }: { id?: string; all?: boolean }) {
+export function DeleteCheckButton({ id, all = false, count = 0 }: { id?: string; all?: boolean; count?: number }) {
   const t = useTranslations("cit.checks");
   const { pending, run } = useRun();
-  return all ? (
-    <Button variant="outline" size="sm" disabled={pending} onClick={() => run(() => deleteCheckLinks({ all: true }), t("deleted"))}><Trash2 className="size-4" aria-hidden="true" />{t("deleteAll")}</Button>
-  ) : (
-    <Button variant="ghost" size="icon" className="size-8" aria-label={t("delete")} disabled={pending} onClick={() => run(() => deleteCheckLinks({ ids: [id!] }), t("deleted"))}><Trash2 className="size-4" /></Button>
+  const [open, setOpen] = useState(false);
+  if (!all) {
+    return <Button variant="ghost" size="icon" className="size-8 text-muted-foreground hover:text-destructive" aria-label={t("delete")} disabled={pending} onClick={() => run(() => deleteCheckLinks({ ids: [id!] }), t("deleted"))}><Trash2 className="size-4" aria-hidden="true" /></Button>;
+  }
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm" className="rounded-full"><Trash2 className="size-4" aria-hidden="true" />{t("deleteAll")}</Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{t("confirmTitle")}</DialogTitle>
+          <DialogDescription>{t("confirmBody", { count })}</DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setOpen(false)}>{t("cancel")}</Button>
+          <Button variant="destructive" disabled={pending} onClick={() => run(() => deleteCheckLinks({ all: true }), t("deleted"), () => setOpen(false))}>
+            <Trash2 className="size-4" aria-hidden="true" />{t("deleteAll")}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -63,61 +84,11 @@ export function ReportDetailForm({ id }: { id: string }) {
 }
 
 /** C4: notifications with Realtime (RLS: own rows only) and a 60 s polling fallback. */
-export function NotificationsLive({ items }: { items: { id: string; title: string; body: string | null; href: string | null; read_at: string | null; created_at: string }[] }) {
-  const t = useTranslations("cit.alerts");
-  const locale = useLocale();
-  const router = useRouter();
-  const { pending, run } = useRun();
-  useEffect(() => {
-    let client: ReturnType<typeof createBrowserClient> | null = null;
-    try { client = createBrowserClient(); } catch { client = null; }
-    const poll = setInterval(() => router.refresh(), 60_000);
-    const ch = client?.channel("citizen-notifications").on("postgres_changes", { event: "INSERT", schema: "public", table: "notifications" }, (p) => { toast((p.new as { title: string }).title); router.refresh(); }).subscribe();
-    return () => { clearInterval(poll); if (ch) client?.removeChannel(ch); };
-  }, [router]);
-  const unread = items.filter((n) => !n.read_at).length;
-  return (
-    <div className="space-y-3">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="inline-flex items-center gap-2 text-sm text-muted-foreground" aria-live="polite"><span aria-hidden="true" className="size-2 animate-pulse rounded-full bg-flag-green" />{t("live")} · {t("unread", { count: unread })}</p>
-        {unread > 0 && <Button size="sm" variant="outline" disabled={pending} onClick={() => run(() => markNotificationsRead({}))}><Check className="size-4" aria-hidden="true" />{t("markAll")}</Button>}
-      </div>
-      {!items.length ? <p className="text-sm text-muted-foreground">{t("empty")}</p> : (
-        <ul className="space-y-2">
-          {items.map((n) => (
-            <li key={n.id} className={cn("flex items-start gap-3 rounded-xl border p-3", n.read_at ? "border-border" : "border-primary/40 bg-primary/5")}>
-              <Bell className={cn("mt-0.5 size-4 shrink-0", n.read_at ? "text-muted-foreground" : "text-primary")} aria-hidden="true" />
-              <div className="min-w-0 flex-1">
-                {n.href ? <Link href={n.href} className="font-medium hover:underline">{n.title}</Link> : <p className="font-medium">{n.title}</p>}
-                {n.body && n.body !== "watch_match" && <p className="text-sm text-muted-foreground">{n.body}</p>}
-                <p className="text-xs text-muted-foreground">{fmtAgo(n.created_at, locale)}</p>
-              </div>
-              {!n.read_at && <Button size="sm" variant="ghost" disabled={pending} onClick={() => run(() => markNotificationsRead({ ids: [n.id] }))}>{t("markRead")}</Button>}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-}
-
-export function FollowList({ institutions, followed }: { institutions: { id: string; name: string }[]; followed: string[] }) {
-  const { pending, run } = useRun();
-  return (
-    <ul className="flex flex-wrap gap-2">
-      {institutions.map((i) => {
-        const on = followed.includes(i.id);
-        return (
-          <li key={i.id}>
-            <Button size="sm" variant={on ? "default" : "outline"} aria-pressed={on} disabled={pending} onClick={() => run(() => setFollow({ institutionId: i.id, follow: !on }))}>
-              {on && <Check className="size-3.5" aria-hidden="true" />}{i.name}
-            </Button>
-          </li>
-        );
-      })}
-    </ul>
-  );
-}
+const WATCH_KINDS = [
+  { k: "phone", Icon: Phone },
+  { k: "email", Icon: AtSign },
+  { k: "name", Icon: UserRound },
+] as const;
 
 export function WatchForm() {
   const t = useTranslations("cit.watch");
@@ -125,15 +96,51 @@ export function WatchForm() {
   const [value, setValue] = useState("");
   const { pending, run } = useRun();
   return (
-    <form className="glass-card flex flex-col gap-3 rounded-xl p-4 sm:flex-row sm:items-end" onSubmit={(e) => { e.preventDefault(); run(() => addWatchItem({ kind, value }), t("added"), () => setValue("")); }}>
-      <div className="space-y-1.5"><Label htmlFor="w-kind">{t("kind")}</Label>
-        <Select value={kind} onValueChange={(v) => setKind(v as typeof kind)}><SelectTrigger id="w-kind" className="w-full sm:w-36"><SelectValue /></SelectTrigger>
-          <SelectContent>{(["phone", "email", "name"] as const).map((k) => <SelectItem key={k} value={k}>{t(`kinds.${k}`)}</SelectItem>)}</SelectContent></Select></div>
-      <div className="flex-1 space-y-1.5"><Label htmlFor="w-value">{t("value")}</Label><Input id="w-value" value={value} onChange={(e) => setValue(e.target.value)} autoComplete="off" inputMode={kind === "phone" ? "tel" : kind === "email" ? "email" : "text"} /></div>
-      <Button type="submit" disabled={pending || value.trim().length < 3}><Plus className="size-4" aria-hidden="true" />{t("add")}</Button>
+    <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); run(() => addWatchItem({ kind, value }), t("added"), () => setValue("")); }}>
+      <fieldset className="space-y-2">
+        <legend className="sr-only">{t("kind")}</legend>
+        <div role="radiogroup" className="grid grid-cols-3 gap-2">
+          {WATCH_KINDS.map(({ k, Icon }) => (
+            <button
+              key={k}
+              type="button"
+              role="radio"
+              aria-checked={kind === k}
+              onClick={() => setKind(k)}
+              className={cn(
+                "flex h-11 items-center justify-center gap-2 rounded-xl border-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+                kind === k ? "border-primary bg-primary/10 text-foreground" : "border-border text-muted-foreground hover:border-primary/40 hover:text-foreground",
+              )}
+            >
+              <Icon className="size-4" aria-hidden="true" />
+              {t(`kinds.${k}`)}
+            </button>
+          ))}
+        </div>
+      </fieldset>
+      <div className="space-y-1.5">
+        <Label htmlFor="w-value" className="sr-only">{t("value")}</Label>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <Input
+            id="w-value"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            placeholder={t(`placeholders.${kind}`)}
+            autoComplete="off"
+            inputMode={kind === "phone" ? "tel" : kind === "email" ? "email" : "text"}
+            className="h-12 flex-1 rounded-xl text-base"
+            aria-describedby="w-hint"
+          />
+          <Button type="submit" size="lg" className="h-12 rounded-xl px-6" disabled={pending || value.trim().length < 3}>
+            <Plus className="size-4" aria-hidden="true" />{t("add")}
+          </Button>
+        </div>
+        <p id="w-hint" className="text-xs text-muted-foreground">{t("addHint")}</p>
+      </div>
     </form>
   );
 }
+
 export function RemoveWatchButton({ id, label }: { id: string; label: string }) {
   const tu = useTranslations("ui");
   const { pending, run } = useRun();
@@ -152,62 +159,104 @@ export function ExtensionControls({ id, autoSubmit }: { id: string; autoSubmit: 
   );
 }
 
-export function PrivacyActions() {
+export function ExportDataButton() {
+  const t = useTranslations("cit.privacy");
+  const tu = useTranslations("ui");
+  const [pending, start] = useTransition();
+  return (
+    <Button variant="outline" className="rounded-full" disabled={pending} onClick={() => start(async () => {
+      const r = await exportMyData();
+      if (!r.ok) return void toast.error(tu("errorGeneric"));
+      const url = URL.createObjectURL(new Blob([JSON.stringify(r.data, null, 2)], { type: "application/json" }));
+      const a = document.createElement("a"); a.href = url; a.download = "mburoja-my-data.json"; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    })}><Download className="size-4" aria-hidden="true" />{t("export")}</Button>
+  );
+}
+
+export function DeleteAccountButton() {
   const t = useTranslations("cit.privacy");
   const tu = useTranslations("ui");
   const router = useRouter();
   const [confirm, setConfirm] = useState("");
   const [pending, start] = useTransition();
   return (
-    <div className="grid gap-4 md:grid-cols-2">
-      <section className="glass-card space-y-2 rounded-xl p-5">
-        <h2 className="font-medium">{t("export")}</h2>
-        <p className="text-sm text-muted-foreground">{t("exportHint")}</p>
-        <Button variant="outline" disabled={pending} onClick={() => start(async () => {
-          const r = await exportMyData();
-          if (!r.ok) return void toast.error(tu("errorGeneric"));
-          const url = URL.createObjectURL(new Blob([JSON.stringify(r.data, null, 2)], { type: "application/json" }));
-          const a = document.createElement("a"); a.href = url; a.download = "mburoja-my-data.json"; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
-        })}><Download className="size-4" aria-hidden="true" />{t("export")}</Button>
-      </section>
-      <section className="space-y-2 rounded-xl border border-destructive/40 p-5">
-        <h2 className="font-medium text-destructive">{t("delete")}</h2>
-        <p className="text-sm text-muted-foreground">{t("deleteHint")}</p>
-        <Dialog>
-          <DialogTrigger asChild><Button variant="destructive"><Trash2 className="size-4" aria-hidden="true" />{t("delete")}</Button></DialogTrigger>
-          <DialogContent>
-            <DialogHeader><DialogTitle>{t("delete")}</DialogTitle><DialogDescription>{t("deleteHint")}</DialogDescription></DialogHeader>
-            <Label htmlFor="del-confirm">{t("deleteConfirm")}</Label>
-            <Input id="del-confirm" value={confirm} onChange={(e) => setConfirm(e.target.value)} autoComplete="off" />
-            <DialogFooter>
-              <Button variant="destructive" disabled={pending || confirm !== t("deleteWord")} onClick={() => start(async () => {
-                const r = await deleteMyAccount({ confirm });
-                if (r.ok) { toast.success(t("deleted")); router.push("/"); } else toast.error(r.message === "owner" ? tu("errorForbidden") : tu("errorGeneric"));
-              })}>{tu("confirm")}</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      </section>
-    </div>
+    <Dialog>
+      <DialogTrigger asChild><Button variant="destructive" className="rounded-full"><Trash2 className="size-4" aria-hidden="true" />{t("delete")}</Button></DialogTrigger>
+      <DialogContent>
+        <DialogHeader><DialogTitle>{t("delete")}</DialogTitle><DialogDescription>{t("deleteHint")}</DialogDescription></DialogHeader>
+        <div className="space-y-1.5">
+          <Label htmlFor="del-confirm">{t("deleteConfirm")}</Label>
+          <Input id="del-confirm" value={confirm} onChange={(e) => setConfirm(e.target.value)} autoComplete="off" className="font-mono" />
+        </div>
+        <DialogFooter>
+          <Button variant="destructive" disabled={pending || confirm !== t("deleteWord")} onClick={() => start(async () => {
+            const r = await deleteMyAccount({ confirm });
+            if (r.ok) { toast.success(t("deleted")); router.push("/"); } else toast.error(r.message === "owner" ? tu("errorForbidden") : tu("errorGeneric"));
+          })}>{tu("confirm")}</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
-export function CitizenSettingsForm({ name, locale, notifyEmail, notifyInApp }: { name: string; locale: "sq" | "en"; notifyEmail: boolean; notifyInApp: boolean }) {
+export function CitizenSettingsForm({ name, locale, notifyEmail, notifyInApp, account }: { name: string; locale: "sq" | "en"; notifyEmail: boolean; notifyInApp: boolean; account: React.ReactNode }) {
   const t = useTranslations("cit.settings");
   const tu = useTranslations("ui");
-  const [v, setV] = useState({ fullName: name, locale, notifyEmail, notifyInApp });
+  const initial = { fullName: name, locale, notifyEmail, notifyInApp };
+  const [v, setV] = useState(initial);
   const { pending, run } = useRun();
+  const dirty = JSON.stringify(v) !== JSON.stringify(initial);
+  const row = (title: string, hint: string, body: React.ReactNode) => (
+    <section className="grid gap-4 py-6 first:pt-0 md:grid-cols-[18rem_1fr] lg:grid-cols-[22rem_1fr] md:gap-10">
+      <div className="space-y-1">
+        <h2 className="font-display text-lg font-medium">{title}</h2>
+        <p className="text-sm text-muted-foreground">{hint}</p>
+      </div>
+      <div className="min-w-0">{body}</div>
+    </section>
+  );
+  const toggle = (id: string, label: string, hint: string, checked: boolean, on: (x: boolean) => void) => (
+    <label htmlFor={id} className="flex cursor-pointer items-center gap-4 p-4">
+      <span className="min-w-0 flex-1">
+        <span className="block text-sm font-medium">{label}</span>
+        <span className="block text-sm text-muted-foreground">{hint}</span>
+      </span>
+      <Switch id={id} checked={checked} onCheckedChange={on} />
+    </label>
+  );
   return (
-    <form className="glass-card max-w-xl space-y-4 rounded-xl p-5" onSubmit={(e) => { e.preventDefault(); run(() => saveCitizenSettings(v), t("saved")); }}>
-      <div className="space-y-1.5"><Label htmlFor="cs-name">{t("name")}</Label><Input id="cs-name" value={v.fullName} onChange={(e) => setV({ ...v, fullName: e.target.value })} autoComplete="name" /></div>
-      <div className="space-y-1.5"><Label htmlFor="cs-lang">{t("language")}</Label>
-        <Select value={v.locale} onValueChange={(x) => setV({ ...v, locale: x as "sq" })}><SelectTrigger id="cs-lang" className="w-40"><SelectValue /></SelectTrigger>
-          <SelectContent><SelectItem value="sq">Shqip</SelectItem><SelectItem value="en">English</SelectItem></SelectContent></Select></div>
-      <fieldset className="space-y-2"><legend className="text-sm font-medium">{t("notifications")}</legend>
-        <label className="flex items-center gap-2 text-sm"><Switch checked={v.notifyEmail} onCheckedChange={(x) => setV({ ...v, notifyEmail: x })} />{t("notifyEmail")}</label>
-        <label className="flex items-center gap-2 text-sm"><Switch checked={v.notifyInApp} onCheckedChange={(x) => setV({ ...v, notifyInApp: x })} />{t("notifyInApp")}</label>
-      </fieldset>
-      <Button type="submit" disabled={pending}>{tu("save")}</Button>
+    <form className="divide-y divide-border" onSubmit={(e) => { e.preventDefault(); run(() => saveCitizenSettings(v), t("saved")); }}>
+      {row(t("profile"), t("profileHint"), (
+        <div className="max-w-2xl space-y-1.5">
+          <Label htmlFor="cs-name">{t("name")}</Label>
+          <Input id="cs-name" value={v.fullName} onChange={(e) => setV({ ...v, fullName: e.target.value })} autoComplete="name" className="h-11 rounded-xl" />
+        </div>
+      ))}
+      {row(t("prefs"), t("prefsHint"), (
+        <fieldset className="space-y-1.5">
+          <legend className="mb-1.5 text-sm font-medium">{t("language")}</legend>
+          <div role="radiogroup" className="inline-flex rounded-xl border border-border p-1">
+            {(["sq", "en"] as const).map((l) => (
+              <button key={l} type="button" role="radio" aria-checked={v.locale === l} onClick={() => setV({ ...v, locale: l })}
+                className={cn("rounded-lg px-4 py-1.5 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none", v.locale === l ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}>
+                {l === "sq" ? "Shqip" : "English"}
+              </button>
+            ))}
+          </div>
+        </fieldset>
+      ))}
+      {row(t("notifications"), t("notificationsHint"), (
+        <div className="max-w-3xl divide-y divide-border rounded-xl border border-border">
+          {toggle("cs-email", t("notifyEmail"), t("notifyEmailHint"), v.notifyEmail, (x) => setV({ ...v, notifyEmail: x }))}
+          {toggle("cs-inapp", t("notifyInApp"), t("notifyInAppHint"), v.notifyInApp, (x) => setV({ ...v, notifyInApp: x }))}
+        </div>
+      ))}
+      {row(t("account"), t("accountHint"), account)}
+      <div className="sticky bottom-0 -mx-1 flex items-center justify-end gap-3 bg-background/90 px-1 py-4 backdrop-blur">
+        {dirty && <p className="text-sm text-muted-foreground" aria-live="polite">{t("unsaved")}</p>}
+        <Button type="button" variant="ghost" disabled={!dirty || pending} onClick={() => setV(initial)}>{tu("cancel")}</Button>
+        <Button type="submit" className="rounded-full px-6" disabled={!dirty || pending}>{tu("save")}</Button>
+      </div>
     </form>
   );
 }

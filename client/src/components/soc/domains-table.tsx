@@ -49,10 +49,10 @@ export function DomainsTable({ rows, campaignsByDomain, intel = {} }: { rows: Do
       } else toast.error(tu("errorGeneric"));
     });
 
-  if (!rows.length) return <p className="rounded-xl border border-dashed border-border p-10 text-center text-sm text-muted-foreground">{t("empty")}</p>;
+  if (!rows.length) return <p className="rounded-xl bg-card p-14 text-center text-sm text-muted-foreground ring-1 ring-foreground/10">{t("empty")}</p>;
   return (
     <>
-      <div className="overflow-x-auto rounded-xl border border-border">
+      <div className="overflow-x-auto rounded-xl bg-card ring-1 ring-foreground/10 [&_th]:h-11 [&_th]:bg-muted/40">
         <Table>
           <TableHeader className="sticky top-0 bg-card/95">
             <TableRow>

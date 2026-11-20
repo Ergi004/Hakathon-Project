@@ -69,12 +69,12 @@ async function Workspace({ params }: { params: Params }) {
   const highlights = reasons.map((x) => x.evidence).filter((x): x is string => !!x && !x.includes("[."));
 
   return (
-    <div className="space-y-5">
-      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-        <div className="flex items-center gap-4">
+    <div className="space-y-6">
+      <div className="flex flex-col gap-4 rounded-xl bg-card p-5 ring-1 ring-foreground/10 md:flex-row md:items-center md:justify-between">
+        <div className="flex items-center gap-5">
           <ScoreRing score={r.score} flag={r.flag ?? "grey"} size="sm" />
           <div>
-            <p className="font-mono text-sm">{r.protocol}</p>
+            <h1 className="font-mono text-2xl font-bold tracking-tight md:text-3xl">{r.protocol}</h1>
             <div className="flex flex-wrap items-center gap-2 pt-1">
               {r.flag && <FlagBadge flag={r.flag} score={r.score} />}
               <Badge variant="outline">{ts(r.status)}</Badge>
@@ -92,35 +92,35 @@ async function Workspace({ params }: { params: Params }) {
       <DecisionBar id={r.id} status={r.status} campaignId={campaign?.id ?? null} campaignConfirmed={!!campaign && ["confirmed", "takedown_in_progress"].includes(campaign.status)} />
 
       <UrlTabs defaultTab="workspace" tabs={[{ value: "workspace", label: ti("workspace"), content: (
-      <div className="grid gap-5 xl:grid-cols-[1.2fr_1fr]">
-        <div className="space-y-5">
-          <section className="glass-card space-y-3 rounded-xl p-4">
-            <h2 className="font-display text-base font-medium">{t("message")}</h2>
+      <div className="grid items-start gap-6 xl:grid-cols-[1.4fr_1fr]">
+        <div className="space-y-6">
+          <section className="space-y-4 rounded-xl bg-card p-5 ring-1 ring-foreground/10">
+            <h2 className="font-display text-lg font-medium">{t("message")}</h2>
             {m ? (
               <>
                 <dl className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
                   <div><dt className="inline">{t("sender")}: </dt><dd className="inline font-mono text-foreground">{m.sender_masked ?? "—"}</dd></div>
                   <div><dt className="inline">{t("reporter")}: </dt><dd className="inline text-foreground">{r.reporter_id ? "✓" : r.reporter_org_id ? `${t("org")}: ${(r.reporter_org as { name: string } | null)?.name ?? ""}` : t("anonymous")}{r.reporter_contact ? ` · ${t("contactHidden")}` : ""}</dd></div>
                 </dl>
-                <MaskedText text={m.body_masked} highlights={highlights} className="rounded-lg bg-muted/50 p-3" />
+                <MaskedText text={m.body_masked} highlights={highlights} className="rounded-xl bg-muted/50 p-4 leading-relaxed" />
               </>
             ) : <p className="text-sm text-muted-foreground">{t("noMessage")}</p>}
             {d.extension && <pre className="max-h-48 overflow-auto rounded bg-muted p-2 text-xs">{JSON.stringify(d.extension.signals, null, 2)}</pre>}
           </section>
 
-          <section className="glass-card space-y-3 rounded-xl p-4">
-            <h2 className="font-display text-base font-medium">{t("iocs")}</h2>
+          <section className="space-y-4 rounded-xl bg-card p-5 ring-1 ring-foreground/10">
+            <h2 className="font-display text-lg font-medium">{t("iocs")}</h2>
             <AuditedIocTable filename={`iocs-${r.protocol.replace("/", "-")}`} rows={[
               ...(m?.urls ?? []).map((u) => ({ type: "url", value: u, campaign: campaign?.code ?? null })),
               ...[...new Set((m?.urls ?? []).map((u) => hostOf(u)).filter((h): h is string => !!h))].map((h) => ({ type: "domain", value: h, campaign: campaign?.code ?? null })),
             ]} />
           </section>
 
-          <section className="glass-card space-y-3 rounded-xl p-4">
-            <h2 className="inline-flex items-center gap-2 font-display text-base font-medium"><MessagesSquare className="size-4" aria-hidden="true" />{t("notes")}</h2>
+          <section className="space-y-4 rounded-xl bg-card p-5 ring-1 ring-foreground/10">
+            <h2 className="inline-flex items-center gap-2 font-display text-lg font-medium"><MessagesSquare className="size-4" aria-hidden="true" />{t("notes")}</h2>
             <ul className="space-y-2">
               {notes.map((n) => (
-                <li key={n.id} className="rounded-lg border border-border p-2.5 text-sm">
+                <li key={n.id} className="rounded-xl bg-muted/40 p-3 text-sm">
                   <p className="whitespace-pre-wrap">{(n.data as { body?: string }).body}</p>
                   <p className="pt-1 text-xs text-muted-foreground">{(n.actor as { full_name: string | null } | null)?.full_name ?? "—"} · {fmtAgo(n.created_at, locale)}</p>
                 </li>
@@ -130,14 +130,14 @@ async function Workspace({ params }: { params: Params }) {
           </section>
         </div>
 
-        <div className="space-y-5">
-          <section className="glass-card space-y-3 rounded-xl p-4">
-            <h2 className="font-display text-base font-medium">{t("reasons")}</h2>
+        <div className="space-y-6">
+          <section className="space-y-4 rounded-xl bg-card p-5 ring-1 ring-foreground/10">
+            <h2 className="font-display text-lg font-medium">{t("reasons")}</h2>
             <ReasonList reasons={reasons} initial={8} showWeights />
           </section>
 
-          <section className="glass-card space-y-3 rounded-xl p-4">
-            <h2 className="inline-flex items-center gap-2 font-display text-base font-medium"><Lightbulb className="size-4 text-flag-yellow" aria-hidden="true" />{t("suggestion")}</h2>
+          <section className="space-y-4 rounded-xl bg-card p-5 ring-1 ring-foreground/10">
+            <h2 className="inline-flex items-center gap-2 font-display text-lg font-medium"><Lightbulb className="size-4 text-flag-yellow" aria-hidden="true" />{t("suggestion")}</h2>
             {campaign ? (
               <p className="text-sm">{t("linked", { code: campaign.code })}</p>
             ) : suggestion?.code && suggestion.id ? (
@@ -155,12 +155,12 @@ async function Workspace({ params }: { params: Params }) {
             )}
           </section>
 
-          <section className="glass-card space-y-3 rounded-xl p-4">
-            <h2 className="font-display text-base font-medium">{t("similar")}</h2>
+          <section className="space-y-4 rounded-xl bg-card p-5 ring-1 ring-foreground/10">
+            <h2 className="font-display text-lg font-medium">{t("similar")}</h2>
             {d.similar.length ? (
               <ul className="space-y-2">
                 {d.similar.map((s) => (
-                  <li key={s.id} className="rounded-lg border border-border p-2 text-xs">
+                  <li key={s.id} className="rounded-xl bg-muted/40 p-3 text-xs">
                     <p className="line-clamp-2">{s.body_masked}</p>
                     <p className="pt-1 text-muted-foreground">{Math.round(s.similarity * 100)}% · {fmtAgo(s.created_at, locale)}</p>
                   </li>
@@ -169,8 +169,8 @@ async function Workspace({ params }: { params: Params }) {
             ) : <p className="text-sm text-muted-foreground">{t("noSimilar")}</p>}
           </section>
 
-          <section className="glass-card space-y-3 rounded-xl p-4">
-            <h2 className="font-display text-base font-medium">{t("timeline")}</h2>
+          <section className="space-y-4 rounded-xl bg-card p-5 ring-1 ring-foreground/10">
+            <h2 className="font-display text-lg font-medium">{t("timeline")}</h2>
             <ol className="space-y-1.5 text-sm">
               {timeline.map((e) => (
                 <li key={e.id} className="flex justify-between gap-2">
@@ -192,7 +192,7 @@ async function Workspace({ params }: { params: Params }) {
 
 export default function ReportWorkspacePage({ params }: { params: Params }) {
   return (
-    <div className="space-y-4">
+    <div className="mx-auto w-full max-w-[100rem] space-y-4">
       <Suspense fallback={null}><Back /></Suspense>
       <Suspense fallback={<div className="space-y-3"><Skeleton className="h-16 w-80" /><Skeleton className="h-96 w-full" /></div>}>
         <Workspace params={params} />

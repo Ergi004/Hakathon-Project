@@ -29,7 +29,21 @@
     "placeholderTitle": "Në ndërtim",
     "placeholderBody": "Kjo faqe do të plotësohet në një fazë të mëvonshme të projektit.",
     "activeOrg": "Organizata aktive",
-    "noOrg": "Pa organizatë"
+    "noOrg": "Pa organizatë",
+    "navGroups": {
+      "activity": "Aktiviteti",
+      "protection": "Mbrojtja",
+      "account": "Llogaria",
+      "monitor": "Monitorimi",
+      "respond": "Reagimi",
+      "people": "Njerëzit",
+      "setup": "Konfigurimi",
+      "operations": "Operacionet",
+      "investigate": "Hetimi",
+      "manage": "Menaxhimi"
+    },
+    "accountMenu": "Menyja e llogarisë",
+    "settings": "Cilësimet"
   },
   "flags": {
     "green": "I sigurt",
@@ -68,7 +82,15 @@
     },
     "footer": {
       "rights": "Të dhëna sintetike për demonstrim.",
-      "legal": "Ligjore"
+      "legal": "Ligjore",
+      "helpTitle": "Keni paguar ose keni ndarë të dhënat e kartës?",
+      "helpBody": "Telefononi menjëherë bankën për të bllokuar kartën dhe ndryshoni fjalëkalimet. Pastaj raportoni mashtrimin që të paralajmërohen edhe të tjerët.",
+      "promise": "Nuk i hapim kurrë lidhjet që kontrolloni. Ruajmë një gjurmë, jo tekstin tuaj.",
+      "groups": {
+        "tools": "Mbrohu",
+        "learn": "Qëndro i informuar",
+        "about": "Ndihmë dhe ligjore"
+      }
     }
   },
   "auth": {
@@ -888,7 +910,31 @@
     "storedNote": "Kjo faqe tregon rezultatin, jo atë që u kontrollua.",
     "checkedAt": "Kontrolluar më {date}",
     "notFound": "Ky rezultat nuk ekziston ose ka skaduar.",
-    "summary": "Shpjegim i shkurtër"
+    "summary": "Shpjegim i shkurtër",
+    "tabHints": {
+      "link": "Një adresë interneti nga një mesazh ose faqe",
+      "message": "Teksti i një SMS-je, emaili ose bisede",
+      "phone": "Një numër që ju telefonoi ose ju shkroi",
+      "qr": "Foto e një ngjitëseje ose kodi QR"
+    },
+    "howTo": {
+      "link": "Mbani shtypur lidhjen, zgjidhni Kopjo lidhjen dhe ngjiteni këtu. Ne nuk e hapim kurrë.",
+      "message": "Kopjoni të gjithë mesazhin, bashkë me lidhjen nëse ka. Shtoni dërguesin nëse e dini.",
+      "phone": "Shkruajeni numrin siç e patë, me prefiksin e shtetit nëse kishte.",
+      "qr": "Bëni një foto të qartë të kodit. Lexohet në pajisjen tuaj dhe nuk ngarkohet kurrë."
+    },
+    "askTitle": "Çfarë doni të kontrolloni?",
+    "scale": {
+      "title": "Rreziku",
+      "explain": "{score} nga 100. Sa më i lartë rezultati, aq më e mundshme që të jetë mashtrim.",
+      "low": "Rrezik i ulët",
+      "high": "Rrezik i lartë"
+    },
+    "trust": [
+      "Nuk e hapim kurrë lidhjen që dërgoni",
+      "Nuk nevojitet llogari",
+      "Ruajmë një gjurmë, jo tekstin tuaj"
+    ]
   },
   "home": {
     "eyebrow": "Platformë kombëtare kundër mashtrimeve",
@@ -1010,6 +1056,19 @@
       "body": "Kontrollo, raporto dhe ndihmo të tjerët të mos bien pre.",
       "check": "Kontrollo tani",
       "report": "Raporto një mashtrim"
+    },
+    "specimen": {
+      "label": "Shembull SMS-je të rreme për një pako",
+      "sender": "POSTA-AL",
+      "received": "Marrë sot",
+      "body": "Pakoja juaj është mbajtur në doganë. <pay>Paguani 150 lekë</pay> <urgent>brenda 24 orëve</urgent> ose do të kthehet: <link>hxxps://posta-al-dogana[.]example/pay</link>",
+      "notes": {
+        "pay": "Kërkon pagesë përmes një lidhjeje",
+        "urgent": "Ju shtyn të veproni me ngut",
+        "link": "Domen që imiton Postën, jo ai zyrtar"
+      },
+      "caption": "Çdo kontroll shpjegon me fjalë të thjeshta çfarë gjeti.",
+      "headerCta": "Kontrollo një mesazh"
     }
   },
   "report": {
@@ -1057,6 +1116,36 @@
     "trackNow": "Ndiq raportin",
     "another": "Raporto diçka tjetër",
     "signedInNote": "Je i kyçur: raporti do të shfaqet edhe te „Raportet e mia”.",
+    "nextTitle": "Çfarë ndodh pasi raportoni",
+    "nextSteps": [
+      {
+        "title": "Merrni një numër protokolli",
+        "body": "Dhe një kod privat për të ndjekur raportin. Nuk nevojitet llogari."
+      },
+      {
+        "title": "Ekipi ynë e shqyrton",
+        "body": "Analistët e kontrollojnë dhe e lidhin me fushatat e njohura të mashtrimit."
+      },
+      {
+        "title": "Veprojmë",
+        "body": "Domenet e rrezikshme bllokohen dhe kërkohet heqja e tyre."
+      },
+      {
+        "title": "Ndiqni statusin",
+        "body": "Përdorni kodin tuaj në faqen Ndiq raportin në çdo kohë."
+      }
+    ],
+    "urgentTitle": "Keni paguar ose ndarë të dhënat e kartës?",
+    "urgentBody": "Telefononi menjëherë bankën për të bllokuar kartën, pastaj përfundoni këtë raport.",
+    "privacyTitle": "Privatësia juaj",
+    "privacyBody": "Telefonat, emailet, IBAN-et, numrat e identitetit dhe emrat maskohen para se të ruhet çdo gjë.",
+    "edit": "Ndrysho",
+    "summaryCategory": "Rreth",
+    "summaryChannel": "Ardhur me",
+    "summaryContent": "Përmbajtja",
+    "summaryContact": "Kontakti",
+    "noContact": "Pa email, do ta ndiqni me kodin tuaj",
+    "tokenWarning": "Ky kod shfaqet vetëm një herë. Kopjojeni tani.",
     "region": {
       "legend": "Ku ndodheni? (opsionale)",
       "hint": "Vetëm qarku dhe bashkia, nëse doni. Nuk përdorim GPS, adresën apo IP-në tuaj.",
@@ -1095,7 +1184,32 @@
     "count": "{count} fushata",
     "empty": "Nuk ka fushata për këto filtra.",
     "feedNote": "Të dhënat vijnë nga furnizimi publik dhe përditësohen çdo minutë.",
-    "rss": "API e furnizimit"
+    "rss": "API e furnizimit",
+    "statusAll": "Të gjitha",
+    "filterStatus": "Statusi",
+    "view": {
+      "label": "Pamja",
+      "grid": "Karta",
+      "table": "Tabelë"
+    },
+    "clear": "Pastro filtrat",
+    "stats": {
+      "total": "Fushata",
+      "active": "Aktive tani",
+      "takedown": "Në heqje",
+      "resolved": "Të zgjidhura"
+    },
+    "cols": {
+      "code": "ID",
+      "institution": "Imiton",
+      "tactic": "Taktika",
+      "status": "Statusi",
+      "messages": "Mesazhe",
+      "lastSeen": "Parë së fundi",
+      "domains": "Domene"
+    },
+    "filtersTitle": "Filtro fushatat",
+    "lastSeen": "Parë së fundi {date}"
   },
   "campaign": {
     "back": "Të gjitha kërcënimet",
@@ -1125,7 +1239,16 @@
       "Raportoje mesazhin që ta bllokojmë."
     ],
     "checkCta": "Kontrollo një mesazh",
-    "reportCta": "Raporto"
+    "reportCta": "Raporto",
+    "progress": "Ecuria e fushatës",
+    "statusHelp": {
+      "monitoring": "Po ndjekim për mesazhe të reja.",
+      "confirmed": "Ekipi ynë konfirmoi që është mashtrim.",
+      "takedown_in_progress": "Kërkuam heqjen e domeneve.",
+      "resolved": "Fushata nuk është më aktive."
+    },
+    "received": "Marrë nga njerëz në Shqipëri",
+    "weeklyHint": "Mesazhe të raportuara në javë"
   },
   "learn": {
     "title": "Mëso të njohësh mashtrimet",
@@ -1146,7 +1269,27 @@
     "retry": "Provo përsëri",
     "allGuides": "Të gjithë udhëzuesit",
     "from": "Nga",
-    "progressSaved": "Përparimi u ruajt në profilin tënd."
+    "progressSaved": "Përparimi u ruajt në profilin tënd.",
+    "rulesTitle": "Tre rregulla që ndalojnë shumicën e mashtrimeve",
+    "rules": [
+      {
+        "title": "Mos ndani kurrë kode",
+        "body": "Bankat dhe institucionet nuk kërkojnë kurrë kode, fjalëkalime ose të dhëna karte me SMS, email ose telefon."
+      },
+      {
+        "title": "Shkruajeni vetë adresën",
+        "body": "Mos përdorni lidhjet në mesazhe. Hapni faqen ose aplikacionin zyrtar si zakonisht."
+      },
+      {
+        "title": "Ndaluni para se të paguani",
+        "body": "Mashtrimet ju nxitojnë. Nëse mesazhi thotë sot ose brenda 24 orëve, ndaluni dhe kontrollojeni më parë."
+      }
+    ],
+    "guidesTitle": "Udhëzuesit",
+    "signsCount": "{count} shenja paralajmëruese",
+    "quizQuestions": "{count} pyetje kuizi",
+    "checkTitle": "Keni marrë një mesazh tani?",
+    "checkBody": "Ngjiteni dhe merrni vlerësimin me arsyet brenda pak sekondash."
   },
   "quiz": {
     "title": "Gjej mashtrimin",
@@ -1168,7 +1311,17 @@
     "low": "Mashtruesit janë të zgjuar. Udhëzuesit do të të ndihmojnë.",
     "again": "Luaj përsëri",
     "best": "Rezultati më i mirë: {score}",
-    "empty": "Kuizi nuk ka mesazhe tani. Provo udhëzuesit."
+    "empty": "Kuizi nuk ka mesazhe tani. Provo udhëzuesit.",
+    "prompt": "A është mashtrim ky mesazh?",
+    "scoreLabel": "Pikët",
+    "keysHint": "Këshillë: shtypni ← për Mashtrim dhe → për I ligjshëm.",
+    "recap": "Përgjigjet tuaja",
+    "answerN": "Mesazhi {n}: {result}",
+    "correctShort": "saktë",
+    "wrongShort": "gabim",
+    "from": "Ardhur me {channel}",
+    "youSaid": "Ju u përgjigjët: {choice}",
+    "legitNote": "Ky ishte një mesazh i vërtetë. Edhe mesazhet e vërteta mund të kenë lidhje, prandaj kontrolloni dërguesin para se të vendosni."
   },
   "institutions": {
     "title": "Drejtoria e institucioneve",
@@ -1185,8 +1338,14 @@
       "email": "Email"
     },
     "empty": "Asnjë institucion nuk përputhet me kërkimin.",
-    "count": "{count} institucione",
-    "verifyHint": "Mund ta verifikosh edhe përmes API: /api/v1/institutions/verify"
+    "count": "{count, plural, one {# institucion} other {# institucione}}",
+    "verifyHint": "Mund ta verifikosh edhe përmes API: /api/v1/institutions/verify",
+    "verified": "Zyrtar",
+    "tipTitle": "Nuk është në këtë listë?",
+    "tipBody": "Trajtojeni lidhjen, dërguesin ose numrin si të dyshimtë dhe kontrollojeni para se të përgjigjeni ose të klikoni.",
+    "allSectors": "Të gjitha",
+    "clearSearch": "Pastro kërkimin",
+    "noContacts": "Ende nuk ka kontakte zyrtare të listuara. Verifikoni drejtpërdrejt me institucionin."
   },
   "apiDocs": {
     "title": "API publike",
@@ -1252,7 +1411,25 @@
       "activeTab dhe scripting: lexon emailin e hapur vetëm kur klikon",
       "Qasje vetëm te mail.google.com, outlook.live.com, outlook.office.com dhe API-ja e Mburojës"
     ],
-    "manage": "Menaxho shtesën nga llogaria jote"
+    "manage": "Menaxho shtesën nga llogaria jote",
+    "worksWith": "Punon në Chrome me Gmail dhe Outlook",
+    "howInstall": "Si të instalohet",
+    "mock": {
+      "label": "Shembull i shtesës duke skanuar një email",
+      "from": "Posta Shqiptare",
+      "address": "njoftime@posta-al-dogana[.]example",
+      "subject": "Pakoja juaj po pret: paguani taksën doganore",
+      "scan": "Skano me Mburoja",
+      "reason1": "Domeni i dërguesit imiton Postën",
+      "reason2": "Kërkon pagesë përmes një lidhjeje"
+    },
+    "consentIntro": "Dërgimi automatik është i fikur derisa të jepni një pëlqim të vetëm në dritaren e shtesës. Pas pëlqimit:",
+    "colResult": "Rezultati",
+    "colSent": "Çfarë dërgohet",
+    "sendReport": "Një raport sinjali i maskuar",
+    "sendIndicators": "Vetëm tregues (domene), pa tekst",
+    "sendNothing": "Asgjë",
+    "deleteWindow": "Mund ta fshini çdo raport brenda 10 minutave."
   },
   "legal": {
     "lastUpdated": "Përditësuar më {date}",
@@ -1427,6 +1604,131 @@
       "notificationsHint": "Një për rresht.",
       "retention": "Ruajtja e të dhënave (ditë)",
       "plan": "Plani"
+    },
+    "pages": {
+      "overview": "Si po imitohet marka juaj tani dhe çfarë kërkon vëmendjen tuaj.",
+      "onboarding": "Na tregoni çfarë i përket markës suaj. E përdorim për të gjetur domene dhe mesazhe që ju imitojnë.",
+      "alerts": "Domene të ngjashme dhe fushata të zbuluara kundër markës suaj. Konfirmoni, përshkallëzoni ose zgjidhni secilin.",
+      "campaigns": "Fushata mashtrimi që imitojnë markën tuaj, me statusin e heqjes dhe çfarë t'u thoni klientëve.",
+      "domains": "Domene që ngjajnë me tuajat, të renditura sipas rrezikut. Kërkoni heqjen ose lejoni variantet tuaja.",
+      "reports": "Çfarë raportuan qytetarët për markën tuaj. Anonime: shfaqen vetëm teksti i maskuar dhe statusi.",
+      "notices": "Paralajmërime gati për klientët, në shqip dhe anglisht. Ndryshojini dhe kopjojini.",
+      "training": "Testoni stafin me emaile phishing të simuluara dhe shihni kush klikon dhe kush raporton.",
+      "api": "Çelësat për API-në e skanimit, përdorimi në 30 ditët e fundit dhe kod për të filluar.",
+      "team": "Kush ka akses në panelin e markës dhe çfarë mund të bëjë.",
+      "export": "Raport mujor i incidenteve dhe kohëve të heqjes për auditime dhe rregullatorë.",
+      "settings": "Profili i organizatës, kush njoftohet dhe sa kohë i ruajmë të dhënat."
+    },
+    "ov": {
+      "hello": "{org}",
+      "viewAll": "Shiko të gjitha",
+      "quick": "Veprime të shpejta",
+      "quickSetup": "Konfigurimi i markës",
+      "quickNotice": "Paralajmëro klientët",
+      "quickExport": "Raporti mujor",
+      "quickDomains": "Domene të ngjashme",
+      "last30": "30 ditët e fundit"
+    },
+    "al": {
+      "stats": {
+        "new": "Të reja",
+        "acknowledged": "Të konfirmuara",
+        "escalated": "Të përshkallëzuara",
+        "resolved": "Të zgjidhura"
+      },
+      "emptyBody": "Kur zbulojmë një domen të ngjashëm ose fushatë kundër markës suaj, shfaqet këtu.",
+      "campaign": "Fushata {code}",
+      "filterStatus": "Statusi"
+    },
+    "cp": {
+      "emptyBody": "Pasi domenet tuaja të verifikohen dhe lidhen, fushatat që ju imitojnë shfaqen këtu.",
+      "openPublic": "Faqja publike",
+      "messages": "{count, plural, one {# mesazh} other {# mesazhe}}"
+    },
+    "dm": {
+      "stats": {
+        "total": "Domene të ngjashme",
+        "threat": "Kërcënime të konfirmuara",
+        "watching": "Nën vëzhgim",
+        "takenDown": "Të hequra"
+      },
+      "filter": "Shfaq",
+      "filters": {
+        "all": "Të gjitha",
+        "threat": "Kërcënime",
+        "watching": "Nën vëzhgim",
+        "allowlisted": "Të lejuara"
+      },
+      "noneInFilter": "Asnjë domen në këtë pamje."
+    },
+    "rp": {
+      "stats": {
+        "total": "Raporte",
+        "week": "7 ditët e fundit",
+        "confirmed": "Të konfirmuara"
+      },
+      "campaign": "Fushata",
+      "emptyBody": "Raportet që qytetarët dërgojnë për mashtrime që ju imitojnë do të shfaqen këtu, anonime."
+    },
+    "nt": {
+      "setup": "Përgatitni njoftimin",
+      "channelHint": "Zgjidhni ku do ta publikoni.",
+      "sms": "160 karaktere hyjnë në një SMS."
+    },
+    "tr": {
+      "create": "Krijoni një simulim",
+      "stats": {
+        "sims": "Simulime",
+        "sent": "Emaile të dërguara",
+        "clickRate": "Shkalla e klikimeve",
+        "reportRate": "Shkalla e raportimeve"
+      },
+      "emptyBody": "Krijoni një simulim, shtoni emailet e punonjësve dhe nisni atë për të parë kush klikon."
+    },
+    "ap": {
+      "keys": "Çelësat",
+      "calls": "Thirrje (30 ditë)",
+      "activeKeys": "Çelësa aktivë",
+      "created": "Krijuar {date}",
+      "docs": "Dokumentimi i API-së"
+    },
+    "tm": {
+      "members": "{count, plural, one {# anëtar} other {# anëtarë}}",
+      "rolesTitle": "Çfarë mund të bëjë çdo rol",
+      "roles": {
+        "owner": "Gjithçka, përfshirë faturimin dhe fshirjen e organizatës.",
+        "admin": "Gjithçka përveç fshirjes së organizatës.",
+        "security": "Njoftime, domene, raporte dhe simulime.",
+        "comms": "Njoftime për klientët dhe fushata.",
+        "finance": "Eksporte përputhshmërie.",
+        "viewer": "Vetëm shikim i përmbledhjes.",
+        "contact": "Merr përshkallëzimet nga SOC."
+      }
+    },
+    "ex": {
+      "formTitle": "Gjeneroni një raport",
+      "includes": [
+        "Incidentet dhe njoftimet e muajit",
+        "Koha nga zbulimi te heqja",
+        "Fushatat dhe domenet e ngjashme",
+        "Tendenca krahasuar me muajin e kaluar"
+      ],
+      "includesTitle": "Çfarë përmban raporti"
+    },
+    "st": {
+      "profileHint": "Emri që shohin klientët dhe SOC.",
+      "planTitle": "Plani",
+      "planHint": "Abonimi juaj aktual.",
+      "notifHint": "Kush merr email kur vjen një njoftim i ri.",
+      "retentionHint": "Sa kohë ruhen njoftimet dhe raportet. 30 deri në 1825 ditë.",
+      "days": "ditë",
+      "unsaved": "Keni ndryshime të paruajtura."
+    },
+    "ob": {
+      "progress": "{done} nga {total} hapa të kryera",
+      "why": "Pse ka rëndësi",
+      "whyBody": "Sa më shumë të dimë për domenet, dërguesit dhe llogaritë tuaja zyrtare, aq më shpejt dallojmë imitimet. Domenet e verifikuara i lejojnë SOC-ut të lidhë markën tuaj me fushatat.",
+      "count": "{count, plural, =0 {Asgjë e shtuar} one {# i shtuar} other {# të shtuara}}"
     }
   },
   "sim": {
@@ -1462,7 +1764,21 @@
       "noWarnings": "Asnjë fushatë aktive për institucionet që ndjek.",
       "streak": "Ditë radhazi",
       "streakHint": "Ditë me të paktën një kontroll, raport ose mësim.",
-      "badges": "Distinktivët"
+      "badges": "Distinktivët",
+      "hello": "Përshëndetje, {name}",
+      "helloAnon": "Mirë se u kthyet",
+      "subtitle": "Ja sa i mbrojtur jeni dhe çfarë të bëni më pas.",
+      "checkNow": "Kontrollo një mesazh",
+      "report": "Raporto një mashtrim",
+      "setupTitle": "Mbrohuni plotësisht",
+      "setupProgress": "{done} nga {total} të kryera",
+      "go": "Fillo",
+      "viewAll": "Shiko të gjitha",
+      "manageFollows": "Zgjidhni institucionet",
+      "badgesHint": "Fitoni distinktivë duke kontrolluar, raportuar dhe mësuar.",
+      "locked": "Ende pa fituar",
+      "streakDays": "{count, plural, one {# ditë} other {# ditë}}",
+      "quiet": "Gjithçka e qetë"
     },
     "badges": {
       "first_check": "Kontrolli i parë",
@@ -1488,7 +1804,27 @@
         "phone": "Telefon",
         "qr": "QR",
         "email_signals": "Email"
-      }
+      },
+      "title": "Kontrollet e mia",
+      "subtitle": "Çdo lidhje, mesazh dhe numër që keni kontrolluar, me rezultatin e tij.",
+      "checkNow": "Kontrollo një mesazh",
+      "stats": {
+        "total": "Kontrolle të ruajtura",
+        "risky": "Të shënuara si të rrezikshme",
+        "safe": "Dukeshin të sigurta"
+      },
+      "filter": "Shfaq",
+      "filters": {
+        "all": "Të gjitha",
+        "risky": "Të rrezikshme",
+        "safe": "Të sigurta"
+      },
+      "noneInFilter": "Asnjë kontroll në këtë pamje.",
+      "emptyBody": "Kontrolloni një lidhje ose mesazh të dyshimtë dhe rezultati do të ruhet këtu.",
+      "historyOff": "Historiku është i fikur, ndaj kontrollet e reja nuk ruhen këtu.",
+      "confirmTitle": "Të fshihen të gjitha kontrollet e ruajtura?",
+      "confirmBody": "Kjo heq {count, plural, one {# kontroll} other {# kontrolle}} nga historiku juaj. Rezultatet mbeten anonime te ne. Ky veprim nuk kthehet.",
+      "cancel": "Anulo"
     },
     "reports": {
       "empty": "Nuk ke dërguar raporte.",
@@ -1500,7 +1836,28 @@
       "campaign": "Fushata publike",
       "takedown": "Bllokimi",
       "back": "Raportet e mia",
-      "notFound": "Raporti nuk u gjet."
+      "notFound": "Raporti nuk u gjet.",
+      "title": "Raportet e mia",
+      "subtitle": "Ndiqni çfarë ndodh me çdo mashtrim që keni raportuar.",
+      "newReport": "Raporto një mashtrim",
+      "stats": {
+        "total": "Raporte të dërguara",
+        "open": "Në proces",
+        "confirmed": "Mashtrime të konfirmuara",
+        "takenDown": "Të hequra"
+      },
+      "filter": "Shfaq",
+      "filters": {
+        "all": "Të gjitha",
+        "open": "Në proces",
+        "closed": "Të mbyllura"
+      },
+      "noneInFilter": "Asnjë raport në këtë pamje.",
+      "emptyBody": "Kur raportoni një mashtrim, ai shfaqet këtu që ta ndiqni derisa të hiqet.",
+      "details": "Shiko detajet",
+      "sentAt": "Dërguar {date}",
+      "via": "me {channel}",
+      "linked": "Pjesë e fushatës {code}"
     },
     "alerts": {
       "markRead": "Shëno si të lexuar",
@@ -1509,7 +1866,21 @@
       "follow": "Institucionet që ndjek",
       "followHint": "Merr paralajmërime kur ka fushata që i imitojnë.",
       "unread": "{count} të palexuara",
-      "live": "Përditësohet automatikisht"
+      "live": "Përditësohet automatikisht",
+      "title": "Njoftimet",
+      "subtitle": "Paralajmërime për mashtrime që imitojnë institucionet që përdorni dhe përputhje nga lista juaj e vëzhgimit.",
+      "inbox": "Njoftimet",
+      "tabAll": "Të gjitha",
+      "tabUnread": "Të palexuara",
+      "emptyTitle": "Ende asgjë këtu",
+      "emptyUnread": "I keni lexuar të gjitha.",
+      "followSearch": "Kërko institucione",
+      "following": "{count, plural, =0 {Nuk ndiqni asnjë} one {Ndiqni # institucion} other {Ndiqni # institucione}}",
+      "noFollows": "Ndiqni bankat, postën dhe shërbimet publike që përdorni. Ju paralajmërojmë kur një mashtrim i imiton.",
+      "noMatch": "Asnjë institucion nuk përputhet me kërkimin.",
+      "unfollow": "Mos e ndiq më {name}",
+      "followAction": "Ndiq {name}",
+      "open": "Hap"
     },
     "watch": {
       "intro": "Shto numra, email ose emra për t'i monitoruar. I ruajmë vetëm si hash; nuk mund t'i lexojmë.",
@@ -1524,14 +1895,61 @@
       "added": "U shtua në listë.",
       "empty": "Lista jote është bosh.",
       "lastMatch": "Përputhja e fundit",
-      "never": "Asnjë përputhje"
+      "never": "Asnjë përputhje",
+      "title": "Lista e vëzhgimit",
+      "addTitle": "Shtoni diçka për të vëzhguar",
+      "addHint": "Numri juaj i telefonit ose emaili funksionojnë më mirë.",
+      "placeholders": {
+        "phone": "+355 69 123 4567",
+        "email": "emri@example.test",
+        "name": "Emri dhe mbiemri"
+      },
+      "watching": "{count, plural, =0 {Asgjë nën vëzhgim} one {Po vëzhgohet # element} other {Po vëzhgohen # elemente}}",
+      "matched": "Parë në një raport {ago}",
+      "safe": "Asnjë përputhje deri tani",
+      "howTitle": "Si funksionon",
+      "how": [
+        {
+          "title": "Shtoni një numër, email ose emër",
+          "body": "Vetëm ju e shihni shenjën e maskuar këtu."
+        },
+        {
+          "title": "Ruajmë një gjurmë, jo vlerën",
+          "body": "Ruhet si hash i njëanshëm. Askush, as ne, nuk mund ta lexojë."
+        },
+        {
+          "title": "Ju njoftojmë kur ka përputhje",
+          "body": "Kur një raport i ri mashtrimi e përmban, merrni menjëherë një njoftim."
+        }
+      ],
+      "emptyBody": "Shtoni numrin ose emailin tuaj për të zbuluar nëse mashtruesit po e përdorin."
     },
     "learn": {
       "progress": "{done} nga {total} udhëzues të përfunduar",
       "score": "Kuizi: {score}%",
       "notStarted": "Pa filluar",
       "open": "Hap",
-      "quiz": "Luaj kuizin e përgjithshëm"
+      "quiz": "Luaj kuizin e përgjithshëm",
+      "title": "Rruga e të mësuarit",
+      "subtitle": "Gjashtë udhëzues të shkurtër për mashtrimet më të shpeshta në Shqipëri. Lexoni një, bëni kuizin, vazhdoni.",
+      "avgScore": "Rezultati mesatar i kuizeve",
+      "noScore": "Ende pa kuize",
+      "continueTitle": "Në vijim",
+      "allDoneTitle": "Rruga u përfundua",
+      "allDoneBody": "I përfunduat të gjithë udhëzuesit. Luani kuizin e përgjithshëm që të mbeteni vigjilent.",
+      "start": "Fillo udhëzuesin",
+      "continue": "Vazhdo",
+      "review": "Rishiko",
+      "stepN": "Udhëzuesi {n}",
+      "status": {
+        "done": "Përfunduar",
+        "progress": "Në proces",
+        "next": "Në vijim",
+        "todo": "Pa filluar"
+      },
+      "quizTitle": "Gjej mashtrimin",
+      "quizBody": "Dhjetë mesazhe që duken të vërteta. Vendosni cilat janë mashtrime.",
+      "badgesHint": "Fitoni distinktivë duke kontrolluar, raportuar dhe mësuar."
     },
     "extension": {
       "intro": "Shtesa skanon vetëm email-in që zgjedh ti. Këtu sheh çfarë është dërguar dhe e menaxhon pëlqimin.",
@@ -1564,7 +1982,24 @@
         "extension_auto_submit": "Dërgim automatik nga shtesa",
         "notify_email": "Njoftime me email",
         "terms": "Kushtet"
-      }
+      },
+      "title": "Qendra e privatësisë",
+      "subtitle": "Shihni çfarë ruan Mburoja për ju, shkarkojeni ose fshijeni.",
+      "keepTitle": "Çfarë ruajmë për ju",
+      "keep": {
+        "checks": "Kontrolle të ruajtura",
+        "reports": "Raporte",
+        "watch": "Elemente në vëzhgim",
+        "consents": "Regjistrime pëlqimi"
+      },
+      "neverTitle": "Çfarë nuk ruajmë kurrë",
+      "never": [
+        "Tekstin e mesazheve që kontrolloni",
+        "Vlerat e listës së vëzhgimit (vetëm një hash i njëanshëm)",
+        "Numrat e telefonit, IBAN-et dhe emrat në raporte (të maskuara)"
+      ],
+      "dangerTitle": "Zona e rrezikut",
+      "consentsHint": "Sa herë që ndizni ose fikni një cilësim të dhënash."
     },
     "settings": {
       "name": "Emri",
@@ -1573,7 +2008,82 @@
       "notifyEmail": "Njoftime me email",
       "notifyInApp": "Njoftime në aplikacion",
       "methods": "Mënyrat e hyrjes",
-      "saved": "Cilësimet u ruajtën."
+      "saved": "Cilësimet u ruajtën.",
+      "title": "Cilësimet",
+      "subtitle": "Profili juaj, gjuha dhe si ju njoftojmë.",
+      "profile": "Profili",
+      "profileHint": "Shfaqet në panelin tuaj. Opsional.",
+      "prefs": "Preferencat",
+      "prefsHint": "Gjuha për faqen dhe emailet.",
+      "notificationsHint": "Zgjidhni ku ju arrijnë paralajmërimet për mashtrime.",
+      "notifyEmailHint": "Një email i shkurtër kur një fushatë imiton një institucion që ndiqni.",
+      "notifyInAppHint": "Njoftime te zilja në krye të panelit tuaj.",
+      "account": "Llogaria",
+      "accountHint": "Si hyni në llogari.",
+      "email": "Email",
+      "privacyLink": "Shkarkoni ose fshini të dhënat tuaja te Qendra e privatësisë",
+      "unsaved": "Keni ndryshime të paruajtura."
+    }
+  },
+  "socx": {
+    "pages": {
+      "command": "Pamja e drejtpërdrejtë e raporteve, fushatave dhe çfarë kërkon vendim tani.",
+      "inbox": "Çdo raport që pret vendim. J/K për të lëvizur, Enter për ta hapur, 1–5 për statusin.",
+      "campaigns": "Raportet të grupuara në fushata mashtrimi, me status, rëndësi dhe përgjegjës.",
+      "domains": "Domenet e ngjashme dhe të dyshimta që gjejnë skanerët, renditur sipas rrezikut.",
+      "takedowns": "Njoftimet për regjistruesit, hostet dhe platformat, nga drafti te heqja.",
+      "threatMap": "Kë imitojnë, si, nga ku dhe kur kulmojnë sulmet.",
+      "search": "Kërko njëkohësisht raporte, fushata, domene, tregues dhe tekst mesazhesh.",
+      "advisories": "Paralajmërime publike në shqip dhe anglisht, nga fushatat e konfirmuara.",
+      "blocklist": "Treguesit që ndahen me partnerët dhe zgjerimin e shfletuesit.",
+      "quality": "Sa mirë punon modeli i zbulimit dhe ku ka gabuar.",
+      "alerts": "Rregulla që paralajmërojnë ekipin kur rritet numri i raporteve.",
+      "admin": "Stafi, institucionet, shabllonet, marrësit, cilësimet dhe regjistri i auditimit."
+    },
+    "quick": "Veprime të shpejta",
+    "filters": "Filtrat",
+    "results": "{count, plural, one {# rezultat} other {# rezultate}}",
+    "td": {
+      "open": "Në përgatitje",
+      "waiting": "Në pritje të përgjigjes",
+      "overdue": "Me vonesë",
+      "done": "Të hequra"
+    },
+    "bl": {
+      "total": "Hyrje",
+      "active": "Aktive",
+      "expired": "Të skaduara",
+      "add": "Shto një hyrje",
+      "list": "Hyrjet"
+    },
+    "al": {
+      "rules": "Rregulla",
+      "active": "Rregulla aktive",
+      "fired": "Të aktivizuara (50 të fundit)",
+      "add": "Rregull i ri",
+      "list": "Rregullat",
+      "noRules": "Ende pa rregulla. Shtoni një më lart."
+    },
+    "adv": {
+      "drafts": "Drafte",
+      "review": "Në shqyrtim",
+      "published": "Të publikuara",
+      "write": "Shkruaj një paralajmërim",
+      "list": "Të gjitha paralajmërimet"
+    },
+    "q": {
+      "fp": "Pozitive të rreme",
+      "fn": "Negative të rreme",
+      "labels": "Etiketa (200 të fundit)"
+    },
+    "cmd": {
+      "volumeHint": "Raporte në ditë, të ndara sipas flamurit",
+      "live": "Live"
+    },
+    "det": {
+      "workspace": "Hapësira e raportit",
+      "overview": "Përmbledhje",
+      "exports": "Eksporto treguesit"
     }
   },
   "intel": {
