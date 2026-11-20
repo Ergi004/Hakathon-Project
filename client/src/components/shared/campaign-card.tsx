@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Link } from "@/i18n/navigation";
 import { fmtDate } from "@/lib/format";
 import type { Enums } from "@/types/database";
-import { defangValue } from "./defanged-text";
+import { defangValue } from "@/lib/defang";
 
 export interface CampaignCardData {
   code: string;

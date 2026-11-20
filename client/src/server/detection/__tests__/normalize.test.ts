@@ -23,6 +23,11 @@ describe("normalize", () => {
     expect(urls).toHaveLength(2);
   });
 
+  it("does not turn email addresses into link indicators (regression: ana.hoxha@gmail.com → ana.hoxha)", () => {
+    expect(extractUrls("Shkruani te ana.hoxha@gmail.com ose ana[at]posta.al.example sot")).toEqual([]);
+    expect(extractUrls("Kontakt: info@banka.al.example, faqja www.banka.al.example")).toEqual(["www.banka.al.example"]);
+  });
+
   it("returns hosts in punycode and lower case", () => {
     expect(hostOf("HTTP://WWW.Pogradеc.al.test/a")).toBe("xn--pogradc-dhg.al.test");
   });

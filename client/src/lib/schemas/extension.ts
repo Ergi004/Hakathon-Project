@@ -19,6 +19,8 @@ export const signalReportSchema = z.object({
   reasonCodes: z.array(z.string().max(64)).max(20).default([]),
   version: z.string().max(32),
   indicatorsOnly: z.boolean().optional(),
+  /** Defaults to email; the phishing scanner also reports SMS (smishing). */
+  channel: z.enum(["email", "sms"]).optional(),
 });
 export type SignalReport = z.infer<typeof signalReportSchema>;
 

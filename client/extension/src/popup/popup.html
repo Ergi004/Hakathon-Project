@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="sq">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mburoja</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header class="top">
+      <img src="icons/icon-32.png" alt="" width="20" height="20" />
+      <h1 id="app-title">Mburoja</h1>
+      <button type="button" id="open-settings" class="icon-btn" aria-expanded="false" aria-controls="settings">⚙</button>
+    </header>
+
+    <section id="settings" class="card" hidden>
+      <h2 data-i18n="settings"></h2>
+      <label for="server" data-i18n="server"></label>
+      <input id="server" type="url" autocomplete="off" spellcheck="false" />
+      <label for="lang" data-i18n="language"></label>
+      <select id="lang">
+        <option value="sq">Shqip</option>
+        <option value="en">English</option>
+      </select>
+      <div class="row">
+        <button type="button" id="save-settings" class="btn primary" data-i18n="save"></button>
+        <button type="button" id="reset-token" class="btn" data-i18n="resetToken"></button>
+      </div>
+      <p id="settings-status" class="muted" role="status"></p>
+
+      <h2 class="consent-title" data-i18n="consentTitle"></h2>
+      <ul id="consent-rules" class="small"></ul>
+      <label class="switch-row" for="auto-submit">
+        <input id="auto-submit" type="checkbox" role="switch" />
+        <span data-i18n="consentToggle"></span>
+      </label>
+      <p id="consent-since" class="muted small" role="status"></p>
+    </section>
+
+    <p id="consent-prompt" class="notice small" hidden></p>
+
+    <nav class="tabs" role="tablist" aria-label="Scan">
+      <button type="button" role="tab" id="tab-email" aria-controls="panel-email" aria-selected="true" data-i18n="tabEmail"></button>
+      <button type="button" role="tab" id="tab-sms" aria-controls="panel-sms" aria-selected="false" tabindex="-1" data-i18n="tabSms"></button>
+      <button type="button" role="tab" id="tab-eml" aria-controls="panel-eml" aria-selected="false" tabindex="-1" data-i18n="tabEml"></button>
+    </nav>
+
+    <section id="panel-email" role="tabpanel" aria-labelledby="tab-email" class="panel">
+      <p class="muted" data-i18n="scanOpenHint"></p>
+      <button type="button" id="scan-open" class="btn primary wide" data-i18n="scanOpen"></button>
+      <p id="extract-info" class="muted small" role="status"></p>
+    </section>
+
+    <section id="panel-sms" role="tabpanel" aria-labelledby="tab-sms" class="panel" hidden>
+      <label for="sms-text" data-i18n="smsText"></label>
+      <textarea id="sms-text" rows="4" maxlength="5000"></textarea>
+      <label for="sms-sender" data-i18n="smsSender"></label>
+      <input id="sms-sender" type="text" maxlength="64" />
+      <button type="button" id="scan-sms" class="btn primary wide" data-i18n="scanSms"></button>
+    </section>
+
+    <section id="panel-eml" role="tabpanel" aria-labelledby="tab-eml" class="panel" hidden>
+      <label for="eml-file" data-i18n="emlFile"></label>
+      <input id="eml-file" type="file" accept=".eml,.msg,message/rfc822" />
+      <p class="muted small" data-i18n="emlHint"></p>
+      <button type="button" id="scan-eml" class="btn primary wide" data-i18n="scanEml"></button>
+    </section>
+
+    <p id="error" class="error" role="alert" hidden></p>
+
+    <section id="result" class="card" aria-live="polite" hidden></section>
+
+    <section class="history">
+      <h2 data-i18n="history"></h2>
+      <ul id="history-list"></ul>
+    </section>
+
+    <p class="muted small footer" data-i18n="privacy"></p>
+    <script src="popup.js"></script>
+  </body>
+</html>

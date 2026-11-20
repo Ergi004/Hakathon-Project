@@ -18,7 +18,10 @@ export default async function ExtensionPage({ params }: { params: Promise<{ loca
   const { locale } = await params;
   setRequestLocale(locale as Locale);
   const t = await getTranslations("extensionPage");
-  const hasZip = existsSync(path.join(process.cwd(), "public", "downloads", "mburoja-extension.zip"));
+  // Packages are produced by `npm run ext:build` (scripts/build-extension.mjs).
+  const downloads = path.join(process.cwd(), "public", "downloads");
+  const hasZip = existsSync(path.join(downloads, "mburoja-extension.zip"));
+  const hasXpi = existsSync(path.join(downloads, "mburoja-extension-firefox.xpi"));
   const list = (key: string) => t.raw(key) as string[];
   const card = (icon: React.ReactNode, title: string, items: string[], tone: "ok" | "no" = "ok") => (
     <section className="glass-card space-y-3 rounded-xl p-5">
@@ -36,7 +39,12 @@ export default async function ExtensionPage({ params }: { params: Promise<{ loca
   return (
     <div className="mx-auto max-w-5xl space-y-10 px-4 py-12 md:px-8">
       <PageHeader title={t("title")} description={t("description")} actions={
-        hasZip ? <Button asChild><a href="/downloads/mburoja-extension.zip" download><Download className="size-4" aria-hidden="true" /> {t("download")}</a></Button> : undefined
+        hasZip || hasXpi ? (
+          <div className="flex flex-wrap gap-2">
+            {hasZip && <Button asChild><a href="/downloads/mburoja-extension.zip" download><Download className="size-4" aria-hidden="true" /> {t("download")}</a></Button>}
+            {hasXpi && <Button asChild variant="outline"><a href="/downloads/mburoja-extension-firefox.xpi" download><Download className="size-4" aria-hidden="true" /> {t("downloadFirefox")}</a></Button>}
+          </div>
+        ) : undefined
       } />
       <section className="glass-card space-y-4 rounded-xl p-5 md:p-6">
         <h2 className="font-display text-xl font-medium">{t("install")}</h2>
@@ -48,6 +56,7 @@ export default async function ExtensionPage({ params }: { params: Promise<{ loca
             </li>
           ))}
         </ol>
+        <p className="text-sm"><span className="font-medium">Firefox: </span>{t("installFirefox")}</p>
         <p className="text-xs text-muted-foreground">{t("downloadNote")}</p>
       </section>
       <div className="grid gap-4 md:grid-cols-2">

@@ -3,7 +3,7 @@
 export type NavIcon =
   | "home" | "list" | "file" | "bell" | "eye" | "book" | "users" | "puzzle" | "lock" | "settings"
   | "layout" | "wand" | "alert" | "flag" | "globe" | "megaphone" | "graduation" | "key" | "download"
-  | "gauge" | "inbox" | "gavel" | "chart" | "search" | "ban" | "target" | "siren" | "shield";
+  | "gauge" | "inbox" | "gavel" | "chart" | "search" | "ban" | "target" | "siren" | "shield" | "radar";
 
 export interface NavEntry<K extends string = string> {
   key: K;
@@ -62,6 +62,7 @@ export const BUSINESS_NAV = [
 export const SOC_NAV = [
   { key: "command", href: "/soc", icon: "gauge" },
   { key: "inbox", href: "/soc/inbox", icon: "inbox" },
+  { key: "intel", href: "/soc/intel", icon: "radar" },
   { key: "campaigns", href: "/soc/campaigns", icon: "flag" },
   { key: "domains", href: "/soc/domains", icon: "globe" },
   { key: "takedowns", href: "/soc/takedowns", icon: "gavel" },

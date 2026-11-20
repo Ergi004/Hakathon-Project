@@ -1,4 +1,4 @@
-import { ArrowLeft, Megaphone } from "lucide-react";
+import { Megaphone } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
@@ -14,6 +14,7 @@ import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { fmtDate } from "@/lib/format";
 import { getPublicCampaign } from "@/server/queries/public";
+import { BackLink } from "@/components/layout/back-link";
 
 type Params = Promise<{ locale: string; code: string }>;
 
@@ -122,22 +123,10 @@ async function CampaignView({ params }: { params: Params }) {
 export default function PublicCampaignPage({ params }: { params: Params }) {
   return (
     <div className="mx-auto max-w-5xl space-y-6 px-4 py-12 md:px-8">
-      <Suspense fallback={null}>
-        <BackLink params={params} />
-      </Suspense>
+      <BackLink href="/threats" namespace="campaign" label="back" />
       <Suspense fallback={<div className="space-y-4"><Skeleton className="h-10 w-72" /><Skeleton className="h-64 w-full" /></div>}>
         <CampaignView params={params} />
       </Suspense>
     </div>
-  );
-}
-
-async function BackLink({ params }: { params: Params }) {
-  const { locale } = await params;
-  const t = await getTranslations({ locale: locale as Locale, namespace: "campaign" });
-  return (
-    <Button asChild variant="ghost" size="sm" className="-ml-2">
-      <Link href="/threats"><ArrowLeft className="size-4" aria-hidden="true" /> {t("back")}</Link>
-    </Button>
   );
 }

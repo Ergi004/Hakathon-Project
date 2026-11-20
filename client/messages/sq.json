@@ -192,7 +192,8 @@
       "blocklist": "Lista e bllokimit",
       "quality": "Cilësia e modelit",
       "alerts": "Rregullat e sinjalizimit",
-      "admin": "Administrimi"
+      "admin": "Administrimi",
+      "intel": "Phishing intel"
     },
     "status": {
       "ingestion": "Marrja e të dhënave",
@@ -583,6 +584,336 @@
       "escalated": "U përshkallëzua",
       "taken_down": "U hoq",
       "rejected": "U refuzua"
+    },
+    "intel": {
+      "description": "Skanime email dhe SMS me reputacionin nga VirusTotal, klasifikimin, MITRE ATT&CK dhe atribuimin. Përditësohet live.",
+      "channel": "Kanali",
+      "verdictLabel": "Verdikti",
+      "statusLabel": "Statusi",
+      "albaniaOnly": "Vetëm Shqipëri",
+      "vtOnly": "Vetëm me detektime në VirusTotal",
+      "empty": "Asnjë skanim nuk përputhet me këto filtra",
+      "emptyHint": "Skanimet shfaqen këtu sapo extension-i ose API dërgon një email ose SMS.",
+      "open": "Hap skanimin {id}",
+      "engines": "{n} motorë",
+      "albania": "Shqipëri",
+      "vtBadge": "VirusTotal: {n} motorë",
+      "source": "Burimi",
+      "processing": "Analiza po vazhdon",
+      "noReport": "Raporti nuk është i disponueshëm",
+      "notFound": "Skanimi nuk u gjet",
+      "back": "Kthehu te phishing intel",
+      "message": "Mesazhi",
+      "from": "Nga",
+      "replyTo": "Reply-To",
+      "subject": "Subjekti",
+      "auth": "Autentikimi",
+      "authAbsent": "pa header Authentication-Results",
+      "attachments": "Bashkëngjitjet",
+      "sender": "Dërguesi",
+      "senderKind": "Lloji i dërguesit",
+      "international": "numër i huaj",
+      "albaniaWhy": "Shqipëri sepse",
+      "virusTotal": "VirusTotal",
+      "iocs": "Indikatorët",
+      "findings": "Gjetjet në email dhe SMS",
+      "noFindings": "Asnjë gjetje",
+      "reasons": "Arsyet (motori i vlerësimit)",
+      "classification": "Klasifikimi",
+      "mitre": "MITRE ATT&CK",
+      "noMitre": "Asnjë teknikë nuk mbështetet nga evidenca",
+      "attribution": "Atribuimi",
+      "ai": "Analiza me AI",
+      "aiAdvisory": "vetëm këshilluese, nuk e ndryshon pikëzimin",
+      "aiUnavailable": "Analiza me AI nuk ishte e disponueshme: rezultati bazohet vetëm te rregullat.",
+      "actions": "Veprimet e rekomanduara",
+      "limitations": "Kufizimet",
+      "timeline": "Ecuria e përpunimit",
+      "col": {
+        "risk": "Rreziku",
+        "channel": "Kanali",
+        "verdict": "Verdikti",
+        "virusTotal": "VirusTotal",
+        "type": "Lloji",
+        "family": "Familja",
+        "scope": "Fusha",
+        "status": "Statusi",
+        "age": "Koha",
+        "exfil": "Dërgon te"
+      },
+      "kpi": {
+        "total": "Skanime (24 orë)",
+        "email": "Email",
+        "sms": "SMS",
+        "malicious": "Malicioze",
+        "vtHits": "Detektime VirusTotal",
+        "exfil": "Destinacione të dhënash (24 orë)"
+      },
+      "verdict": {
+        "malicious": "Malicioz",
+        "suspicious": "I dyshimtë",
+        "clean": "I pastër",
+        "unknown": "I panjohur"
+      },
+      "status": {
+        "queued": "Në radhë",
+        "processing": "Në përpunim",
+        "completed": "Përfunduar",
+        "partial": "I pjesshëm",
+        "failed": "Dështoi"
+      },
+      "severity": {
+        "low": "E ulët",
+        "medium": "Mesatare",
+        "high": "E lartë",
+        "critical": "Kritike"
+      },
+      "attr": {
+        "confirmed": "E konfirmuar",
+        "high_confidence": "Besueshmëri e lartë",
+        "possible": "E mundshme",
+        "unattributed": "Pa atribuim"
+      },
+      "cls": {
+        "phishingType": "Lloji i phishing-ut",
+        "phishingFamily": "Familja e karremit",
+        "malwareFamily": "Familja e malware-it"
+      },
+      "type": {
+        "credential_phishing": "Vjedhje kredencialesh",
+        "adversary_in_the_middle": "Adversary-in-the-middle",
+        "business_email_compromise": "Komprometim i emailit të biznesit",
+        "oauth_phishing": "Phishing OAuth",
+        "qr_phishing": "Phishing me QR",
+        "malware_delivery": "Shpërndarje malware",
+        "payment_fraud": "Mashtrim me pagesë",
+        "callback_scam": "Mashtrim me thirrje",
+        "brand_impersonation": "Imitim i markës"
+      },
+      "family": {
+        "parcel_delivery_fee": "Tarifë dërgese pakete",
+        "bank_account_verification": "Verifikim llogarie bankare",
+        "toll_traffic_fine": "Gjobë rrugore / autostradë",
+        "tax_refund": "Rimbursim tatimi",
+        "government_service": "Shërbim qeveritar",
+        "utility_bill": "Faturë shërbimi",
+        "prize_lottery": "Çmim / lotari",
+        "job_offer": "Ofertë pune",
+        "invoice_fraud": "Mashtrim me faturë",
+        "account_suspension": "Pezullim llogarie",
+        "investment_crypto": "Investim / kripto"
+      },
+      "senderKinds": {
+        "e164": "Numër telefoni",
+        "short_code": "Kod i shkurtër",
+        "alphanumeric": "Emër dërguesi",
+        "malformed": "I pasaktë",
+        "absent": "I panjohur"
+      },
+      "albaniaSignal": {
+        "al_sender": "dërgues me numër shqiptar",
+        "al_phone": "numër shqiptar në tekst",
+        "al_domain": "domen .al",
+        "al_institution": "imiton një institucion shqiptar",
+        "albanian_text": "tekst në shqip"
+      },
+      "stage": {
+        "queue": "Radha",
+        "parsing": "Leximi",
+        "iocExtraction": "Indikatorët",
+        "heuristics": "Heuristika",
+        "virusTotal": "VirusTotal",
+        "aiAnalysis": "AI",
+        "attribution": "Atribuimi",
+        "report": "Raporti",
+        "pipeline": "Procesi",
+        "landing": "Sandbox i faqes"
+      },
+      "vt": {
+        "indicator": "Indikatori",
+        "malicious": "Malicioze",
+        "suspicious": "Të dyshimta",
+        "harmless": "Të padëmshme",
+        "label": "Etiketa / kategoria",
+        "notFound": "i panjohur për VirusTotal",
+        "cached": "nga cache",
+        "none": "Asnjë indikator nuk u kontrollua në VirusTotal.",
+        "skip": {
+          "synthetic": "domen testi, nuk u dërgua",
+          "official": "domen zyrtar, nuk u dërgua",
+          "private_ip": "IP private, nuk u dërgua",
+          "quota": "u arrit kuota",
+          "error": "gabim nga ofruesi",
+          "limit": "kufiri për skanim"
+        }
+      },
+      "finding": {
+        "spf_fail": "SPF dështoi",
+        "dkim_fail": "Nënshkrimi DKIM nuk u verifikua",
+        "dmarc_fail": "DMARC dështoi",
+        "reply_to_mismatch": "Reply-To ndryshon nga dërguesi",
+        "return_path_mismatch": "Return-Path ndryshon nga dërguesi",
+        "display_name_spoof": "Emri i dërguesit përmban një domen tjetër",
+        "message_id_mismatch": "Domeni i Message-ID ndryshon nga dërguesi",
+        "link_text_mismatch": "Teksti i lidhjes tregon një adresë, por hap një tjetër",
+        "javascript_link": "Lidhja ekzekuton JavaScript",
+        "html_form": "Përmban një formular që dërgon të dhëna",
+        "password_field": "Përmban një fushë fjalëkalimi",
+        "html_script": "Përmban kod skripti",
+        "meta_refresh": "Ridrejton automatikisht",
+        "data_uri_html": "Fut HTML ose skript si data URI",
+        "html_obfuscation": "HTML i koduar rëndë",
+        "hidden_content": "Fsheh përmbajtje nga lexuesi",
+        "disguised_executable": "Program i maskuar si dokument",
+        "type_mismatch": "Përmbajtja e skedarit nuk përputhet me prapashtesën",
+        "html_attachment": "Bashkëngjitje HTML (modeli i faqes së rreme të hyrjes)",
+        "svg_attachment": "Bashkëngjitje SVG",
+        "disk_image": "Bashkëngjitje disk image",
+        "rtl_override": "Karaktere që përmbysin drejtimin e tekstit",
+        "mixed_script": "Shkronja të ngjashme nga alfabete të tjera",
+        "app_install_lure": "Kërkon instalimin e një aplikacioni / APK",
+        "remote_access_lure": "Përmend softuer për qasje në distancë",
+        "disable_protection": "Kërkon çaktivizimin e mbrojtjes së pajisjes",
+        "channel_switch": "Shtyn drejt një aplikacioni tjetër mesazhesh",
+        "otp_request": "Kërkon të ndash një kod njëpërdorimësh",
+        "payment_handle": "Përmban një llogari bankare për pagesë",
+        "callback_lure": "Kërkon të telefonosh një numër",
+        "malformed_sender": "Numër dërguesi i pasaktë",
+        "international_sender": "Numër dërguesi i huaj",
+        "exfil_telegram": "Të dhënat e kapura dërgohen te një bot Telegram",
+        "exfil_webhook": "Të dhënat e kapura dërgohen te një webhook chat-i",
+        "exfil_google": "Të dhënat e kapura dërgohen te një Google Apps Script ose Form",
+        "exfil_form_service": "Të dhënat e kapura dërgohen te një shërbim mbledhjeje formularësh",
+        "exfil_php": "Të dhënat e kapura dërgohen te një skript PHP në një server tjetër",
+        "exfil_endpoint": "Një formular ose kod dërgon të dhënat e kapura në një server tjetër",
+        "exfil_mailto": "Një formular i dërgon të dhënat e kapura me email",
+        "obfuscated_exfil": "Destinacioni i të dhënave fshihet me kodim",
+        "victim_ip_lookup": "Faqja kërkon adresën IP dhe vendndodhjen e viktimës"
+      },
+      "live": {
+        "on": "Live",
+        "off": "Po lidhet…",
+        "newScan": "Skanim i ri {channel}",
+        "maliciousScan": "Skanim {channel} i rrezikshëm: {engines} motorë VirusTotal"
+      },
+      "exfilOnly": "Me destinacion të dhënash",
+      "exfil": {
+        "title": "Ku dërgohen të dhënat",
+        "none": "Nuk u gjet asnjë destinacion të dhënash në email ose në bashkëngjitje. Lidhjet nuk u hapën, ndaj faqja ku të çojnë mund t'i dërgojë diku tjetër.",
+        "note": "Analizë statike e email-it dhe bashkëngjitjeve: asgjë nuk u ekzekutua dhe asnjë server nuk u kontaktua. Tokenët e bot-eve dhe çelësat e webhook-ëve maskohen dhe nuk ruhen kurrë.",
+        "abuseHint": "Mos e përdorni bot-in ose webhook-un. Raportojeni te ekipi i abuzimeve të shërbimit (Telegram: abuse@telegram.org, Discord: Trust & Safety) me ID-në që shfaqet këtu.",
+        "chat": "Chat",
+        "sharedService": "shërbim i përbashkët",
+        "firstSeen": "parë për herë të parë",
+        "otherScansN": "{n, plural, one {# skanim tjetër} other {# skanime të tjera}}",
+        "col": {
+          "kind": "Lloji",
+          "destination": "Destinacioni",
+          "foundIn": "Gjetur në",
+          "vt": "VirusTotal",
+          "otherScans": "I njëjti destinacion"
+        },
+        "kind": {
+          "telegram_bot": "Bot Telegram",
+          "discord_webhook": "Webhook Discord",
+          "webhook": "Webhook",
+          "google_apps_script": "Google Apps Script",
+          "google_form": "Google Form",
+          "form_service": "Shërbim formularësh",
+          "php_handler": "Skript PHP",
+          "form_action": "Formular",
+          "js_endpoint": "Kërkesë nga kodi",
+          "mailto": "Email (mailto)"
+        },
+        "source": {
+          "email_html": "HTML i email-it",
+          "attachment": "Bashkëngjitje",
+          "text": "Teksti i email-it",
+          "landing_page": "Faqja e lidhjes (sandbox)"
+        },
+        "via": {
+          "base64": "i fshehur: base64",
+          "percent": "i fshehur: kodim URL",
+          "charcode": "i fshehur: fromCharCode",
+          "escape": "i fshehur: \\x escapes",
+          "entities": "i fshehur: entitete HTML",
+          "plain": "i hapur"
+        }
+      },
+      "landing": {
+        "title": "Faqja e lidhjes (sandbox urlscan.io)",
+        "intro": "urlscan.io e hap faqen në sandbox-in e vet; kjo platformë dërgon vetëm URL-në dhe lexon atë që regjistroi urlscan. Vetëm vëzhgim: asgjë nuk shkruhet apo dërgohet në faqe.",
+        "notConfigured": "Sandbox-i nuk është konfiguruar. Shto URLSCAN_API_KEY në mjedisin e serverit (mjafton një llogari falas te urlscan.io).",
+        "noLinks": "Ky skanim nuk ka lidhje për t'u analizuar.",
+        "analyze": "Analizo me urlscan.io",
+        "again": "Analizo sërish",
+        "confirm": "Dërgo te urlscan.io",
+        "cancel": "Anulo",
+        "sending": "Po dërgohet…",
+        "running": "urlscan.io po e analizon faqen…",
+        "submitted": "U dërgua te urlscan.io. Rezultati shfaqet këtu pas rreth 30 sekondash.",
+        "reused": "Kjo faqe u analizua në 24 orët e fundit: rezultati u ripërdor pa harxhuar kuotë.",
+        "confirmText": "URL-ja më sipër (me email-et dhe telefonat e viktimës të zëvendësuar) do t'i dërgohet urlscan.io si „{visibility}”. urlscan.io do ta hapë në sandbox-in e vet.",
+        "sanitized": "U zëvendësua para dërgimit: {what}",
+        "replaced": {
+          "email": "adresë email",
+          "email_encoded": "adresë email e koduar",
+          "email_base64": "adresë email në base64",
+          "phone": "numër telefoni",
+          "credentials": "përdorues/fjalëkalim në URL"
+        },
+        "block": {
+          "synthetic": "domen testi, nuk mund të hapet",
+          "private_ip": "adresë rrjeti privat, nuk dërgohet",
+          "invalid": "nuk është adresë web"
+        },
+        "error": {
+          "generic": "Analiza nuk u nis dot.",
+          "not_configured": "Mungon URLSCAN_API_KEY në server.",
+          "not_in_scan": "Kjo URL nuk është ndër indikatorët e skanimit.",
+          "synthetic": "Domenet e testit (.example, .test) nuk mund të hapen.",
+          "private_ip": "Adresat e rrjetit privat nuk dërgohen kurrë.",
+          "invalid": "Nuk është adresë web e vlefshme.",
+          "rate_limited_user": "Arrite kufirin tënd për orë të analizave në sandbox.",
+          "rate_limited_day": "Kuota ditore e sandbox-it u harxhua.",
+          "urlscan_unauthorized": "urlscan.io e refuzoi çelësin API.",
+          "urlscan_quota": "U arrit kuota e urlscan.io. Provo më vonë.",
+          "urlscan_rejected": "urlscan.io e refuzoi URL-në (p.sh. domeni nuk ekziston më).",
+          "urlscan_timeout": "urlscan.io nuk u përgjigj në kohë.",
+          "urlscan_upstream": "urlscan.io ktheu një gabim.",
+          "urlscan_bad_response": "urlscan.io ktheu një përgjigje të papritur."
+        },
+        "status": {
+          "queued": "Në radhë",
+          "submitted": "Po analizohet",
+          "completed": "Përfunduar",
+          "failed": "Dështoi"
+        },
+        "malicious": "urlscan: malicioze",
+        "notMalicious": "urlscan: pa verdikt",
+        "openReport": "Raporti në urlscan.io",
+        "screenshot": "Screenshot",
+        "submittedUrl": "U dërgua",
+        "finalUrl": "Faqja përfundimtare",
+        "pendingNote": "urlscan.io po e hap faqen. Përditësohet live.",
+        "page": {
+          "title": "Titulli",
+          "ip": "IP",
+          "asnname": "Rrjeti",
+          "country": "Shteti",
+          "server": "Serveri",
+          "status": "HTTP",
+          "domainAgeDays": "Mosha e domenit (ditë)",
+          "tlsIssuer": "Lëshuesi TLS"
+        },
+        "forms": "Formularët në faqe",
+        "passwordForm": "kërkon fjalëkalim",
+        "sameUrl": "dërgon te e njëjta faqe",
+        "noForms": "Asnjë formular në faqe.",
+        "noExfil": "Nuk u gjet asnjë destinacion të dhënash në faqe ose në skriptet e saj.",
+        "requests": "{n, plural, one {# kërkesë} other {# kërkesa}} gjatë ngarkimit",
+        "redirects": "{n, plural, one {# ridrejtim} other {# ridrejtime}}"
+      }
     }
   },
   "admin": {
@@ -708,7 +1039,10 @@
       "cert": "Certifikatë",
       "phone": "Telefon",
       "email": "Email",
-      "file_hash": "Hash skedari"
+      "file_hash": "Hash skedari",
+      "phone_number": "Telefon",
+      "short_code": "Kod i shkurtër",
+      "exfil_endpoint": "Destinacion të dhënash"
     }
   },
   "reportStatus": {
@@ -1205,22 +1539,24 @@
   },
   "extensionPage": {
     "title": "Shtesa Mburoja për shfletuesin",
-    "description": "Skano emailet e dyshimta në Gmail dhe Outlook me një klik.",
+    "description": "Skano emailet dhe SMS-të e dyshimta me një klik, në Chrome, Edge dhe Firefox.",
     "install": "Instalimi",
     "installSteps": [
-      "Shkarko paketën e shtesës (zip) dhe hape.",
-      "Hap chrome://extensions dhe aktivizo „Developer mode”.",
-      "Kliko „Load unpacked” dhe zgjidh dosjen e shtesës.",
-      "Hap një email në Gmail ose Outlook dhe kliko butonin „Skano”."
+      "Shkarko paketën për Chrome/Edge (zip) dhe shpaketoje në një dosje.",
+      "Hap chrome://extensions (ose edge://extensions) dhe aktivizo „Developer mode”.",
+      "Kliko „Load unpacked” dhe zgjidh dosjen e shpaketuar.",
+      "Hap një email në Gmail ose Outlook, kliko ikonën Mburoja dhe pastaj „Skano”."
     ],
-    "download": "Shkarko shtesën (zip)",
-    "downloadNote": "Chrome Web Store nuk është pjesë e këtij pilot-projekti; shtesa ngarkohet manualisht.",
+    "installFirefox": "shkarko skedarin .xpi, hap about:debugging#/runtime/this-firefox, kliko „Load Temporary Add-on” dhe zgjidh skedarin. Për instalim të përhershëm duhet nënshkrimi nga addons.mozilla.org.",
+    "download": "Shkarko për Chrome / Edge (zip)",
+    "downloadFirefox": "Shkarko për Firefox (xpi)",
+    "downloadNote": "Paketat janë gati edhe për Chrome Web Store, Edge Add-ons dhe addons.mozilla.org, por publikimi në dyqane nuk është pjesë e këtij pilot-projekti.",
     "reads": "Çfarë lexon",
     "readsItems": [
       "Vetëm emailin që hap ti, dhe vetëm kur klikon „Skano”",
       "Subjektin, dërguesin, tekstin e dukshëm dhe lidhjet",
       "Emrat dhe llojet e bashkëngjitjeve (jo përmbajtjen)",
-      "Rezultatet SPF, DKIM, DMARC nëse shfaqen"
+      "SPF, DKIM, DMARC dhe hash-et e bashkëngjitjeve vetëm kur ngarkon vetë një skedar .eml"
     ],
     "never": "Çfarë nuk lexon kurrë",
     "neverItems": [
@@ -1240,9 +1576,10 @@
     ],
     "permissions": "Lejet që kërkon",
     "permissionsItems": [
-      "storage: ruan rezultatin e fundit dhe pëlqimin",
+      "storage: ruan rezultatet e fundit dhe cilësimet",
       "activeTab dhe scripting: lexon emailin e hapur vetëm kur klikon",
-      "Qasje vetëm te mail.google.com, outlook.live.com, outlook.office.com dhe API-ja e Mburojës"
+      "notifications dhe contextMenus: njoftimi kur mbaron skanimi dhe skanimi i tekstit të zgjedhur",
+      "Qasje vetëm te API-ja e Mburojës, asnjë qasje e përhershme te Gmail ose Outlook"
     ],
     "manage": "Menaxho shtesën nga llogaria jote"
   },
