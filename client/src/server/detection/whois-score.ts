@@ -2,6 +2,7 @@ import type { DetectionContext } from "./context";
 import { officialCores, parseHost } from "./domain-score";
 
 export interface WhoisFinding {
+  ageDays: number | null;
   young: boolean;
   privacy: boolean;
   certFast: boolean;
@@ -34,6 +35,7 @@ export function scoreWhois(host: string, ctx: DetectionContext, now = new Date()
   const pair = `${(intel.registrar ?? "").toLowerCase()}|${(intel.hostingCountry ?? "").toLowerCase()}`;
 
   return {
+    ageDays: age,
     young: age !== null && age >= 0 && age < 30,
     privacy: intel.privacy === true,
     certFast,

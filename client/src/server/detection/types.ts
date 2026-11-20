@@ -1,5 +1,6 @@
 /** Contracts from SPEC 6.2. */
 import type { FlagLevel } from "@/lib/flags";
+import type { ScamClassification, ScamFeatures } from "./pattern";
 
 export type { FlagLevel };
 
@@ -12,7 +13,7 @@ export interface AnalysisInput {
   urls?: string[];
   sender?: string;
   subject?: string;
-  headers?: { spf?: AuthResult; dkim?: AuthResult; dmarc?: AuthResult; replyTo?: string };
+  headers?: { spf?: AuthResult; dkim?: AuthResult; dmarc?: AuthResult; dmarcPolicy?: "none" | "quarantine" | "reject"; replyTo?: string };
   attachments?: { name: string; mime: string; size: number }[];
   channel: Channel;
   locale: "sq" | "en";
@@ -29,6 +30,11 @@ export interface Reason {
   evidence?: string;
 }
 
+/** Signals stored on a check. `claimedPlace` is a municipality or institution named in the lure, never a victim location. */
+export interface CheckFeatures extends ScamFeatures {
+  claimedPlace: string | null;
+}
+
 export interface AnalysisResult {
   score: number;
   flag: FlagLevel;
@@ -43,6 +49,9 @@ export interface AnalysisResult {
   matchedInstitution?: { id: string; name: string };
   iocs: { type: "domain" | "url" | "phone" | "email"; value: string }[];
   modelVersion: string;
+  /** Weighted pattern classification. Message text is not included. */
+  classification: ScamClassification;
+  features: CheckFeatures;
 }
 
 /** Group caps from SPEC 6.3. */

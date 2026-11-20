@@ -20,6 +20,9 @@ import { buildNotice } from "@/server/takedown/fill";
 type Params = Promise<{ locale: string; id: string }>;
 const FLOW = ["draft", "in_review", "approved", "sent", "acknowledged", "taken_down"] as const;
 
+/** Auth + notice data are request-time; allow blocking navigations under Cache Components. */
+export const instant = false;
+
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   return { title: (await getTranslations({ locale: locale as "sq" | "en", namespace: "soc.nav" }))("takedowns") };

@@ -2,25 +2,107 @@ import "server-only";
 
 import { cacheLife, cacheTag } from "next/cache";
 import type { CampaignCardData } from "@/components/shared/campaign-card";
+import { readClaimedPlace, readHostingCountry } from "@/server/detection/stored-features";
 import { tryAdmin } from "@/server/db";
 import type { Enums } from "@/types/database";
 
+/** A region is omitted until this many checks share it. */
+export const MIN_REGION_CHECKS = 3;
+
+/** Recent checks included in public pattern aggregates. */
+const AGGREGATE_CHECK_LIMIT = 5000;
+
+export type RegionKind = "hosting_country" | "claimed_place";
+
+export interface PatternAggregates {
+  byScamType: { scamType: string; count: number }[];
+  byBrand: { brand: string; count: number }[];
+  byWeek: { week: string; count: number }[];
+  regions: { kind: RegionKind; name: string; count: number }[];
+}
+
+export interface PublicStats extends PatternAggregates {
+  reportsToday: number;
+  activeCampaigns: number;
+  domainsBlocked: number;
+  checksTotal: number;
+}
+
+export const EMPTY_PATTERN_AGGREGATES: PatternAggregates = {
+  byScamType: [],
+  byBrand: [],
+  byWeek: [],
+  regions: [],
+};
+
+function weekStart(iso: string): string | null {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return null;
+  date.setUTCDate(date.getUTCDate() - ((date.getUTCDay() + 6) % 7));
+  return date.toISOString().slice(0, 10);
+}
+
+function bump(map: Map<string, number>, key: string | null | undefined) {
+  if (!key) return;
+  map.set(key, (map.get(key) ?? 0) + 1);
+}
+
+function ranked(map: Map<string, number>, min = 1): { name: string; count: number }[] {
+  return [...map.entries()]
+    .filter(([, count]) => count >= min)
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .map(([name, count]) => ({ name, count }));
+}
+
+function summarizeChecks(
+  rows: { scam_type: string | null; impersonated_brand: string | null; features: unknown; created_at: string }[],
+): PatternAggregates {
+  const scamTypes = new Map<string, number>();
+  const brands = new Map<string, number>();
+  const weeks = new Map<string, number>();
+  const hosting = new Map<string, number>();
+  const places = new Map<string, number>();
+  for (const row of rows) {
+    bump(scamTypes, row.scam_type);
+    bump(brands, row.impersonated_brand);
+    bump(weeks, weekStart(row.created_at));
+    bump(hosting, readHostingCountry(row.features));
+    bump(places, readClaimedPlace(row.features));
+  }
+  return {
+    byScamType: ranked(scamTypes).map(({ name, count }) => ({ scamType: name, count })),
+    byBrand: ranked(brands).map(({ name, count }) => ({ brand: name, count })),
+    byWeek: [...weeks.entries()].sort((a, b) => a[0].localeCompare(b[0])).map(([week, count]) => ({ week, count })),
+    regions: [
+      ...ranked(hosting, MIN_REGION_CHECKS).map(({ name, count }) => ({ kind: "hosting_country" as const, name, count })),
+      ...ranked(places, MIN_REGION_CHECKS).map(({ name, count }) => ({ kind: "claimed_place" as const, name, count })),
+    ],
+  };
+}
+
 /** Homepage counters (SPEC 7): cached, revalidated about every minute. */
-export async function getPublicStats(): Promise<{ reportsToday: number; activeCampaigns: number; domainsBlocked: number; checksTotal: number }> {
+export async function getPublicStats(): Promise<PublicStats> {
   "use cache";
   cacheLife("minutes");
   cacheTag("kpis");
   const db = tryAdmin();
-  if (!db) return { reportsToday: 0, activeCampaigns: 0, domainsBlocked: 0, checksTotal: 0 };
+  if (!db) return { reportsToday: 0, activeCampaigns: 0, domainsBlocked: 0, checksTotal: 0, ...EMPTY_PATTERN_AGGREGATES };
   const since = new Date();
   since.setHours(0, 0, 0, 0);
-  const [r, c, d, k] = await Promise.all([
+  const [r, c, d, k, pattern] = await Promise.all([
     db.from("reports").select("id", { count: "exact", head: true }).gte("created_at", since.toISOString()),
     db.from("campaigns").select("id", { count: "exact", head: true }).in("status", ["monitoring", "confirmed", "takedown_in_progress"]),
     db.from("domains").select("id", { count: "exact", head: true }).in("status", ["threat", "taken_down"]),
     db.from("checks").select("id", { count: "exact", head: true }),
+    db.from("checks").select("scam_type, impersonated_brand, features, created_at").order("created_at", { ascending: false }).limit(AGGREGATE_CHECK_LIMIT),
   ]);
-  return { reportsToday: r.count ?? 0, activeCampaigns: c.count ?? 0, domainsBlocked: d.count ?? 0, checksTotal: k.count ?? 0 };
+  return {
+    reportsToday: r.count ?? 0,
+    activeCampaigns: c.count ?? 0,
+    domainsBlocked: d.count ?? 0,
+    checksTotal: k.count ?? 0,
+    ...summarizeChecks(pattern.data ?? []),
+  };
 }
 
 export interface FeedFilters {

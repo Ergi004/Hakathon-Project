@@ -1,6 +1,6 @@
 import type { DetectionContext } from "./context";
 import { channelKey } from "./context";
-import { foldText, hostOf, normalizePhone, parseSender } from "./normalize";
+import { extractUrls, foldText, hostOf, normalizePhone, parseSender } from "./normalize";
 import type { AnalysisInput } from "./types";
 
 export const FREEMAIL = new Set([
@@ -20,6 +20,11 @@ export interface SenderFinding {
   officialInstitutionId?: string;
   /** Official sender AND all auth pass (or SMS sender exact match): SPEC 6.3 cap rule. */
   capEligible: boolean;
+}
+
+function messageHasLink(input: AnalysisInput): boolean {
+  if (input.urls?.some((url) => url.trim())) return true;
+  return extractUrls([input.subject, input.text].filter(Boolean).join("\n")).length > 0;
 }
 
 function isOfficialDomain(domain: string, ctx: DetectionContext): string | undefined {
@@ -88,7 +93,7 @@ export function scoreSender(input: AnalysisInput, ctx: DetectionContext): Sender
   if (officialId) {
     f.officialInstitutionId = officialId;
     f.capEligible = true;
-  } else if (claimed) {
+  } else if (claimed || messageHasLink(input)) {
     f.unknownSmsSender = true;
   }
   return f;

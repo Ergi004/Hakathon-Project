@@ -14,10 +14,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { CheckAggregates } from "@/components/shared/check-aggregates";
 import { Link } from "@/i18n/navigation";
 import { fmtDate } from "@/lib/format";
+import { asBrandCategory, asScamType } from "@/lib/pattern-labels";
 import { requireRole } from "@/server/auth";
-import { getCampaigns } from "@/server/queries/soc";
+import { getCampaignPatternMap, getCampaigns } from "@/server/queries/soc";
 
 type Search = Promise<{ status?: string; q?: string; view?: string }>;
 const STATUS = ["monitoring", "confirmed", "takedown_in_progress", "resolved"] as const;
@@ -56,9 +58,12 @@ async function List_({ searchParams }: { searchParams: Search }) {
   const ctx = await requireRole("soc_analyst");
   const t = await getTranslations("soc.campaigns");
   const ts = await getTranslations("campaignStatus");
+  const tScam = await getTranslations("scamType");
+  const tBrand = await getTranslations("brandCategory");
   const locale = await getLocale();
   const status = STATUS.find((s) => s === sp.status);
   const rows = await getCampaigns(ctx.supabase, { status, q: sp.q?.slice(0, 100) });
+  const patterns = await getCampaignPatternMap(ctx.supabase, rows.map((c) => c.id));
   const view = sp.view === "grid" ? "grid" : "table";
   const toggle = (
     <div className="flex gap-1" role="group">
@@ -72,29 +77,59 @@ async function List_({ searchParams }: { searchParams: Search }) {
       {toggle}
       {view === "grid" ? (
         <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {rows.map((c) => <li key={c.id}><CampaignCard c={{ ...c, imitated_name: c.imitated_name ?? (c.institutions as { name: string } | null)?.name ?? null }} href={`/soc/campaigns/${c.id}`} /></li>)}
+          {rows.map((c) => {
+            const pattern = patterns.get(c.id);
+            const scamKey = asScamType(pattern?.scamType);
+            const brandKey = asBrandCategory(pattern?.brand);
+            return (
+              <li key={c.id}>
+                <CampaignCard c={{ ...c, imitated_name: c.imitated_name ?? (c.institutions as { name: string } | null)?.name ?? null }} href={`/soc/campaigns/${c.id}`} />
+                {pattern && (
+                  <p className="mt-2 flex flex-wrap gap-x-3 text-xs text-muted-foreground">
+                    {scamKey && <span>{tScam(scamKey)}</span>}
+                    {brandKey && <span>{tBrand(brandKey)}</span>}
+                    <span>{t("patternSizeCount", { count: pattern.size })}</span>
+                    <span>{t("firstSeen")} {fmtDate(pattern.firstSeen, locale)}</span>
+                    <span>{t("lastSeen")} {fmtDate(pattern.lastSeen, locale)}</span>
+                  </p>
+                )}
+              </li>
+            );
+          })}
         </ul>
       ) : (
         <div className="overflow-x-auto rounded-xl border border-border">
           <Table>
             <TableHeader><TableRow>
               <TableHead>{t("code")}</TableHead><TableHead>{t("institution")}</TableHead><TableHead className="hidden md:table-cell">{t("tactic")}</TableHead>
+              <TableHead className="hidden xl:table-cell">{t("scamType")}</TableHead><TableHead className="hidden xl:table-cell">{t("brand")}</TableHead>
               <TableHead>{t("status")}</TableHead><TableHead>{t("severity")}</TableHead><TableHead className="text-right">{t("count")}</TableHead>
-              <TableHead className="hidden lg:table-cell">{t("owner")}</TableHead><TableHead className="hidden md:table-cell">{t("lastSeen")}</TableHead>
+              <TableHead className="hidden text-right lg:table-cell">{t("patternSize")}</TableHead>
+              <TableHead className="hidden lg:table-cell">{t("owner")}</TableHead>
+              <TableHead className="hidden xl:table-cell">{t("firstSeen")}</TableHead><TableHead className="hidden md:table-cell">{t("lastSeen")}</TableHead>
             </TableRow></TableHeader>
             <TableBody>
-              {rows.map((c) => (
+              {rows.map((c) => {
+                const pattern = patterns.get(c.id);
+                const scamKey = asScamType(pattern?.scamType);
+                const brandKey = asBrandCategory(pattern?.brand);
+                return (
                 <TableRow key={c.id}>
                   <TableCell className="font-mono text-xs"><Link className="hover:underline" href={`/soc/campaigns/${c.id}`}>{c.code}</Link>{c.is_public && <Globe className="ml-1 inline size-3 text-primary" aria-label={t("public")} />}</TableCell>
                   <TableCell className="text-xs">{(c.institutions as { name: string } | null)?.name ?? c.imitated_name ?? "—"}</TableCell>
                   <TableCell className="hidden text-xs md:table-cell">{c.tactic.replace(/_/g, " ")}</TableCell>
+                  <TableCell className="hidden text-xs xl:table-cell">{scamKey ? tScam(scamKey) : "—"}</TableCell>
+                  <TableCell className="hidden text-xs xl:table-cell">{brandKey ? tBrand(brandKey) : "—"}</TableCell>
                   <TableCell><Badge variant="outline" className="whitespace-nowrap">{ts(c.status)}</Badge></TableCell>
                   <TableCell><SeverityDot severity={c.severity} /></TableCell>
                   <TableCell className="text-right tabular-nums">{c.message_count}</TableCell>
+                  <TableCell className="hidden text-right tabular-nums lg:table-cell">{pattern ? pattern.size : "—"}</TableCell>
                   <TableCell className="hidden text-xs lg:table-cell">{(c.owner as { full_name: string | null } | null)?.full_name ?? "—"}</TableCell>
-                  <TableCell className="hidden text-xs md:table-cell">{fmtDate(c.last_seen, locale)}</TableCell>
+                  <TableCell className="hidden text-xs xl:table-cell">{fmtDate(pattern?.firstSeen ?? c.first_seen, locale)}</TableCell>
+                  <TableCell className="hidden text-xs md:table-cell">{fmtDate(pattern?.lastSeen ?? c.last_seen, locale)}</TableCell>
                 </TableRow>
-              ))}
+                );
+              })}
             </TableBody>
           </Table>
         </div>
@@ -109,6 +144,7 @@ export default async function CampaignsPage({ params, searchParams }: { params: 
   return (
     <div className="space-y-5">
       <PageHeader title={t("campaigns")} />
+      <Suspense fallback={<Skeleton className="h-28 w-full" />}><CheckAggregates /></Suspense>
       <Suspense fallback={<Skeleton className="h-12 w-full" />}><Toolbar /></Suspense>
       <Suspense fallback={<Skeleton className="h-96 w-full" />}><List_ searchParams={searchParams} /></Suspense>
     </div>

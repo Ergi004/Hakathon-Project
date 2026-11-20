@@ -143,6 +143,14 @@ export function scoreDomain(host: string, ctx: DetectionContext): DomainFinding 
         continue;
       }
     }
+    // Shortened brand plus a scam word: posta-pagese imitates postashqiptare, banka-login imitates bankashembull.
+    const stem = rawTokens
+      .map((token) => collapse(token))
+      .find((token) => token.length >= 5 && token.length < oCollapsed.length && oCollapsed.startsWith(token));
+    if (stem && rawTokens.some((token) => COMBO_WORDS.has(token))) {
+      consider("combosquat", official, institutionId);
+      continue;
+    }
     if (brandInRaw && rawCollapsed === oCollapsed && h.registrable !== official) {
       // Same name under a different suffix, e.g. lezhe.al vs lezhe.gov.al
       consider("typosquat", official, institutionId);

@@ -181,6 +181,9 @@ async function Workspace({ params }: { params: Params }) {
   );
 }
 
+/** Auth + report data are request-time; allow blocking navigations under Cache Components. */
+export const instant = false;
+
 export default function ReportWorkspacePage({ params }: { params: Params }) {
   return (
     <div className="space-y-4">

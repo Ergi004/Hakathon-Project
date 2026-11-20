@@ -21,6 +21,12 @@ describe("domain-score", () => {
     expect(f.lookalike).toMatchObject({ cls: "homoglyph", institutionId: IDS.lezhe });
   });
 
+  it("flags a shortened brand plus a scam word as combosquat", () => {
+    expect(scoreDomain("posta-pagese.example", c).lookalike).toMatchObject({ cls: "combosquat", institutionId: IDS.posta });
+    expect(scoreDomain("banka-login.example", c).lookalike).toMatchObject({ cls: "combosquat", institutionId: IDS.banka });
+    expect(scoreDomain("posta.example", c).lookalike).toBeUndefined();
+  });
+
   it("flags the combosquat pogradec-fines-gov.al.example", () => {
     expect(scoreDomain("pogradec-fines-gov.al.example", c).lookalike).toMatchObject({ cls: "combosquat", institutionId: IDS.pogradec });
   });

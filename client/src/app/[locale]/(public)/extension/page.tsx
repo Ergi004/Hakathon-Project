@@ -18,7 +18,9 @@ export default async function ExtensionPage({ params }: { params: Promise<{ loca
   const { locale } = await params;
   setRequestLocale(locale as Locale);
   const t = await getTranslations("extensionPage");
+  // Workers serve public/ via ASSETS; existsSync is a local-dev convenience only.
   const hasZip = existsSync(path.join(process.cwd(), "public", "downloads", "mburoja-extension.zip"));
+
   const list = (key: string) => t.raw(key) as string[];
   const card = (icon: React.ReactNode, title: string, items: string[], tone: "ok" | "no" = "ok") => (
     <section className="glass-card space-y-3 rounded-xl p-5">

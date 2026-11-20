@@ -1,10 +1,9 @@
 import "server-only";
 
-import { readFileSync } from "node:fs";
-import path from "node:path";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database, Enums } from "@/types/database";
 import { defang } from "@/server/detection/normalize";
+import { bundledTemplate } from "./fallback-templates";
 import { parseTemplateFile, render } from "./render";
 
 type DB = SupabaseClient<Database>;
@@ -13,8 +12,7 @@ type Kind = Enums<"notice_type">;
 export async function loadTemplate(db: DB, kind: Kind, locale: "sq" | "en") {
   const { data } = await db.from("templates").select("subject, body").eq("kind", kind).eq("locale", locale).eq("active", true).order("version", { ascending: false }).limit(1).maybeSingle();
   if (data) return data;
-  const file = path.join(process.cwd(), "src", "server", "takedown", "templates", `${kind}.${locale}.md`);
-  return parseTemplateFile(readFileSync(file, "utf8"));
+  return parseTemplateFile(bundledTemplate(kind, locale));
 }
 
 /** Pick a recipient by matching registrar / hosting strings (SPEC 11.1 step 1). */

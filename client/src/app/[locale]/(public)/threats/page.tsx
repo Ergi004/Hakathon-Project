@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { EmptyState } from "@/components/layout/empty-state";
 import { PageHeader } from "@/components/layout/page-header";
 import { CampaignCard } from "@/components/shared/campaign-card";
+import { CheckAggregates } from "@/components/shared/check-aggregates";
 import { UrlSelect } from "@/components/shared/url-select";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Locale } from "@/i18n/routing";
@@ -53,6 +54,9 @@ export default async function ThreatsPage({ params, searchParams }: { params: Pr
   return (
     <div className="mx-auto max-w-6xl space-y-8 px-4 py-12 md:px-8">
       <PageHeader title={t("title")} description={t("description")} />
+      <Suspense fallback={<Skeleton className="h-28 w-full" />}>
+        <CheckAggregates />
+      </Suspense>
       <Suspense fallback={<Skeleton className="h-16 w-full max-w-2xl" />}>
         <Filters />
       </Suspense>
