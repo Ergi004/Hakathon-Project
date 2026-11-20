@@ -7,6 +7,7 @@ import { signInSchema } from "@/lib/schemas/auth";
 import type { ActionResult } from "@/lib/result";
 import { getSessionUser, homePathFor } from "@/server/auth";
 import { finalizeBusinessSignup } from "@/server/onboarding";
+import { confirmUserByEmail, skipEmailConfirmation } from "@/server/auth-bypass";
 import { createClient, SupabaseNotConfiguredError } from "@/server/supabase/server";
 
 export type SignInError = "invalidInput" | "invalidCredentials" | "unavailable" | "generic";
@@ -23,10 +24,15 @@ export async function signIn(input: unknown): Promise<ActionResult<undefined, Si
     return { ok: false, error: "generic" };
   }
 
-  const { data, error } = await supabase.auth.signInWithPassword({
+  let { data, error } = await supabase.auth.signInWithPassword({
     email: parsed.data.email,
     password: parsed.data.password,
   });
+  // TEMPORARY (AUTH_SKIP_EMAIL_CONFIRMATION=true): Supabase reports "email_not_confirmed"
+  // only after the password matched, so confirm the account and retry once.
+  if (error?.code === "email_not_confirmed" && skipEmailConfirmation() && (await confirmUserByEmail(parsed.data.email))) {
+    ({ data, error } = await supabase.auth.signInWithPassword({ email: parsed.data.email, password: parsed.data.password }));
+  }
   if (error) {
     return { ok: false, error: error.status === 400 ? "invalidCredentials" : "unavailable" };
   }

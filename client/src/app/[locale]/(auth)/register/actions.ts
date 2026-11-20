@@ -6,6 +6,7 @@ import { redirect } from "@/i18n/navigation";
 import type { ActionResult } from "@/lib/result";
 import { signUpSchema } from "@/lib/schemas/auth";
 import { appUrl } from "@/server/app-url";
+import { createConfirmedUser, skipEmailConfirmation } from "@/server/auth-bypass";
 import { ipHash } from "@/server/hash";
 import { finalizeBusinessSignup } from "@/server/onboarding";
 import { limit } from "@/server/rate-limit";
@@ -34,17 +35,31 @@ export async function signUp(input: unknown): Promise<ActionResult<{ status: "ch
   }
 
   const locale = await getLocale();
+  const metadata = {
+    full_name: fullName || null,
+    locale,
+    account_type: accountType,
+    ...(accountType === "business" ? { pending_org: { name: orgName } } : {}),
+  };
+
+  // TEMPORARY (AUTH_SKIP_EMAIL_CONFIRMATION=true): create the account confirmed and sign in now.
+  if (skipEmailConfirmation()) {
+    const created = await createConfirmedUser(email, password, metadata);
+    if (created.error && created.error.code !== "email_exists" && created.error.code !== "user_already_exists") {
+      return { ok: false, error: created.error.code === "weak_password" ? "weakPassword" : created.error.code === "unavailable" ? "unavailable" : "generic" };
+    }
+    const signedIn = await supabase.auth.signInWithPassword({ email, password });
+    if (signedIn.error || !signedIn.data.user) return { ok: true, data: { status: "check_email" } };
+    const hasOrg = accountType === "business" && (await finalizeBusinessSignup(signedIn.data.user));
+    return redirect({ href: hasOrg ? "/business" : "/citizen", locale });
+  }
+
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
       emailRedirectTo: `${await appUrl()}/${locale}/auth/confirm`,
-      data: {
-        full_name: fullName || null,
-        locale,
-        account_type: accountType,
-        ...(accountType === "business" ? { pending_org: { name: orgName } } : {}),
-      },
+      data: metadata,
     },
   });
 
