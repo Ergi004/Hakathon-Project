@@ -1,6 +1,16 @@
-import { placeholderRoute } from "@/components/layout/placeholder-route";
+import type { Metadata } from "next";
+import { setRequestLocale } from "next-intl/server";
+import { LegalPage } from "@/components/legal/legal-page";
+import { LEGAL } from "@/content/legal";
+import type { Locale } from "@/i18n/routing";
 
-const route = placeholderRoute("public.nav", "accessibility");
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return { title: LEGAL.accessibility.title[locale as Locale] };
+}
 
-export const generateMetadata = route.generateMetadata;
-export default route.Page;
+export default async function Page({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  setRequestLocale(locale as Locale);
+  return <LegalPage doc={LEGAL.accessibility} locale={locale as Locale} />;
+}

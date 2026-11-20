@@ -66,14 +66,6 @@
       "accessibility": "Aksesueshmëria",
       "contact": "Kontakt"
     },
-    "home": {
-      "eyebrow": "Platformë kombëtare kundër mashtrimeve",
-      "title": "Një mesazh të duket i dyshimtë? Kontrolloje para se të klikosh.",
-      "subtitle": "Mburoja dallon mesazhet, faqet dhe emailet e rreme që imitojnë institucionet, bankat, postën dhe shërbimet publike.",
-      "ctaCheck": "Kontrollo një link ose mesazh",
-      "ctaReport": "Raporto një mashtrim",
-      "privacyNote": "Ne ruajmë një gjurmë të asaj që kontrollon, jo tekstin."
-    },
     "footer": {
       "rights": "Të dhëna sintetike për demonstrim.",
       "legal": "Ligjore"
@@ -228,5 +220,636 @@
   "metadata": {
     "title": "Mburoja",
     "description": "Kontrollo linke, SMS dhe emaile të dyshimta. Platformë kundër mashtrimeve për Shqipërinë."
+  },
+  "ui": {
+    "copy": "Kopjo",
+    "copied": "U kopjua",
+    "copyFailed": "Kopjimi dështoi",
+    "reveal": "Shfaq",
+    "hide": "Fshih",
+    "defanged": "E çaktivizuar për siguri",
+    "revealWarning": "Mos e hap këtë adresë. Shfaqet vetëm për analizë.",
+    "showMore": "Shfaq {count} arsye të tjera",
+    "showLess": "Shfaq më pak",
+    "copyAll": "Kopjo të gjitha",
+    "exportCsv": "Eksporto CSV",
+    "exportJson": "Eksporto JSON",
+    "search": "Kërko",
+    "filters": "Filtrat",
+    "clear": "Pastro",
+    "all": "Të gjitha",
+    "apply": "Zbato",
+    "loading": "Duke u ngarkuar…",
+    "save": "Ruaj",
+    "saved": "U ruajt",
+    "cancel": "Anulo",
+    "delete": "Fshi",
+    "close": "Mbyll",
+    "back": "Kthehu",
+    "next": "Vazhdo",
+    "previous": "Mbrapa",
+    "submit": "Dërgo",
+    "edit": "Ndrysho",
+    "create": "Krijo",
+    "add": "Shto",
+    "remove": "Hiq",
+    "open": "Hap",
+    "view": "Shiko",
+    "confirm": "Konfirmo",
+    "actions": "Veprimet",
+    "details": "Detajet",
+    "none": "Asnjë",
+    "unknown": "E panjohur",
+    "yes": "Po",
+    "no": "Jo",
+    "optional": "opsionale",
+    "required": "e detyrueshme",
+    "errorGeneric": "Diçka shkoi keq. Provo përsëri.",
+    "errorUnavailable": "Shërbimi nuk është i disponueshëm tani.",
+    "errorForbidden": "Nuk ke të drejtë për këtë veprim.",
+    "errorInvalid": "Kontrollo të dhënat.",
+    "rateLimited": "Shumë kërkesa. Provo përsëri pas pak.",
+    "empty": "Ende asgjë këtu.",
+    "noData": "Nuk ka të dhëna për këtë periudhë.",
+    "page": "Faqja {page} nga {pages}",
+    "rows": "{count} rreshta",
+    "lastUpdated": "Përditësuar më {date}",
+    "dateRange": "Periudha",
+    "days": "{count} ditë",
+    "hoursAgo": "{count} orë më parë"
+  },
+  "reasonGroups": {
+    "links": "Lidhjet",
+    "content": "Përmbajtja",
+    "sender": "Dërguesi",
+    "attachments": "Bashkëngjitjet",
+    "reputation": "Reputacioni"
+  },
+  "reasonList": {
+    "title": "Pse e vlerësuam kështu",
+    "evidence": "Provë"
+  },
+  "ioc": {
+    "type": "Lloji",
+    "value": "Vlera",
+    "campaign": "Fushata",
+    "firstSeen": "Parë për herë të parë",
+    "lastSeen": "Parë për herë të fundit",
+    "types": {
+      "domain": "Domen",
+      "url": "URL",
+      "ip": "IP",
+      "cert": "Certifikatë",
+      "phone": "Telefon",
+      "email": "Email",
+      "file_hash": "Hash skedari"
+    }
+  },
+  "reportStatus": {
+    "received": "U mor",
+    "under_review": "Në shqyrtim",
+    "confirmed": "Mashtrim i konfirmuar",
+    "not_scam": "Nuk është mashtrim",
+    "takedown_requested": "U kërkua bllokimi",
+    "taken_down": "U bllokua",
+    "duplicate": "Dublikatë"
+  },
+  "campaignStatus": {
+    "monitoring": "Në monitorim",
+    "confirmed": "E konfirmuar",
+    "takedown_in_progress": "Bllokim në proces",
+    "resolved": "E zgjidhur"
+  },
+  "noticeStatus": {
+    "draft": "Draft",
+    "in_review": "Në rishikim",
+    "approved": "Aprovuar",
+    "sent": "Dërguar",
+    "acknowledged": "Pranuar",
+    "taken_down": "U hoq",
+    "no_response": "Pa përgjigje",
+    "rejected": "Refuzuar"
+  },
+  "noticeType": {
+    "registrar": "Regjistruesi",
+    "hosting": "Hostingu",
+    "akcesk": "AKCESK"
+  },
+  "severity": {
+    "low": "E ulët",
+    "medium": "Mesatare",
+    "high": "E lartë",
+    "critical": "Kritike"
+  },
+  "channel": {
+    "sms": "SMS",
+    "email": "Email",
+    "social": "Rrjete sociale",
+    "web": "Faqe interneti",
+    "qr": "Kod QR",
+    "call": "Telefonatë",
+    "other": "Tjetër"
+  },
+  "sector": {
+    "government": "Qeveri",
+    "municipality": "Bashki",
+    "bank": "Bankë",
+    "postal": "Posta",
+    "utility": "Shërbime publike",
+    "telecom": "Telekomunikacion",
+    "police": "Policia",
+    "other": "Tjetër"
+  },
+  "domainClass": {
+    "typosquat": "Gabim shkrimi",
+    "homoglyph": "Shkronja të ngjashme",
+    "combosquat": "Emër me fjalë të shtuara",
+    "legitimate": "I ligjshëm",
+    "unknown": "I panjohur"
+  },
+  "campaignCard": {
+    "messages": "{count} mesazhe",
+    "domains": "{count} domene",
+    "since": "Nga {date}",
+    "until": "deri {date}",
+    "imitates": "Imiton",
+    "tactic": "Taktika",
+    "open": "Shiko fushatën"
+  },
+  "timeline": {
+    "now": "Tani",
+    "pending": "Në pritje"
+  },
+  "check": {
+    "title": "Kontrollo një link ose mesazh",
+    "description": "Ngjit një link, një SMS ose email, një numër telefoni ose ngarko një foto të kodit QR. Të tregojmë sa i rrezikshëm duket dhe çfarë të bësh.",
+    "tabs": {
+      "link": "Link",
+      "message": "Mesazh",
+      "phone": "Telefon",
+      "qr": "Kod QR"
+    },
+    "labels": {
+      "link": "Lidhja që dyshon",
+      "message": "Teksti i mesazhit",
+      "phone": "Numri i telefonit",
+      "qr": "Foto e kodit QR",
+      "sender": "Dërguesi (opsional)",
+      "channel": "Ku e more?"
+    },
+    "placeholders": {
+      "link": "p.sh. hxxps://pagesa-gjoba[.]al[.]example",
+      "message": "Ngjit këtu SMS-in ose email-in e plotë…",
+      "phone": "p.sh. 069 123 4567",
+      "sender": "p.sh. Posta ose +355…"
+    },
+    "qrHint": "Fotoja lexohet vetëm në pajisjen tënde dhe nuk ngarkohet.",
+    "qrNotFound": "Nuk gjetëm kod QR në këtë foto. Provo një foto më të qartë.",
+    "qrFound": "Kodi QR të çon te:",
+    "submit": "Kontrollo",
+    "checking": "Duke kontrolluar…",
+    "privacyNote": "Ne ruajmë një gjurmë të asaj që kontrollon, jo tekstin.",
+    "examples": "Provo një shembull:",
+    "states": {
+      "rateLimited": "Ke bërë shumë kontrolle në pak kohë. Provo përsëri pas disa minutash.",
+      "error": "Nuk arritëm ta kontrollojmë tani. Provo përsëri pas pak.",
+      "empty": "Shkruaj ose ngjit diçka për ta kontrolluar.",
+      "invalid": "Kjo nuk duket e saktë. Kontrollo dhe provo përsëri."
+    },
+    "headline": {
+      "green": "Nuk gjetëm shenja mashtrimi",
+      "yellow": "Ki kujdes",
+      "orange": "Duket i dyshimtë",
+      "red": "Ka shumë gjasa të jetë mashtrim",
+      "darkred": "Ky është mashtrim i njohur",
+      "grey": "Nuk mundëm ta analizojmë"
+    },
+    "lead": {
+      "green": "Kjo nuk do të thotë se është 100% i sigurt. Nëse të kërkon para ose kode, verifiko me institucionin.",
+      "yellow": "Disa shenja kërkojnë vëmendje. Mos jep të dhëna personale pa verifikuar.",
+      "orange": "Gjetëm disa shenja paralajmëruese. Mos kliko dhe mos paguaj.",
+      "red": "Mos kliko, mos paguaj dhe mos jep asnjë të dhënë.",
+      "darkred": "Ky link ose mesazh është pjesë e një fushate mashtrimi të njohur.",
+      "grey": "Nuk kishte mjaftueshëm përmbajtje. Provo me tekstin e plotë ose me lidhjen."
+    },
+    "todoTitle": "Çfarë të bësh tani",
+    "todo": {
+      "green": [
+        "Nëse të kërkohet pagesë, hyr vetë në faqen zyrtare (mos përdor lidhjen).",
+        "Kontrollo dërguesin te lista e institucioneve.",
+        "Nëse ke dyshime, raportoje gjithsesi."
+      ],
+      "yellow": [
+        "Mos kliko lidhjen derisa ta verifikosh.",
+        "Telefono institucionin në numrin zyrtar.",
+        "Mos jep kode, fjalëkalime ose të dhëna karte."
+      ],
+      "orange": [
+        "Mos kliko dhe mos u përgjigj.",
+        "Fshije mesazhin pasi ta raportosh.",
+        "Paralajmëro të afërmit nëse kanë marrë të njëjtin mesazh."
+      ],
+      "red": [
+        "Mos kliko, mos paguaj, mos u përgjigj.",
+        "Raportoje këtu që ta bllokojmë.",
+        "Nëse ke dhënë të dhëna karte, telefono menjëherë bankën."
+      ],
+      "darkred": [
+        "Mos kliko, mos paguaj, mos u përgjigj.",
+        "Nëse ke paguar ose ke dhënë të dhëna, telefono bankën dhe policinë.",
+        "Raportoje që ta lidhim me fushatën."
+      ],
+      "grey": [
+        "Ngjit tekstin e plotë të mesazhit.",
+        "Ose ngjit vetëm lidhjen që përmban.",
+        "Nëse ke dyshime, raportoje gjithsesi."
+      ]
+    },
+    "campaign": "Lidhur me fushatën {code}",
+    "institution": "Imiton: {name}",
+    "reportThis": "Raporto këtë",
+    "reporting": "Duke raportuar…",
+    "shareWarning": "Ndaj paralajmërimin",
+    "shareText": "Kujdes! Mburoja e vlerësoi këtë mesazh si „{flag}” ({score}/100). Mos kliko dhe mos paguaj. Detajet: {url}",
+    "shareCopied": "Paralajmërimi u kopjua. Ngjite ku të duash.",
+    "checkAnother": "Kontrollo diçka tjetër",
+    "reported": "Faleminderit! Raporti u dërgua.",
+    "protocol": "Numri i protokollit",
+    "token": "Kodi privat për ndjekje",
+    "tokenNote": "Ruaje këtë kod. Nuk do ta shfaqim më. Me të mund të ndjekësh statusin e raportit.",
+    "track": "Ndiq raportin",
+    "resultTitle": "Rezultati i kontrollit",
+    "storedNote": "Kjo faqe tregon rezultatin, jo atë që u kontrollua.",
+    "checkedAt": "Kontrolluar më {date}",
+    "notFound": "Ky rezultat nuk ekziston ose ka skaduar.",
+    "summary": "Shpjegim i shkurtër"
+  },
+  "home": {
+    "eyebrow": "Platformë kombëtare kundër mashtrimeve",
+    "title": "Një mesazh të duket i dyshimtë? Kontrolloje para se të klikosh.",
+    "subtitle": "Mburoja dallon mesazhet, faqet dhe emailet e rreme që imitojnë institucionet, bankat, postën dhe shërbimet publike.",
+    "stats": {
+      "title": "Mburoja sot",
+      "reportsToday": "raporte sot",
+      "activeCampaigns": "fushata aktive",
+      "domainsBlocked": "domene të rrezikshme",
+      "checks": "kontrolle gjithsej",
+      "srSummary": "Sot janë {reports} raporte, {campaigns} fushata aktive dhe {domains} domene të rrezikshme."
+    },
+    "how": {
+      "title": "Si funksionon",
+      "subtitle": "Tre hapa, më pak se një minutë.",
+      "s1": {
+        "title": "Ngjit ose ngarko",
+        "body": "Një link, SMS, email, numër telefoni ose foto të kodit QR. Nuk të duhet llogari."
+      },
+      "s2": {
+        "title": "Ne e analizojmë",
+        "body": "Kontrollojmë domenin, përmbajtjen, dërguesin dhe fushatat e njohura. Ruajmë vetëm një gjurmë, jo tekstin."
+      },
+      "s3": {
+        "title": "Ti vendos të sigurt",
+        "body": "Merr një vlerësim të qartë, arsyet dhe hapat e radhës. Me një klik e raporton për bllokim."
+      }
+    },
+    "scams": {
+      "title": "Mashtrimet më të shpeshta",
+      "subtitle": "Mëso t'i njohësh në dy minuta.",
+      "cta": "Lexo udhëzuesin",
+      "all": "Të gjithë udhëzuesit"
+    },
+    "latest": {
+      "title": "Fushatat e fundit",
+      "subtitle": "Mashtrime aktive të konfirmuara nga ekipi ynë.",
+      "all": "Shiko të gjitha kërcënimet",
+      "empty": "Nuk ka fushata publike për momentin."
+    },
+    "audience": {
+      "title": "Për kë është Mburoja",
+      "citizen": {
+        "title": "Qytetarët",
+        "body": "Kontrollo çdo mesazh pa llogari. Me llogari ruan historikun, merr njoftime për institucionet që ndjek dhe mbron familjen.",
+        "cta": "Krijo llogari falas"
+      },
+      "business": {
+        "title": "Bizneset dhe institucionet",
+        "body": "Monitoro domenet që imitojnë markën tënde, merr sinjalizime dhe kërko bllokimin e tyre bashkë me SOC-un.",
+        "cta": "Mbro markën tënde"
+      },
+      "authorities": {
+        "title": "Autoritetet",
+        "body": "Triazh i raporteve, grupim në fushata, tregues komprometimi dhe njoftime bllokimi me miratim të dyfishtë.",
+        "cta": "Hyr në SOC"
+      }
+    },
+    "extension": {
+      "title": "Shtesa e shfletuesit për Gmail dhe Outlook",
+      "body": "Skano vetëm emailin që zgjedh ti, me një klik. Nuk lexon asgjë në sfond dhe nuk dërgon asgjë pa pëlqimin tënd.",
+      "cta": "Si funksionon shtesa",
+      "points": [
+        "Skanim vetëm kur klikon",
+        "Maskim i të dhënave personale",
+        "Mund të fshish atë që u dërgua"
+      ]
+    },
+    "privacy": {
+      "title": "Privatësia e ndërtuar që në fillim",
+      "subtitle": "Kemi ndërtuar Mburojën që të mos dimë më shumë se sa duhet.",
+      "store": "Çfarë ruajmë",
+      "storeItems": [
+        "Një gjurmë (hash) të asaj që kontrollon",
+        "Rezultatin dhe arsyet",
+        "Tekstin e raportit, pasi maskojmë telefonat, emailet, IBAN-et dhe emrat"
+      ],
+      "never": "Çfarë nuk ruajmë kurrë",
+      "neverItems": [
+        "Tekstin e kontrolleve të zakonshme",
+        "Fotot e kodeve QR",
+        "Identitetin tënd, nëse nuk hyn në llogari"
+      ],
+      "cta": "Lexo politikën e privatësisë"
+    },
+    "trust": {
+      "title": "Institucionet që imitohen më shpesh",
+      "body": "Kontrollo domenet dhe dërguesit e tyre zyrtarë.",
+      "cta": "Lista e institucioneve"
+    },
+    "faq": {
+      "title": "Pyetje të shpeshta",
+      "items": [
+        {
+          "q": "A më duhet llogari për të kontrolluar një mesazh?",
+          "a": "Jo. Kontrolli dhe raportimi funksionojnë pa llogari. Llogaria shton historikun dhe njoftimet."
+        },
+        {
+          "q": "A e hapni lidhjen që ngjit unë?",
+          "a": "Kurrë. Serveri ynë nuk viziton asnjë lidhje të dërguar nga përdoruesit. Vlerësimi bazohet në vetë adresën dhe në të dhënat që kemi."
+        },
+        {
+          "q": "Çfarë ndodh kur raportoj?",
+          "a": "Merr një numër protokolli dhe një kod privat. Ekipi i SOC e shqyrton, e lidh me fushatat dhe kërkon bllokimin e domeneve."
+        },
+        {
+          "q": "Nëse rezultati është jeshil, a jam i sigurt?",
+          "a": "Jeshil do të thotë që nuk gjetëm shenja mashtrimi. Nëse të kërkohen para ose kode, verifiko gjithmonë me institucionin."
+        },
+        {
+          "q": "Kam paguar ose kam dhënë të dhënat e kartës. Çfarë bëj?",
+          "a": "Telefono menjëherë bankën për të bllokuar kartën, ndrysho fjalëkalimet dhe raportoje rastin te policia dhe këtu."
+        }
+      ]
+    },
+    "final": {
+      "title": "Mos e lër mashtrimin të kalojë.",
+      "body": "Kontrollo, raporto dhe ndihmo të tjerët të mos bien pre.",
+      "check": "Kontrollo tani",
+      "report": "Raporto një mashtrim"
+    }
+  },
+  "report": {
+    "title": "Raporto një mashtrim",
+    "description": "Na trego çfarë ndodhi. Nuk të duhet llogari. Ne maskojmë të dhënat personale para se t'i ruajmë.",
+    "step": "Hapi {current} nga {total}",
+    "steps": {
+      "what": "Çfarë ndodhi",
+      "channel": "Si erdhi",
+      "content": "Përmbajtja",
+      "contact": "Kontakti"
+    },
+    "categoryLabel": "Për çfarë bëhej fjalë?",
+    "categories": {
+      "fine": "Gjobë ose detyrim",
+      "bank": "Bankë ose kartë",
+      "parcel": "Pako ose dërgesë",
+      "job": "Ofertë pune",
+      "eAlbania": "e-Albania ose shërbim publik",
+      "prize": "Çmim ose rimbursim",
+      "investment": "Investim ose kripto",
+      "other": "Tjetër"
+    },
+    "lostMoney": "Kam paguar ose kam dhënë të dhëna karte",
+    "lostMoneyHint": "Nëse po, telefono menjëherë bankën për të bllokuar kartën.",
+    "channelLabel": "Ku e more mesazhin?",
+    "textLabel": "Teksti i mesazhit",
+    "textHint": "Ngjite të plotë. Telefonat, emailet, IBAN-et dhe emrat maskohen automatikisht.",
+    "urlLabel": "Lidhja (nëse ka)",
+    "senderLabel": "Dërguesi ose numri (nëse e di)",
+    "screenshotLabel": "Pamje ekrani (opsionale)",
+    "screenshotHint": "Leximi automatik i tekstit nga fotoja nuk është aktiv. Fotoja nuk ngarkohet; shkruaj ose ngjit tekstin më sipër.",
+    "screenshotPreview": "Pamja jote (vetëm në pajisjen tënde)",
+    "contactLabel": "Email për njoftime (opsional)",
+    "contactHint": "Vetëm nëse do përgjigje nga ekipi. Mund ta ndjekësh raportin edhe pa të, me kodin privat.",
+    "contactConsent": "Pranoj që ekipi të më kontaktojë për këtë raport.",
+    "review": "Kontrollo para dërgimit",
+    "submit": "Dërgo raportin",
+    "submitting": "Duke dërguar…",
+    "needContent": "Shto tekstin, lidhjen ose dërguesin.",
+    "needConsent": "Duhet pëlqimi për të ruajtur kontaktin.",
+    "doneTitle": "Raporti u dërgua. Faleminderit!",
+    "doneBody": "Ruaji këto dy të dhëna. Kodi privat nuk shfaqet më.",
+    "copyBoth": "Kopjo protokollin dhe kodin",
+    "trackNow": "Ndiq raportin",
+    "another": "Raporto diçka tjetër",
+    "signedInNote": "Je i kyçur: raporti do të shfaqet edhe te „Raportet e mia”."
+  },
+  "track": {
+    "title": "Ndiq raportin",
+    "description": "Shkruaj numrin e protokollit dhe kodin privat që more kur raportove.",
+    "protocol": "Numri i protokollit",
+    "protocolPlaceholder": "SOC-2026/000123",
+    "token": "Kodi privat",
+    "submit": "Shiko statusin",
+    "loading": "Duke kërkuar…",
+    "notFound": "Nuk gjetëm raport me këto të dhëna. Kontrollo protokollin dhe kodin.",
+    "status": "Statusi",
+    "received": "Marrë më {date}",
+    "outcome": "Përfundimi",
+    "notScam": "Ekipi e shqyrtoi dhe nuk e konsideroi mashtrim. Faleminderit që raportove.",
+    "duplicate": "Ky raport u bashkua me një raport tjetër për të njëjtën gjë.",
+    "campaign": "Lidhur me fushatën publike {code}",
+    "help": "Ke humbur kodin? Nuk mund ta rikthejmë, por mund ta raportosh përsëri."
+  },
+  "threats": {
+    "title": "Kërcënimet aktive",
+    "description": "Fushata mashtrimi të konfirmuara nga ekipi i SOC. Domenet shfaqen të çaktivizuara për siguri.",
+    "filterInstitution": "Institucioni",
+    "filterTactic": "Taktika",
+    "filterMonth": "Muaji",
+    "anyInstitution": "Çdo institucion",
+    "anyTactic": "Çdo taktikë",
+    "anyMonth": "Çdo muaj",
+    "count": "{count} fushata",
+    "empty": "Nuk ka fushata për këto filtra.",
+    "feedNote": "Të dhënat vijnë nga furnizimi publik dhe përditësohen çdo minutë.",
+    "rss": "API e furnizimit"
+  },
+  "campaign": {
+    "back": "Të gjitha kërcënimet",
+    "notFound": "Kjo fushatë nuk është publike ose nuk ekziston.",
+    "summary": "Përmbledhje",
+    "timeline": "Kronologjia",
+    "timelineSr": "Numri i mesazheve të raportuara sipas javës.",
+    "example": "Shembull mesazhi (i maskuar)",
+    "noExample": "Nuk ka shembull publik.",
+    "recognise": "Si ta njohësh",
+    "whatToDo": "Çfarë të bësh",
+    "domains": "Domenet e përdorura",
+    "advisories": "Paralajmërime zyrtare",
+    "firstSeen": "Parë për herë të parë",
+    "lastSeen": "Parë për herë të fundit",
+    "messages": "Mesazhe",
+    "status": "Statusi",
+    "recogniseItems": [
+      "Dërguesi nuk është në listën e kanaleve zyrtare të {institution}.",
+      "Lidhja të çon në një domen që imiton atë zyrtar.",
+      "Të kërkon të paguash ose të japësh të dhëna shpejt."
+    ],
+    "todoItems": [
+      "Mos kliko lidhjet dhe mos paguaj.",
+      "Kontrollo vetë në faqen zyrtare të {institution}.",
+      "Nëse ke paguar, telefono bankën menjëherë.",
+      "Raportoje mesazhin që ta bllokojmë."
+    ],
+    "checkCta": "Kontrollo një mesazh",
+    "reportCta": "Raporto"
+  },
+  "learn": {
+    "title": "Mëso të njohësh mashtrimet",
+    "description": "Gjashtë udhëzues të shkurtër me shembuj realë (të maskuar) dhe një kuiz për secilin.",
+    "read": "Lexo",
+    "minutes": "2 min lexim",
+    "quizCta": "Luaj „Gjej mashtrimin”",
+    "quizBody": "10 mesazhe. Ti vendos: mashtrim apo i ligjshëm?",
+    "example": "Shembull",
+    "signs": "Shenjat paralajmëruese",
+    "todo": "Çfarë të bësh",
+    "quiz": "Kuiz i shkurtër",
+    "otherGuides": "Udhëzues të tjerë",
+    "checkAnswer": "Kontrollo përgjigjen",
+    "correct": "Saktë!",
+    "wrong": "Jo saktë.",
+    "score": "Rezultati: {score} nga {total}",
+    "retry": "Provo përsëri",
+    "allGuides": "Të gjithë udhëzuesit",
+    "from": "Nga",
+    "progressSaved": "Përparimi u ruajt në profilin tënd."
+  },
+  "quiz": {
+    "title": "Gjej mashtrimin",
+    "description": "10 mesazhe të rastësishme nga të dhënat tona. Rezultati ruhet vetëm në pajisjen tënde.",
+    "question": "Mesazhi {current} nga {total}",
+    "scam": "Mashtrim",
+    "legit": "I ligjshëm",
+    "rightScam": "Saktë, ishte mashtrim.",
+    "rightLegit": "Saktë, ishte i ligjshëm.",
+    "wrongScam": "Ishte mashtrim.",
+    "wrongLegit": "Ishte i ligjshëm.",
+    "why": "Pse",
+    "next": "Tjetri",
+    "finish": "Shiko rezultatin",
+    "resultTitle": "Rezultati yt",
+    "result": "{score} nga {total} saktë",
+    "great": "Shkëlqyeshëm! Ke sy të mprehtë.",
+    "ok": "Mirë! Lexo udhëzuesit për të mësuar më shumë.",
+    "low": "Mashtruesit janë të zgjuar. Udhëzuesit do të të ndihmojnë.",
+    "again": "Luaj përsëri",
+    "best": "Rezultati më i mirë: {score}",
+    "empty": "Kuizi nuk ka mesazhe tani. Provo udhëzuesit."
+  },
+  "institutions": {
+    "title": "Drejtoria e institucioneve",
+    "description": "Domenet, dërguesit e SMS-ve dhe numrat zyrtarë. Nëse diçka nuk është këtu, ki kujdes.",
+    "search": "Kërko institucionin, domenin ose dërguesin",
+    "sector": "Sektori",
+    "anySector": "Të gjithë sektorët",
+    "domains": "Domene zyrtare",
+    "channels": "Kanale zyrtare",
+    "kinds": {
+      "sms_sender": "Dërgues SMS",
+      "phone": "Telefon",
+      "social": "Rrjet social",
+      "email": "Email"
+    },
+    "empty": "Asnjë institucion nuk përputhet me kërkimin.",
+    "count": "{count} institucione",
+    "verifyHint": "Mund ta verifikosh edhe përmes API: /api/v1/institutions/verify"
+  },
+  "apiDocs": {
+    "title": "API publike",
+    "description": "Integro kontrollin e mashtrimeve në aplikacionin tënd. Të gjitha përgjigjet janë JSON, UTF-8.",
+    "base": "Adresa bazë",
+    "auth": "Autentikimi",
+    "authBody": "Dërgo çelësin API si „Authorization: Bearer mbk_…”. Çelësat krijohen te paneli i biznesit (API dhe çelësat).",
+    "errors": "Gabimet",
+    "errorsBody": "Gabimet kthehen si një objekt „error” me fushat „code” dhe „message”, me kodin HTTP përkatës.",
+    "limits": "Kufizimet",
+    "limitsBody": "/scan 60 në orë për çelës, /reports 10 në orë për IP, /extension/register 5 në orë për IP. Trupi maksimal 64 KB.",
+    "endpoints": "Pikat fundore",
+    "request": "Kërkesa",
+    "response": "Përgjigja",
+    "openapi": "Shkarko OpenAPI JSON",
+    "tryIt": "Provoje: /api/v1/scan",
+    "apiKey": "Çelësi API",
+    "body": "Trupi i kërkesës (JSON)",
+    "send": "Dërgo",
+    "sending": "Duke dërguar…",
+    "status": "Statusi",
+    "keyNote": "Çelësi përdoret vetëm në shfletuesin tënd për këtë kërkesë dhe nuk ruhet.",
+    "authNone": "pa autentikim"
+  },
+  "extensionPage": {
+    "title": "Shtesa Mburoja për shfletuesin",
+    "description": "Skano emailet e dyshimta në Gmail dhe Outlook me një klik.",
+    "install": "Instalimi",
+    "installSteps": [
+      "Shkarko paketën e shtesës (zip) dhe hape.",
+      "Hap chrome://extensions dhe aktivizo „Developer mode”.",
+      "Kliko „Load unpacked” dhe zgjidh dosjen e shtesës.",
+      "Hap një email në Gmail ose Outlook dhe kliko butonin „Skano”."
+    ],
+    "download": "Shkarko shtesën (zip)",
+    "downloadNote": "Chrome Web Store nuk është pjesë e këtij pilot-projekti; shtesa ngarkohet manualisht.",
+    "reads": "Çfarë lexon",
+    "readsItems": [
+      "Vetëm emailin që hap ti, dhe vetëm kur klikon „Skano”",
+      "Subjektin, dërguesin, tekstin e dukshëm dhe lidhjet",
+      "Emrat dhe llojet e bashkëngjitjeve (jo përmbajtjen)",
+      "Rezultatet SPF, DKIM, DMARC nëse shfaqen"
+    ],
+    "never": "Çfarë nuk lexon kurrë",
+    "neverItems": [
+      "Kutinë postare në sfond",
+      "Marrësit e emailit",
+      "Bashkëngjitjet vetë",
+      "Fjalëkalimet ose cookie-t"
+    ],
+    "consent": "Pëlqimi dhe dërgimi automatik",
+    "consentBody": "Dërgimi automatik është i fikur derisa të japësh pëlqim një herë në dritaren e shtesës. Pas pëlqimit: portokalli, i kuq dhe i kuq i errët dërgojnë një raport sinjalesh të maskuar; e verdha dërgon vetëm treguesit (domenet), pa tekst; jeshili dhe grija nuk dërgojnë asgjë. Mund ta fshish çdo raport brenda 10 minutave.",
+    "signal": "Çfarë përmban raporti i sinjaleve",
+    "signalItems": [
+      "Subjekti dhe 600 karakteret e para, të maskuara",
+      "Lidhjet e çaktivizuara dhe domeni i dërguesit",
+      "Rezultatet e autentikimit, emrat e bashkëngjitjeve",
+      "Vlerësimi, flamuri, kodet e arsyeve dhe versioni"
+    ],
+    "permissions": "Lejet që kërkon",
+    "permissionsItems": [
+      "storage: ruan rezultatin e fundit dhe pëlqimin",
+      "activeTab dhe scripting: lexon emailin e hapur vetëm kur klikon",
+      "Qasje vetëm te mail.google.com, outlook.live.com, outlook.office.com dhe API-ja e Mburojës"
+    ],
+    "manage": "Menaxho shtesën nga llogaria jote"
+  },
+  "legal": {
+    "lastUpdated": "Përditësuar më {date}",
+    "draft": "Draft për rishikim ligjor",
+    "contactTitle": "Na kontakto",
+    "contactBody": "Për raportime urgjente përdor formularin e raportimit. Për çështje të tjera:",
+    "contactItems": {
+      "general": "Pyetje të përgjithshme",
+      "privacy": "Mbrojtja e të dhënave",
+      "press": "Media",
+      "security": "Raportim i dobësive të sigurisë"
+    }
   }
 }

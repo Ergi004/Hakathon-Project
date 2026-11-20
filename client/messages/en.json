@@ -66,14 +66,6 @@
       "accessibility": "Accessibility",
       "contact": "Contact"
     },
-    "home": {
-      "eyebrow": "National anti-fraud platform",
-      "title": "Got a message that looks off? Check it before you click.",
-      "subtitle": "Mburoja spots fake messages, sites and emails that imitate institutions, banks, the post office and public services.",
-      "ctaCheck": "Check a link or message",
-      "ctaReport": "Report a scam",
-      "privacyNote": "We store a fingerprint of what you check, not the text."
-    },
     "footer": {
       "rights": "Synthetic data for demonstration.",
       "legal": "Legal"
@@ -228,5 +220,636 @@
   "metadata": {
     "title": "Mburoja",
     "description": "Check suspicious links, SMS and emails. An anti-fraud platform for Albania."
+  },
+  "ui": {
+    "copy": "Copy",
+    "copied": "Copied",
+    "copyFailed": "Copy failed",
+    "reveal": "Reveal",
+    "hide": "Hide",
+    "defanged": "Defanged for safety",
+    "revealWarning": "Do not open this address. It is shown for analysis only.",
+    "showMore": "Show {count} more reasons",
+    "showLess": "Show less",
+    "copyAll": "Copy all",
+    "exportCsv": "Export CSV",
+    "exportJson": "Export JSON",
+    "search": "Search",
+    "filters": "Filters",
+    "clear": "Clear",
+    "all": "All",
+    "apply": "Apply",
+    "loading": "Loading…",
+    "save": "Save",
+    "saved": "Saved",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "close": "Close",
+    "back": "Back",
+    "next": "Continue",
+    "previous": "Back",
+    "submit": "Submit",
+    "edit": "Edit",
+    "create": "Create",
+    "add": "Add",
+    "remove": "Remove",
+    "open": "Open",
+    "view": "View",
+    "confirm": "Confirm",
+    "actions": "Actions",
+    "details": "Details",
+    "none": "None",
+    "unknown": "Unknown",
+    "yes": "Yes",
+    "no": "No",
+    "optional": "optional",
+    "required": "required",
+    "errorGeneric": "Something went wrong. Try again.",
+    "errorUnavailable": "The service is not available right now.",
+    "errorForbidden": "You are not allowed to do this.",
+    "errorInvalid": "Check the details you entered.",
+    "rateLimited": "Too many requests. Try again in a little while.",
+    "empty": "Nothing here yet.",
+    "noData": "No data for this period.",
+    "page": "Page {page} of {pages}",
+    "rows": "{count} rows",
+    "lastUpdated": "Updated {date}",
+    "dateRange": "Period",
+    "days": "{count} days",
+    "hoursAgo": "{count} hours ago"
+  },
+  "reasonGroups": {
+    "links": "Links",
+    "content": "Content",
+    "sender": "Sender",
+    "attachments": "Attachments",
+    "reputation": "Reputation"
+  },
+  "reasonList": {
+    "title": "Why we rated it this way",
+    "evidence": "Evidence"
+  },
+  "ioc": {
+    "type": "Type",
+    "value": "Value",
+    "campaign": "Campaign",
+    "firstSeen": "First seen",
+    "lastSeen": "Last seen",
+    "types": {
+      "domain": "Domain",
+      "url": "URL",
+      "ip": "IP",
+      "cert": "Certificate",
+      "phone": "Phone",
+      "email": "Email",
+      "file_hash": "File hash"
+    }
+  },
+  "reportStatus": {
+    "received": "Received",
+    "under_review": "Under review",
+    "confirmed": "Confirmed scam",
+    "not_scam": "Not a scam",
+    "takedown_requested": "Takedown requested",
+    "taken_down": "Taken down",
+    "duplicate": "Duplicate"
+  },
+  "campaignStatus": {
+    "monitoring": "Monitoring",
+    "confirmed": "Confirmed",
+    "takedown_in_progress": "Takedown in progress",
+    "resolved": "Resolved"
+  },
+  "noticeStatus": {
+    "draft": "Draft",
+    "in_review": "In review",
+    "approved": "Approved",
+    "sent": "Sent",
+    "acknowledged": "Acknowledged",
+    "taken_down": "Taken down",
+    "no_response": "No response",
+    "rejected": "Rejected"
+  },
+  "noticeType": {
+    "registrar": "Registrar",
+    "hosting": "Hosting",
+    "akcesk": "AKCESK"
+  },
+  "severity": {
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "critical": "Critical"
+  },
+  "channel": {
+    "sms": "SMS",
+    "email": "Email",
+    "social": "Social media",
+    "web": "Website",
+    "qr": "QR code",
+    "call": "Phone call",
+    "other": "Other"
+  },
+  "sector": {
+    "government": "Government",
+    "municipality": "Municipality",
+    "bank": "Bank",
+    "postal": "Postal",
+    "utility": "Utility",
+    "telecom": "Telecom",
+    "police": "Police",
+    "other": "Other"
+  },
+  "domainClass": {
+    "typosquat": "Typosquat",
+    "homoglyph": "Homoglyph",
+    "combosquat": "Combosquat",
+    "legitimate": "Legitimate",
+    "unknown": "Unknown"
+  },
+  "campaignCard": {
+    "messages": "{count} messages",
+    "domains": "{count} domains",
+    "since": "From {date}",
+    "until": "to {date}",
+    "imitates": "Imitates",
+    "tactic": "Tactic",
+    "open": "View campaign"
+  },
+  "timeline": {
+    "now": "Now",
+    "pending": "Pending"
+  },
+  "check": {
+    "title": "Check a link or message",
+    "description": "Paste a link, an SMS or email, a phone number, or upload a photo of a QR code. We show how risky it looks and what to do.",
+    "tabs": {
+      "link": "Link",
+      "message": "Message",
+      "phone": "Phone",
+      "qr": "QR code"
+    },
+    "labels": {
+      "link": "The link you are unsure about",
+      "message": "Message text",
+      "phone": "Phone number",
+      "qr": "Photo of the QR code",
+      "sender": "Sender (optional)",
+      "channel": "Where did you get it?"
+    },
+    "placeholders": {
+      "link": "e.g. hxxps://pay-fine[.]al[.]example",
+      "message": "Paste the full SMS or email here…",
+      "phone": "e.g. 069 123 4567",
+      "sender": "e.g. Posta or +355…"
+    },
+    "qrHint": "The photo is read on your device only and is not uploaded.",
+    "qrNotFound": "We could not find a QR code in this photo. Try a sharper photo.",
+    "qrFound": "The QR code leads to:",
+    "submit": "Check",
+    "checking": "Checking…",
+    "privacyNote": "We store a fingerprint of what you check, not the text.",
+    "examples": "Try an example:",
+    "states": {
+      "rateLimited": "You made many checks in a short time. Try again in a few minutes.",
+      "error": "We could not check it right now. Try again shortly.",
+      "empty": "Type or paste something to check.",
+      "invalid": "That does not look right. Check it and try again."
+    },
+    "headline": {
+      "green": "We found no signs of a scam",
+      "yellow": "Be careful",
+      "orange": "This looks suspicious",
+      "red": "This is very likely a scam",
+      "darkred": "This is a known scam",
+      "grey": "We could not analyse it"
+    },
+    "lead": {
+      "green": "That does not mean it is 100% safe. If it asks for money or codes, verify with the institution.",
+      "yellow": "Some signs need attention. Do not share personal details without checking.",
+      "orange": "We found several warning signs. Do not click and do not pay.",
+      "red": "Do not click, do not pay and do not share any details.",
+      "darkred": "This link or message is part of a known scam campaign.",
+      "grey": "There was not enough content. Try again with the full text or the link."
+    },
+    "todoTitle": "What to do now",
+    "todo": {
+      "green": [
+        "If a payment is requested, go to the official site yourself (do not use the link).",
+        "Check the sender in the institutions list.",
+        "If in doubt, report it anyway."
+      ],
+      "yellow": [
+        "Do not click the link until you have verified it.",
+        "Call the institution on its official number.",
+        "Never share codes, passwords or card details."
+      ],
+      "orange": [
+        "Do not click and do not reply.",
+        "Delete the message after reporting it.",
+        "Warn family if they received the same message."
+      ],
+      "red": [
+        "Do not click, pay or reply.",
+        "Report it here so we can block it.",
+        "If you shared card details, call your bank right away."
+      ],
+      "darkred": [
+        "Do not click, pay or reply.",
+        "If you paid or shared details, call your bank and the police.",
+        "Report it so we can link it to the campaign."
+      ],
+      "grey": [
+        "Paste the full text of the message.",
+        "Or paste only the link it contains.",
+        "If in doubt, report it anyway."
+      ]
+    },
+    "campaign": "Linked to campaign {code}",
+    "institution": "Imitates: {name}",
+    "reportThis": "Report this",
+    "reporting": "Reporting…",
+    "shareWarning": "Share warning",
+    "shareText": "Warning! Mburoja rated this message \"{flag}\" ({score}/100). Do not click and do not pay. Details: {url}",
+    "shareCopied": "Warning copied. Paste it wherever you like.",
+    "checkAnother": "Check something else",
+    "reported": "Thank you! Your report was sent.",
+    "protocol": "Protocol number",
+    "token": "Private tracking code",
+    "tokenNote": "Keep this code. We will not show it again. Use it to follow your report.",
+    "track": "Track report",
+    "resultTitle": "Check result",
+    "storedNote": "This page shows the result, not what was checked.",
+    "checkedAt": "Checked on {date}",
+    "notFound": "This result does not exist or has expired.",
+    "summary": "Short explanation"
+  },
+  "home": {
+    "eyebrow": "National anti-fraud platform",
+    "title": "Got a message that looks off? Check it before you click.",
+    "subtitle": "Mburoja spots fake messages, sites and emails that imitate institutions, banks, the post office and public services.",
+    "stats": {
+      "title": "Mburoja today",
+      "reportsToday": "reports today",
+      "activeCampaigns": "active campaigns",
+      "domainsBlocked": "dangerous domains",
+      "checks": "checks in total",
+      "srSummary": "Today there are {reports} reports, {campaigns} active campaigns and {domains} dangerous domains."
+    },
+    "how": {
+      "title": "How it works",
+      "subtitle": "Three steps, under a minute.",
+      "s1": {
+        "title": "Paste or upload",
+        "body": "A link, SMS, email, phone number or photo of a QR code. No account needed."
+      },
+      "s2": {
+        "title": "We analyse it",
+        "body": "We check the domain, content, sender and known campaigns. We keep a fingerprint, not the text."
+      },
+      "s3": {
+        "title": "You decide safely",
+        "body": "Get a clear verdict, the reasons and next steps. Report it for blocking in one click."
+      }
+    },
+    "scams": {
+      "title": "The most common scams",
+      "subtitle": "Learn to spot them in two minutes.",
+      "cta": "Read the guide",
+      "all": "All guides"
+    },
+    "latest": {
+      "title": "Latest campaigns",
+      "subtitle": "Active scams confirmed by our team.",
+      "all": "See all threats",
+      "empty": "There are no public campaigns right now."
+    },
+    "audience": {
+      "title": "Who Mburoja is for",
+      "citizen": {
+        "title": "Citizens",
+        "body": "Check any message without an account. With an account you keep your history, get alerts for institutions you follow and protect your family.",
+        "cta": "Create a free account"
+      },
+      "business": {
+        "title": "Businesses and institutions",
+        "body": "Monitor domains that imitate your brand, get alerts and request takedowns together with the SOC.",
+        "cta": "Protect your brand"
+      },
+      "authorities": {
+        "title": "Authorities",
+        "body": "Report triage, campaign grouping, indicators of compromise and takedown notices with four-eyes approval.",
+        "cta": "Open the SOC"
+      }
+    },
+    "extension": {
+      "title": "Browser extension for Gmail and Outlook",
+      "body": "Scan only the email you choose, in one click. It reads nothing in the background and sends nothing without your consent.",
+      "cta": "How the extension works",
+      "points": [
+        "Scans only when you click",
+        "Masks personal data",
+        "You can delete what was sent"
+      ]
+    },
+    "privacy": {
+      "title": "Privacy built in from the start",
+      "subtitle": "We built Mburoja so we know no more than we need to.",
+      "store": "What we store",
+      "storeItems": [
+        "A fingerprint (hash) of what you check",
+        "The result and the reasons",
+        "Report text, after masking phones, emails, IBANs and names"
+      ],
+      "never": "What we never store",
+      "neverItems": [
+        "The text of ordinary checks",
+        "Photos of QR codes",
+        "Your identity, unless you sign in"
+      ],
+      "cta": "Read the privacy policy"
+    },
+    "trust": {
+      "title": "The most imitated institutions",
+      "body": "Check their official domains and senders.",
+      "cta": "Institutions list"
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "items": [
+        {
+          "q": "Do I need an account to check a message?",
+          "a": "No. Checking and reporting work without an account. An account adds history and alerts."
+        },
+        {
+          "q": "Do you open the link I paste?",
+          "a": "Never. Our server does not visit any link users submit. The verdict is based on the address itself and the data we hold."
+        },
+        {
+          "q": "What happens when I report?",
+          "a": "You get a protocol number and a private code. The SOC team reviews it, links it to campaigns and requests the domains be taken down."
+        },
+        {
+          "q": "If the result is green, am I safe?",
+          "a": "Green means we found no signs of a scam. If you are asked for money or codes, always verify with the institution."
+        },
+        {
+          "q": "I paid or shared my card details. What now?",
+          "a": "Call your bank right away to block the card, change your passwords and report it to the police and here."
+        }
+      ]
+    },
+    "final": {
+      "title": "Don’t let the scam get through.",
+      "body": "Check, report and help others avoid falling for it.",
+      "check": "Check now",
+      "report": "Report a scam"
+    }
+  },
+  "report": {
+    "title": "Report a scam",
+    "description": "Tell us what happened. No account needed. We mask personal data before storing anything.",
+    "step": "Step {current} of {total}",
+    "steps": {
+      "what": "What happened",
+      "channel": "How it arrived",
+      "content": "Content",
+      "contact": "Contact"
+    },
+    "categoryLabel": "What was it about?",
+    "categories": {
+      "fine": "Fine or debt",
+      "bank": "Bank or card",
+      "parcel": "Parcel or delivery",
+      "job": "Job offer",
+      "eAlbania": "e-Albania or public service",
+      "prize": "Prize or refund",
+      "investment": "Investment or crypto",
+      "other": "Other"
+    },
+    "lostMoney": "I paid or shared card details",
+    "lostMoneyHint": "If so, call your bank right away to block the card.",
+    "channelLabel": "Where did you get the message?",
+    "textLabel": "Message text",
+    "textHint": "Paste it in full. Phones, emails, IBANs and names are masked automatically.",
+    "urlLabel": "Link (if any)",
+    "senderLabel": "Sender or number (if known)",
+    "screenshotLabel": "Screenshot (optional)",
+    "screenshotHint": "Automatic text reading from images is not enabled. The image is not uploaded; type or paste the text above.",
+    "screenshotPreview": "Your screenshot (on your device only)",
+    "contactLabel": "Email for updates (optional)",
+    "contactHint": "Only if you want a reply from the team. You can track the report without it, using your private code.",
+    "contactConsent": "I agree the team may contact me about this report.",
+    "review": "Review before sending",
+    "submit": "Send report",
+    "submitting": "Sending…",
+    "needContent": "Add the text, the link or the sender.",
+    "needConsent": "Consent is needed to store your contact.",
+    "doneTitle": "Report sent. Thank you!",
+    "doneBody": "Keep these two details. The private code is not shown again.",
+    "copyBoth": "Copy protocol and code",
+    "trackNow": "Track report",
+    "another": "Report something else",
+    "signedInNote": "You are signed in: the report will also appear under “My reports”."
+  },
+  "track": {
+    "title": "Track a report",
+    "description": "Enter the protocol number and the private code you got when you reported.",
+    "protocol": "Protocol number",
+    "protocolPlaceholder": "SOC-2026/000123",
+    "token": "Private code",
+    "submit": "See status",
+    "loading": "Looking up…",
+    "notFound": "We found no report with these details. Check the protocol and the code.",
+    "status": "Status",
+    "received": "Received {date}",
+    "outcome": "Outcome",
+    "notScam": "The team reviewed it and did not consider it a scam. Thank you for reporting.",
+    "duplicate": "This report was merged with another report about the same thing.",
+    "campaign": "Linked to public campaign {code}",
+    "help": "Lost your code? We cannot recover it, but you can report again."
+  },
+  "threats": {
+    "title": "Active threats",
+    "description": "Scam campaigns confirmed by the SOC team. Domains are shown defanged for safety.",
+    "filterInstitution": "Institution",
+    "filterTactic": "Tactic",
+    "filterMonth": "Month",
+    "anyInstitution": "Any institution",
+    "anyTactic": "Any tactic",
+    "anyMonth": "Any month",
+    "count": "{count} campaigns",
+    "empty": "No campaigns match these filters.",
+    "feedNote": "Data comes from the public feed and refreshes every minute.",
+    "rss": "Feed API"
+  },
+  "campaign": {
+    "back": "All threats",
+    "notFound": "This campaign is not public or does not exist.",
+    "summary": "Summary",
+    "timeline": "Timeline",
+    "timelineSr": "Number of reported messages per week.",
+    "example": "Example message (masked)",
+    "noExample": "No public example.",
+    "recognise": "How to recognise it",
+    "whatToDo": "What to do",
+    "domains": "Domains used",
+    "advisories": "Official advisories",
+    "firstSeen": "First seen",
+    "lastSeen": "Last seen",
+    "messages": "Messages",
+    "status": "Status",
+    "recogniseItems": [
+      "The sender is not in the official channels list of {institution}.",
+      "The link goes to a domain imitating the official one.",
+      "It asks you to pay or share details quickly."
+    ],
+    "todoItems": [
+      "Do not click links and do not pay.",
+      "Check yourself on the official {institution} site.",
+      "If you paid, call your bank right away.",
+      "Report the message so we can block it."
+    ],
+    "checkCta": "Check a message",
+    "reportCta": "Report"
+  },
+  "learn": {
+    "title": "Learn to spot scams",
+    "description": "Six short guides with real (masked) examples and a quiz for each.",
+    "read": "Read",
+    "minutes": "2 min read",
+    "quizCta": "Play “Spot the scam”",
+    "quizBody": "10 messages. You decide: scam or legit?",
+    "example": "Example",
+    "signs": "Warning signs",
+    "todo": "What to do",
+    "quiz": "Short quiz",
+    "otherGuides": "Other guides",
+    "checkAnswer": "Check answer",
+    "correct": "Correct!",
+    "wrong": "Not quite.",
+    "score": "Score: {score} of {total}",
+    "retry": "Try again",
+    "allGuides": "All guides",
+    "from": "From",
+    "progressSaved": "Progress saved to your profile."
+  },
+  "quiz": {
+    "title": "Spot the scam",
+    "description": "10 random messages from our data. Your score is stored on your device only.",
+    "question": "Message {current} of {total}",
+    "scam": "Scam",
+    "legit": "Legit",
+    "rightScam": "Right, it was a scam.",
+    "rightLegit": "Right, it was legit.",
+    "wrongScam": "It was a scam.",
+    "wrongLegit": "It was legit.",
+    "why": "Why",
+    "next": "Next",
+    "finish": "See result",
+    "resultTitle": "Your result",
+    "result": "{score} of {total} correct",
+    "great": "Excellent! You have a sharp eye.",
+    "ok": "Good! Read the guides to learn more.",
+    "low": "Scammers are clever. The guides will help you.",
+    "again": "Play again",
+    "best": "Best score: {score}",
+    "empty": "The quiz has no messages right now. Try the guides."
+  },
+  "institutions": {
+    "title": "Institutions directory",
+    "description": "Official domains, SMS senders and phone numbers. If something is not listed here, be careful.",
+    "search": "Search institution, domain or sender",
+    "sector": "Sector",
+    "anySector": "All sectors",
+    "domains": "Official domains",
+    "channels": "Official channels",
+    "kinds": {
+      "sms_sender": "SMS sender",
+      "phone": "Phone",
+      "social": "Social media",
+      "email": "Email"
+    },
+    "empty": "No institution matches your search.",
+    "count": "{count} institutions",
+    "verifyHint": "You can also verify through the API: /api/v1/institutions/verify"
+  },
+  "apiDocs": {
+    "title": "Public API",
+    "description": "Integrate scam checks into your application. All responses are JSON, UTF-8.",
+    "base": "Base URL",
+    "auth": "Authentication",
+    "authBody": "Send your API key as “Authorization: Bearer mbk_…”. Keys are created in the business dashboard (API and keys).",
+    "errors": "Errors",
+    "errorsBody": "Errors come back as an “error” object with “code” and “message” fields, with the matching HTTP status.",
+    "limits": "Limits",
+    "limitsBody": "/scan 60 per hour per key, /reports 10 per hour per IP, /extension/register 5 per hour per IP. Maximum body 64 KB.",
+    "endpoints": "Endpoints",
+    "request": "Request",
+    "response": "Response",
+    "openapi": "Download OpenAPI JSON",
+    "tryIt": "Try it: /api/v1/scan",
+    "apiKey": "API key",
+    "body": "Request body (JSON)",
+    "send": "Send",
+    "sending": "Sending…",
+    "status": "Status",
+    "keyNote": "The key is used only in your browser for this request and is not stored.",
+    "authNone": "no authentication"
+  },
+  "extensionPage": {
+    "title": "The Mburoja browser extension",
+    "description": "Scan suspicious emails in Gmail and Outlook in one click.",
+    "install": "Installation",
+    "installSteps": [
+      "Download the extension package (zip) and unzip it.",
+      "Open chrome://extensions and turn on “Developer mode”.",
+      "Click “Load unpacked” and choose the extension folder.",
+      "Open an email in Gmail or Outlook and click the “Scan” button."
+    ],
+    "download": "Download the extension (zip)",
+    "downloadNote": "The Chrome Web Store is out of scope for this pilot; the extension is loaded manually.",
+    "reads": "What it reads",
+    "readsItems": [
+      "Only the email you open, and only when you click “Scan”",
+      "The subject, sender, visible text and links",
+      "Attachment names and types (not their contents)",
+      "SPF, DKIM, DMARC results if shown"
+    ],
+    "never": "What it never reads",
+    "neverItems": [
+      "Your mailbox in the background",
+      "The email’s recipients",
+      "The attachments themselves",
+      "Passwords or cookies"
+    ],
+    "consent": "Consent and auto-submit",
+    "consentBody": "Auto-submit is off until you give a one-time consent in the extension popup. After consent: orange, red and dark red send a masked signal report; yellow sends indicators only (domains), no text; green and grey send nothing. You can delete any report within 10 minutes.",
+    "signal": "What a signal report contains",
+    "signalItems": [
+      "The subject and first 600 characters, masked",
+      "Defanged links and the sender domain",
+      "Authentication results, attachment names",
+      "Score, flag, reason codes and version"
+    ],
+    "permissions": "Permissions it asks for",
+    "permissionsItems": [
+      "storage: keeps the last result and your consent",
+      "activeTab and scripting: read the open email only when you click",
+      "Access only to mail.google.com, outlook.live.com, outlook.office.com and the Mburoja API"
+    ],
+    "manage": "Manage the extension from your account"
+  },
+  "legal": {
+    "lastUpdated": "Last updated {date}",
+    "draft": "Draft for legal review",
+    "contactTitle": "Contact us",
+    "contactBody": "For urgent reports use the report form. For anything else:",
+    "contactItems": {
+      "general": "General questions",
+      "privacy": "Data protection",
+      "press": "Press",
+      "security": "Security vulnerability reports"
+    }
   }
 }

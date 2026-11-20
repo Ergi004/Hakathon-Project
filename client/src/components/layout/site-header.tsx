@@ -79,3 +79,17 @@ export function SiteHeader() {
     </header>
   );
 }
+
+/** Static shell shown while the pathname-aware header streams in (dynamic routes). */
+export function SiteHeaderFallback() {
+  const tc = useTranslations("common");
+  return (
+    <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur">
+      <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4 md:px-8">
+        <Link href="/" className="shrink-0 rounded-md" aria-label={tc("appName")}>
+          <Logo label={tc("appName")} />
+        </Link>
+      </div>
+    </header>
+  );
+}
