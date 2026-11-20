@@ -1,0 +1,6 @@
+{
+  "name": "mburoja-extension",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Mburoja phishing & smishing scanner for Chrome and Firefox. Built from the client/ root with `npm run ext:build`."
+}
