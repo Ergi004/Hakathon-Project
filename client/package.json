@@ -25,7 +25,7 @@
     "@react-pdf/renderer": "^4.9.0",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.119.2",
-    "@tanstack/react-table": "^9.3.1",
+    "@tanstack/react-table": "^8.21.3",
     "class-variance-authority": "^0.7.1",
     "cmdk": "^1.1.1",
     "cn": "^0.5.2",

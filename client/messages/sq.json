@@ -1,0 +1,187 @@
+{
+  "common": {
+    "appName": "Mburoja",
+    "tagline": "Mburoja kundër mashtrimeve online",
+    "skipToContent": "Kalo te përmbajtja",
+    "signIn": "Hyr",
+    "signOut": "Dil",
+    "account": "Llogaria",
+    "language": "Gjuha",
+    "languages": {
+      "sq": "Shqip",
+      "en": "English"
+    },
+    "theme": {
+      "toggle": "Ndrysho pamjen",
+      "light": "E çelët",
+      "dark": "E errët",
+      "system": "Si pajisja"
+    },
+    "menu": "Menyja",
+    "toggleSidebar": "Hap ose mbyll menynë anësore",
+    "notifications": "Njoftimet",
+    "more": "Më shumë",
+    "loading": "Duke u ngarkuar…",
+    "copy": "Kopjo",
+    "copied": "U kopjua",
+    "reveal": "Shfaq",
+    "hide": "Fshih",
+    "placeholderTitle": "Në ndërtim",
+    "placeholderBody": "Kjo faqe do të plotësohet në një fazë të mëvonshme të projektit.",
+    "activeOrg": "Organizata aktive",
+    "noOrg": "Pa organizatë"
+  },
+  "flags": {
+    "green": "I sigurt",
+    "yellow": "Kujdes",
+    "orange": "I dyshimtë",
+    "red": "Ka gjasa mashtrim",
+    "darkred": "Mashtrim i njohur",
+    "grey": "I paskanuar",
+    "score": "Rezultati {score} nga 100",
+    "scoreShort": "{score}/100"
+  },
+  "kpi": {
+    "trendUp": "Rritje {value}",
+    "trendDown": "Rënie {value}",
+    "trendFlat": "Pa ndryshim"
+  },
+  "table": {
+    "noResults": "Nuk ka rezultate.",
+    "loading": "Duke ngarkuar tabelën…"
+  },
+  "public": {
+    "nav": {
+      "home": "Kreu",
+      "check": "Kontrollo",
+      "report": "Raporto",
+      "track": "Ndiq raportin",
+      "threats": "Kërcënimet",
+      "learn": "Mëso",
+      "institutions": "Institucionet",
+      "extension": "Shtesa e shfletuesit",
+      "apiDocs": "API",
+      "privacy": "Privatësia",
+      "terms": "Kushtet",
+      "accessibility": "Aksesueshmëria",
+      "contact": "Kontakt"
+    },
+    "home": {
+      "eyebrow": "Platformë kombëtare kundër mashtrimeve",
+      "title": "Një mesazh të duket i dyshimtë? Kontrolloje para se të klikosh.",
+      "subtitle": "Mburoja dallon mesazhet, faqet dhe emailet e rreme që imitojnë institucionet, bankat, postën dhe shërbimet publike.",
+      "ctaCheck": "Kontrollo një link ose mesazh",
+      "ctaReport": "Raporto një mashtrim",
+      "privacyNote": "Ne ruajmë një gjurmë të asaj që kontrollon, jo tekstin."
+    },
+    "footer": {
+      "rights": "Të dhëna sintetike për demonstrim.",
+      "legal": "Ligjore"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Hyr në Mburoja",
+      "description": "Qytetarët nuk kanë nevojë për llogari. Hyni vetëm për historikun, bizneset ose qendrën e operacioneve.",
+      "email": "Email",
+      "password": "Fjalëkalimi",
+      "submit": "Hyr",
+      "submitting": "Duke hyrë…"
+    },
+    "errors": {
+      "invalidInput": "Kontrollo emailin dhe fjalëkalimin.",
+      "invalidCredentials": "Emaili ose fjalëkalimi nuk është i saktë.",
+      "unavailable": "Shërbimi i hyrjes nuk është i disponueshëm tani. Provo përsëri më vonë.",
+      "generic": "Diçka shkoi keq. Provo përsëri."
+    }
+  },
+  "roles": {
+    "user": "Përdorues",
+    "soc_analyst": "Analist SOC",
+    "soc_lead": "Drejtues SOC",
+    "platform_admin": "Administrator"
+  },
+  "orgRoles": {
+    "owner": "Pronar",
+    "admin": "Administrator",
+    "security": "Siguria",
+    "comms": "Komunikimi",
+    "finance": "Financa",
+    "viewer": "Shikues",
+    "contact": "Kontakt institucional"
+  },
+  "citizen": {
+    "area": "Paneli im",
+    "nav": {
+      "home": "Kreu",
+      "checks": "Kontrollet e mia",
+      "reports": "Raportet e mia",
+      "alerts": "Njoftimet",
+      "watchlist": "Lista ime e vëzhgimit",
+      "learn": "Rruga e të mësuarit",
+      "family": "Mbrojtja e familjes",
+      "extension": "Shtesa",
+      "privacy": "Qendra e privatësisë",
+      "settings": "Cilësimet"
+    }
+  },
+  "business": {
+    "area": "Paneli i biznesit",
+    "nav": {
+      "overview": "Përmbledhje",
+      "onboarding": "Konfigurimi i markës",
+      "alerts": "Sinjalizimet e markës",
+      "campaigns": "Fushatat kundër nesh",
+      "domains": "Domenet imituese",
+      "reports": "Raportet e klientëve",
+      "notices": "Njoftimet për klientët",
+      "training": "Simulimet e phishing-ut",
+      "api": "API dhe çelësat",
+      "team": "Ekipi",
+      "export": "Raporti i përputhshmërisë",
+      "settings": "Cilësimet"
+    }
+  },
+  "soc": {
+    "area": "Qendra e operacioneve",
+    "nav": {
+      "command": "Qendra e komandës",
+      "inbox": "Kutia e triazhit",
+      "campaigns": "Fushatat",
+      "domains": "Inteligjenca e domeneve",
+      "takedowns": "Ndjekja e bllokimeve",
+      "threatMap": "Eksploruesi i modeleve",
+      "search": "Kërkim global",
+      "advisories": "Paralajmërimet",
+      "blocklist": "Lista e bllokimit",
+      "quality": "Cilësia e modelit",
+      "alerts": "Rregullat e sinjalizimit",
+      "admin": "Administrimi"
+    },
+    "status": {
+      "ingestion": "Marrja e të dhënave",
+      "lastSync": "Sinkronizimi i fundit",
+      "unknown": "Pa të dhëna"
+    }
+  },
+  "admin": {
+    "area": "Administrimi i platformës",
+    "nav": {
+      "overview": "Përmbledhje"
+    }
+  },
+  "errors": {
+    "notFoundTitle": "Faqja nuk u gjet",
+    "notFoundBody": "Lidhja mund të jetë e vjetër ose e shkruar gabim.",
+    "errorTitle": "Diçka shkoi keq",
+    "errorBody": "Provo përsëri. Nëse problemi vazhdon, na kontakto.",
+    "retry": "Provo përsëri",
+    "backToChecker": "Kthehu te kontrolluesi",
+    "forbiddenTitle": "Nuk ke qasje",
+    "forbiddenBody": "Kjo pjesë kërkon një rol tjetër."
+  },
+  "metadata": {
+    "title": "Mburoja",
+    "description": "Kontrollo linke, SMS dhe emaile të dyshimta. Platformë kundër mashtrimeve për Shqipërinë."
+  }
+}

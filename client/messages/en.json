@@ -1,0 +1,187 @@
+{
+  "common": {
+    "appName": "Mburoja",
+    "tagline": "The shield against online scams",
+    "skipToContent": "Skip to content",
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "account": "Account",
+    "language": "Language",
+    "languages": {
+      "sq": "Shqip",
+      "en": "English"
+    },
+    "theme": {
+      "toggle": "Change theme",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "menu": "Menu",
+    "toggleSidebar": "Open or close the sidebar",
+    "notifications": "Notifications",
+    "more": "More",
+    "loading": "Loading…",
+    "copy": "Copy",
+    "copied": "Copied",
+    "reveal": "Reveal",
+    "hide": "Hide",
+    "placeholderTitle": "Under construction",
+    "placeholderBody": "This page will be built in a later phase of the project.",
+    "activeOrg": "Active organization",
+    "noOrg": "No organization"
+  },
+  "flags": {
+    "green": "Safe",
+    "yellow": "Careful",
+    "orange": "Suspicious",
+    "red": "Likely scam",
+    "darkred": "Known scam",
+    "grey": "Not scanned",
+    "score": "Score {score} out of 100",
+    "scoreShort": "{score}/100"
+  },
+  "kpi": {
+    "trendUp": "Up {value}",
+    "trendDown": "Down {value}",
+    "trendFlat": "No change"
+  },
+  "table": {
+    "noResults": "No results.",
+    "loading": "Loading table…"
+  },
+  "public": {
+    "nav": {
+      "home": "Home",
+      "check": "Check",
+      "report": "Report",
+      "track": "Track a report",
+      "threats": "Threats",
+      "learn": "Learn",
+      "institutions": "Institutions",
+      "extension": "Browser extension",
+      "apiDocs": "API",
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "accessibility": "Accessibility",
+      "contact": "Contact"
+    },
+    "home": {
+      "eyebrow": "National anti-fraud platform",
+      "title": "Got a message that looks off? Check it before you click.",
+      "subtitle": "Mburoja spots fake messages, sites and emails that imitate institutions, banks, the post office and public services.",
+      "ctaCheck": "Check a link or message",
+      "ctaReport": "Report a scam",
+      "privacyNote": "We store a fingerprint of what you check, not the text."
+    },
+    "footer": {
+      "rights": "Synthetic data for demonstration.",
+      "legal": "Legal"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Sign in to Mburoja",
+      "description": "Citizens don't need an account. Sign in only for your history, a business account or the operations centre.",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign in",
+      "submitting": "Signing in…"
+    },
+    "errors": {
+      "invalidInput": "Check your email and password.",
+      "invalidCredentials": "The email or password is incorrect.",
+      "unavailable": "Sign-in is not available right now. Try again later.",
+      "generic": "Something went wrong. Try again."
+    }
+  },
+  "roles": {
+    "user": "User",
+    "soc_analyst": "SOC analyst",
+    "soc_lead": "SOC lead",
+    "platform_admin": "Administrator"
+  },
+  "orgRoles": {
+    "owner": "Owner",
+    "admin": "Admin",
+    "security": "Security",
+    "comms": "Communications",
+    "finance": "Finance",
+    "viewer": "Viewer",
+    "contact": "Institution contact"
+  },
+  "citizen": {
+    "area": "My dashboard",
+    "nav": {
+      "home": "Home",
+      "checks": "My checks",
+      "reports": "My reports",
+      "alerts": "Alerts",
+      "watchlist": "My watchlist",
+      "learn": "Learning path",
+      "family": "Family protection",
+      "extension": "Extension",
+      "privacy": "Privacy centre",
+      "settings": "Settings"
+    }
+  },
+  "business": {
+    "area": "Business dashboard",
+    "nav": {
+      "overview": "Overview",
+      "onboarding": "Brand setup",
+      "alerts": "Brand alerts",
+      "campaigns": "Campaigns against us",
+      "domains": "Lookalike domains",
+      "reports": "Customer reports",
+      "notices": "Customer notices",
+      "training": "Phishing simulations",
+      "api": "API and keys",
+      "team": "Team",
+      "export": "Compliance export",
+      "settings": "Settings"
+    }
+  },
+  "soc": {
+    "area": "Operations centre",
+    "nav": {
+      "command": "Command centre",
+      "inbox": "Triage inbox",
+      "campaigns": "Campaigns",
+      "domains": "Domain intelligence",
+      "takedowns": "Takedown tracker",
+      "threatMap": "Pattern explorer",
+      "search": "Global search",
+      "advisories": "Advisories",
+      "blocklist": "Blocklist",
+      "quality": "Model quality",
+      "alerts": "Alert rules",
+      "admin": "Admin"
+    },
+    "status": {
+      "ingestion": "Ingestion",
+      "lastSync": "Last sync",
+      "unknown": "No data"
+    }
+  },
+  "admin": {
+    "area": "Platform admin",
+    "nav": {
+      "overview": "Overview"
+    }
+  },
+  "errors": {
+    "notFoundTitle": "Page not found",
+    "notFoundBody": "The link may be old or mistyped.",
+    "errorTitle": "Something went wrong",
+    "errorBody": "Try again. If the problem continues, contact us.",
+    "retry": "Try again",
+    "backToChecker": "Back to the checker",
+    "forbiddenTitle": "No access",
+    "forbiddenBody": "This area needs a different role."
+  },
+  "metadata": {
+    "title": "Mburoja",
+    "description": "Check suspicious links, SMS and emails. An anti-fraud platform for Albania."
+  }
+}

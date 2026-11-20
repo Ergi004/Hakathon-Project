@@ -1,0 +1,44 @@
+import type { Metadata } from "next";
+import { Suspense } from "react";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import type { Locale } from "@/i18n/routing";
+import { LoginForm } from "./login-form";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale: locale as Locale, namespace: "auth.login" });
+  return { title: t("title"), robots: { index: false } };
+}
+
+async function LoginFormWithNext({ searchParams }: { searchParams: Promise<{ next?: string | string[] }> }) {
+  const { next } = await searchParams;
+  return <LoginForm next={typeof next === "string" ? next : undefined} />;
+}
+
+export default async function LoginPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ next?: string | string[] }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale as Locale);
+  const t = await getTranslations("auth.login");
+
+  return (
+    <Card className="glass-card w-full max-w-md">
+      <CardHeader>
+        <CardTitle className="font-display text-2xl">{t("title")}</CardTitle>
+        <CardDescription>{t("description")}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Suspense fallback={<Skeleton className="h-52 w-full" />}>
+          <LoginFormWithNext searchParams={searchParams} />
+        </Suspense>
+      </CardContent>
+    </Card>
+  );
+}
