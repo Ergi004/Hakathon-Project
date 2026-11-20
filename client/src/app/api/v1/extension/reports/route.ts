@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
   const masked = withText ? maskText([s.subject, s.bodyExcerpt].filter(Boolean).join("\n").slice(0, 900)) : undefined;
   const created = await createReport({
     category: "other",
-    channel: "email",
+    channel: s.channel ?? "email",
     text: masked,
     url: s.urls[0],
     sender: s.senderDomain,

@@ -2042,6 +2042,604 @@ export type Database = {
           },
         ];
       };
+      phishing_scans: {
+        Row: {
+          id: string;
+          owner_key: string;
+          owner_user_id: string | null;
+          owner_org_id: string | null;
+          owner_install_id: string | null;
+          idempotency_key: string;
+          channel: string;
+          source: string;
+          status: string;
+          verdict: string;
+          risk_score: number | null;
+          severity: string | null;
+          confidence: number | null;
+          phishing_type: string | null;
+          phishing_family: string | null;
+          malware_family: string | null;
+          campaign_id: string | null;
+          threat_actor_id: string | null;
+          attribution_status: string;
+          input: Json;
+          options: Json;
+          stages: Json;
+          progress: number;
+          attempts: number;
+          error: string | null;
+          created_at: string;
+          started_at: string | null;
+          completed_at: string | null;
+          updated_at: string;
+          albania: boolean;
+          albania_signals: string[];
+          vt_max_malicious: number | null;
+        };
+        Insert: {
+          id?: string;
+          owner_key: string;
+          owner_user_id?: string | null;
+          owner_org_id?: string | null;
+          owner_install_id?: string | null;
+          idempotency_key: string;
+          channel: string;
+          source: string;
+          status?: string;
+          verdict?: string;
+          risk_score?: number | null;
+          severity?: string | null;
+          confidence?: number | null;
+          phishing_type?: string | null;
+          phishing_family?: string | null;
+          malware_family?: string | null;
+          campaign_id?: string | null;
+          threat_actor_id?: string | null;
+          attribution_status?: string;
+          input: Json;
+          options?: Json;
+          stages?: Json;
+          progress?: number;
+          attempts?: number;
+          error?: string | null;
+          created_at?: string;
+          started_at?: string | null;
+          completed_at?: string | null;
+          updated_at?: string;
+          albania?: boolean;
+          albania_signals?: string[];
+          vt_max_malicious?: number | null;
+        };
+        Update: {
+          id?: string;
+          owner_key?: string;
+          owner_user_id?: string | null;
+          owner_org_id?: string | null;
+          owner_install_id?: string | null;
+          idempotency_key?: string;
+          channel?: string;
+          source?: string;
+          status?: string;
+          verdict?: string;
+          risk_score?: number | null;
+          severity?: string | null;
+          confidence?: number | null;
+          phishing_type?: string | null;
+          phishing_family?: string | null;
+          malware_family?: string | null;
+          campaign_id?: string | null;
+          threat_actor_id?: string | null;
+          attribution_status?: string;
+          input?: Json;
+          options?: Json;
+          stages?: Json;
+          progress?: number;
+          attempts?: number;
+          error?: string | null;
+          created_at?: string;
+          started_at?: string | null;
+          completed_at?: string | null;
+          updated_at?: string;
+          albania?: boolean;
+          albania_signals?: string[];
+          vt_max_malicious?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "phishing_scans_campaign_id_fkey";
+            columns: ["campaign_id"];
+            isOneToOne: false;
+            referencedRelation: "campaigns";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "phishing_scans_owner_org_id_fkey";
+            columns: ["owner_org_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "phishing_scans_owner_install_id_fkey";
+            columns: ["owner_install_id"];
+            isOneToOne: false;
+            referencedRelation: "extension_installs";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "phishing_scans_actor_fkey";
+            columns: ["threat_actor_id"];
+            isOneToOne: false;
+            referencedRelation: "threat_actors";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      scan_iocs: {
+        Row: {
+          id: string;
+          scan_id: string;
+          type: string;
+          value: string;
+          normalized_value: string;
+          location: string;
+          created_at: string;
+          subtype: string | null;
+          detail: Json;
+        };
+        Insert: {
+          id?: string;
+          scan_id: string;
+          type: string;
+          value: string;
+          normalized_value: string;
+          location: string;
+          created_at?: string;
+          subtype?: string | null;
+          detail?: Json;
+        };
+        Update: {
+          id?: string;
+          scan_id?: string;
+          type?: string;
+          value?: string;
+          normalized_value?: string;
+          location?: string;
+          created_at?: string;
+          subtype?: string | null;
+          detail?: Json;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "scan_iocs_scan_id_fkey";
+            columns: ["scan_id"];
+            isOneToOne: false;
+            referencedRelation: "phishing_scans";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      ioc_reputation: {
+        Row: {
+          id: string;
+          provider: string;
+          ioc_type: string;
+          normalized_value: string;
+          found: boolean;
+          malicious: number | null;
+          suspicious: number | null;
+          harmless: number | null;
+          undetected: number | null;
+          reputation: number | null;
+          threat_label: string | null;
+          categories: string[];
+          first_seen: string | null;
+          last_analysis_at: string | null;
+          fetched_at: string;
+          expires_at: string;
+        };
+        Insert: {
+          id?: string;
+          provider: string;
+          ioc_type: string;
+          normalized_value: string;
+          found: boolean;
+          malicious?: number | null;
+          suspicious?: number | null;
+          harmless?: number | null;
+          undetected?: number | null;
+          reputation?: number | null;
+          threat_label?: string | null;
+          categories?: string[];
+          first_seen?: string | null;
+          last_analysis_at?: string | null;
+          fetched_at?: string;
+          expires_at: string;
+        };
+        Update: {
+          id?: string;
+          provider?: string;
+          ioc_type?: string;
+          normalized_value?: string;
+          found?: boolean;
+          malicious?: number | null;
+          suspicious?: number | null;
+          harmless?: number | null;
+          undetected?: number | null;
+          reputation?: number | null;
+          threat_label?: string | null;
+          categories?: string[];
+          first_seen?: string | null;
+          last_analysis_at?: string | null;
+          fetched_at?: string;
+          expires_at?: string;
+        };
+        Relationships: [];
+      };
+      phishing_classifications: {
+        Row: {
+          id: string;
+          scan_id: string;
+          dimension: string;
+          value: string;
+          confidence: number;
+          evidence: Json;
+          source: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          scan_id: string;
+          dimension: string;
+          value: string;
+          confidence: number;
+          evidence?: Json;
+          source?: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          scan_id?: string;
+          dimension?: string;
+          value?: string;
+          confidence?: number;
+          evidence?: Json;
+          source?: string;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "phishing_classifications_scan_id_fkey";
+            columns: ["scan_id"];
+            isOneToOne: false;
+            referencedRelation: "phishing_scans";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      threat_actors: {
+        Row: {
+          id: string;
+          name: string;
+          aliases: string[];
+          description: string | null;
+          refs: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          aliases?: string[];
+          description?: string | null;
+          refs?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          aliases?: string[];
+          description?: string | null;
+          refs?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      actor_evidence: {
+        Row: {
+          id: string;
+          actor_id: string;
+          campaign_id: string | null;
+          ioc_type: string | null;
+          ioc_value: string | null;
+          kind: string;
+          source: string;
+          source_url: string | null;
+          verified: boolean;
+          observed_at: string;
+          created_by: string | null;
+        };
+        Insert: {
+          id?: string;
+          actor_id: string;
+          campaign_id?: string | null;
+          ioc_type?: string | null;
+          ioc_value?: string | null;
+          kind: string;
+          source: string;
+          source_url?: string | null;
+          verified?: boolean;
+          observed_at?: string;
+          created_by?: string | null;
+        };
+        Update: {
+          id?: string;
+          actor_id?: string;
+          campaign_id?: string | null;
+          ioc_type?: string | null;
+          ioc_value?: string | null;
+          kind?: string;
+          source?: string;
+          source_url?: string | null;
+          verified?: boolean;
+          observed_at?: string;
+          created_by?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "actor_evidence_actor_id_fkey";
+            columns: ["actor_id"];
+            isOneToOne: false;
+            referencedRelation: "threat_actors";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "actor_evidence_campaign_id_fkey";
+            columns: ["campaign_id"];
+            isOneToOne: false;
+            referencedRelation: "campaigns";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      scan_techniques: {
+        Row: {
+          scan_id: string;
+          technique_id: string;
+          name: string;
+          tactic: string;
+          observation: string;
+        };
+        Insert: {
+          scan_id: string;
+          technique_id: string;
+          name: string;
+          tactic: string;
+          observation: string;
+        };
+        Update: {
+          scan_id?: string;
+          technique_id?: string;
+          name?: string;
+          tactic?: string;
+          observation?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "scan_techniques_scan_id_fkey";
+            columns: ["scan_id"];
+            isOneToOne: false;
+            referencedRelation: "phishing_scans";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      scan_reports: {
+        Row: {
+          scan_id: string;
+          channel: string;
+          report: Json;
+          created_at: string;
+        };
+        Insert: {
+          scan_id: string;
+          channel: string;
+          report: Json;
+          created_at?: string;
+        };
+        Update: {
+          scan_id?: string;
+          channel?: string;
+          report?: Json;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "scan_reports_scan_id_fkey";
+            columns: ["scan_id"];
+            isOneToOne: true;
+            referencedRelation: "phishing_scans";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      ai_analysis_logs: {
+        Row: {
+          id: string;
+          scan_id: string;
+          provider: string;
+          model: string;
+          prompt_version: string;
+          policy: string;
+          status: string;
+          latency_ms: number | null;
+          tokens: number | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          scan_id: string;
+          provider: string;
+          model: string;
+          prompt_version: string;
+          policy: string;
+          status: string;
+          latency_ms?: number | null;
+          tokens?: number | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          scan_id?: string;
+          provider?: string;
+          model?: string;
+          prompt_version?: string;
+          policy?: string;
+          status?: string;
+          latency_ms?: number | null;
+          tokens?: number | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "ai_analysis_logs_scan_id_fkey";
+            columns: ["scan_id"];
+            isOneToOne: false;
+            referencedRelation: "phishing_scans";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      scan_events: {
+        Row: {
+          id: number;
+          scan_id: string;
+          stage: string;
+          status: string;
+          message: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: number;
+          scan_id: string;
+          stage: string;
+          status: string;
+          message?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: number;
+          scan_id?: string;
+          stage?: string;
+          status?: string;
+          message?: string | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "scan_events_scan_id_fkey";
+            columns: ["scan_id"];
+            isOneToOne: false;
+            referencedRelation: "phishing_scans";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      landing_analyses: {
+        Row: {
+          id: string;
+          scan_id: string;
+          provider: string;
+          url: string;
+          url_key: string;
+          status: string;
+          provider_uuid: string | null;
+          visibility: string | null;
+          result_url: string | null;
+          screenshot_url: string | null;
+          final_url: string | null;
+          final_domain: string | null;
+          page: Json;
+          verdict: Json;
+          forms: Json;
+          exfil: Json;
+          requests: Json;
+          reputation: Json;
+          sanitized: Json;
+          error: string | null;
+          requested_by: string | null;
+          attempts: number;
+          created_at: string;
+          updated_at: string;
+          completed_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          scan_id: string;
+          provider?: string;
+          url: string;
+          url_key: string;
+          status?: string;
+          provider_uuid?: string | null;
+          visibility?: string | null;
+          result_url?: string | null;
+          screenshot_url?: string | null;
+          final_url?: string | null;
+          final_domain?: string | null;
+          page?: Json;
+          verdict?: Json;
+          forms?: Json;
+          exfil?: Json;
+          requests?: Json;
+          reputation?: Json;
+          sanitized?: Json;
+          error?: string | null;
+          requested_by?: string | null;
+          attempts?: number;
+          created_at?: string;
+          updated_at?: string;
+          completed_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          scan_id?: string;
+          provider?: string;
+          url?: string;
+          url_key?: string;
+          status?: string;
+          provider_uuid?: string | null;
+          visibility?: string | null;
+          result_url?: string | null;
+          screenshot_url?: string | null;
+          final_url?: string | null;
+          final_domain?: string | null;
+          page?: Json;
+          verdict?: Json;
+          forms?: Json;
+          exfil?: Json;
+          requests?: Json;
+          reputation?: Json;
+          sanitized?: Json;
+          error?: string | null;
+          requested_by?: string | null;
+          attempts?: number;
+          created_at?: string;
+          updated_at?: string;
+          completed_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "landing_analyses_scan_id_fkey";
+            columns: ["scan_id"];
+            isOneToOne: false;
+            referencedRelation: "phishing_scans";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: {
       soc_daily_volume: {
@@ -2070,6 +2668,7 @@ export type Database = {
       org_role: { Args: { p_org: string }; Returns: Database["public"]["Enums"]["org_member_role"] };
       is_org_member: { Args: { p_org: string }; Returns: boolean };
       next_protocol: { Args: Record<PropertyKey, never>; Returns: string };
+      can_read_scan: { Args: { p_scan: string }; Returns: boolean };
       api_usage_hit: { Args: { p_key: string }; Returns: undefined };
       similar_messages: { Args: { p_message: string; p_limit?: number }; Returns: { id: string; body_masked: string; similarity: number; campaign_id: string | null; created_at: string }[] };
       similar_campaign_by_body: { Args: { p_body: string; p_min?: number; p_days?: number }; Returns: { campaign_id: string; similarity: number }[] };

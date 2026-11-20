@@ -1,4 +1,3 @@
-import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
@@ -8,7 +7,6 @@ import { StatusTimeline } from "@/components/shared/status-timeline";
 import { NoticeEditor, NoticePreview } from "@/components/soc/notice-editor";
 import { SlaChip } from "@/components/soc/sla-chip";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
 import { fmtDateTime } from "@/lib/format";
@@ -16,6 +14,7 @@ import { hasMinRole, requireRole } from "@/server/auth";
 import { defang } from "@/server/detection/normalize";
 import { getNoticeDetail } from "@/server/queries/soc";
 import { buildNotice } from "@/server/takedown/fill";
+import { BackLink } from "@/components/layout/back-link";
 
 type Params = Promise<{ locale: string; id: string }>;
 const FLOW = ["draft", "in_review", "approved", "sent", "acknowledged", "taken_down"] as const;
@@ -101,12 +100,8 @@ async function Editor({ params }: { params: Params }) {
 export default function NoticePage({ params }: { params: Params }) {
   return (
     <div className="mx-auto w-full max-w-[100rem] space-y-4">
-      <Suspense fallback={null}><Back /></Suspense>
+      <BackLink href="/soc/takedowns" namespace="soc.nav" label="takedowns" />
       <Suspense fallback={<Skeleton className="h-[40rem] w-full" />}><Editor params={params} /></Suspense>
     </div>
   );
-}
-async function Back() {
-  const t = await getTranslations("soc.nav");
-  return <Button asChild variant="ghost" size="sm" className="-ml-2"><Link href="/soc/takedowns"><ArrowLeft className="size-4" aria-hidden="true" />{t("takedowns")}</Link></Button>;
 }

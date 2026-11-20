@@ -214,7 +214,8 @@
       "blocklist": "Blocklist",
       "quality": "Model quality",
       "alerts": "Alert rules",
-      "admin": "Admin"
+      "admin": "Admin",
+      "intel": "Phishing intel"
     },
     "status": {
       "ingestion": "Ingestion",
@@ -625,6 +626,336 @@
       "escalated": "Escalated",
       "taken_down": "Taken down",
       "rejected": "Rejected"
+    },
+    "intel": {
+      "description": "Email and SMS scans with VirusTotal reputation, classification, MITRE ATT&CK and attribution. Updates live.",
+      "channel": "Channel",
+      "verdictLabel": "Verdict",
+      "statusLabel": "Status",
+      "albaniaOnly": "Albania only",
+      "vtOnly": "VirusTotal detections only",
+      "empty": "No scans match these filters",
+      "emptyHint": "Scans appear here as soon as the extension or the API submits an email or SMS.",
+      "open": "Open scan {id}",
+      "engines": "{n} engines",
+      "albania": "Albania",
+      "vtBadge": "VirusTotal: {n} engines",
+      "source": "Source",
+      "processing": "Analysis in progress",
+      "noReport": "The report is not available",
+      "notFound": "Scan not found",
+      "back": "Back to phishing intel",
+      "message": "Message",
+      "from": "From",
+      "replyTo": "Reply-To",
+      "subject": "Subject",
+      "auth": "Authentication",
+      "authAbsent": "no Authentication-Results header",
+      "attachments": "Attachments",
+      "sender": "Sender",
+      "senderKind": "Sender type",
+      "international": "foreign number",
+      "albaniaWhy": "Albania because",
+      "virusTotal": "VirusTotal",
+      "iocs": "Indicators",
+      "findings": "Email and SMS findings",
+      "noFindings": "No findings",
+      "reasons": "Reasons (scoring engine)",
+      "classification": "Classification",
+      "mitre": "MITRE ATT&CK",
+      "noMitre": "No technique is supported by the evidence",
+      "attribution": "Attribution",
+      "ai": "AI analysis",
+      "aiAdvisory": "advisory only, does not change the score",
+      "aiUnavailable": "AI analysis unavailable: the result is rules-based only.",
+      "actions": "Recommended actions",
+      "limitations": "Limitations",
+      "timeline": "Processing timeline",
+      "col": {
+        "risk": "Risk",
+        "channel": "Channel",
+        "verdict": "Verdict",
+        "virusTotal": "VirusTotal",
+        "type": "Type",
+        "family": "Family",
+        "scope": "Scope",
+        "status": "Status",
+        "age": "Age",
+        "exfil": "Sends data to"
+      },
+      "kpi": {
+        "total": "Scans (24 h)",
+        "email": "Email",
+        "sms": "SMS",
+        "malicious": "Malicious",
+        "vtHits": "VirusTotal hits",
+        "exfil": "Data destinations (24 h)"
+      },
+      "verdict": {
+        "malicious": "Malicious",
+        "suspicious": "Suspicious",
+        "clean": "Clean",
+        "unknown": "Unknown"
+      },
+      "status": {
+        "queued": "Queued",
+        "processing": "Processing",
+        "completed": "Completed",
+        "partial": "Partial",
+        "failed": "Failed"
+      },
+      "severity": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High",
+        "critical": "Critical"
+      },
+      "attr": {
+        "confirmed": "Confirmed",
+        "high_confidence": "High confidence",
+        "possible": "Possible",
+        "unattributed": "Unattributed"
+      },
+      "cls": {
+        "phishingType": "Phishing type",
+        "phishingFamily": "Lure family",
+        "malwareFamily": "Malware family"
+      },
+      "type": {
+        "credential_phishing": "Credential phishing",
+        "adversary_in_the_middle": "Adversary-in-the-middle",
+        "business_email_compromise": "Business email compromise",
+        "oauth_phishing": "OAuth phishing",
+        "qr_phishing": "QR phishing",
+        "malware_delivery": "Malware delivery",
+        "payment_fraud": "Payment fraud",
+        "callback_scam": "Callback scam",
+        "brand_impersonation": "Brand impersonation"
+      },
+      "family": {
+        "parcel_delivery_fee": "Parcel delivery fee",
+        "bank_account_verification": "Bank account verification",
+        "toll_traffic_fine": "Toll / traffic fine",
+        "tax_refund": "Tax refund",
+        "government_service": "Government service",
+        "utility_bill": "Utility bill",
+        "prize_lottery": "Prize / lottery",
+        "job_offer": "Job offer",
+        "invoice_fraud": "Invoice fraud",
+        "account_suspension": "Account suspension",
+        "investment_crypto": "Investment / crypto"
+      },
+      "senderKinds": {
+        "e164": "Phone number",
+        "short_code": "Short code",
+        "alphanumeric": "Sender name",
+        "malformed": "Malformed",
+        "absent": "Unknown"
+      },
+      "albaniaSignal": {
+        "al_sender": "Albanian sender number",
+        "al_phone": "Albanian phone number in text",
+        "al_domain": ".al domain",
+        "al_institution": "imitates an Albanian institution",
+        "albanian_text": "text in Albanian"
+      },
+      "stage": {
+        "queue": "Queue",
+        "parsing": "Parsing",
+        "iocExtraction": "Indicators",
+        "heuristics": "Heuristics",
+        "virusTotal": "VirusTotal",
+        "aiAnalysis": "AI",
+        "attribution": "Attribution",
+        "report": "Report",
+        "pipeline": "Pipeline",
+        "landing": "Page sandbox"
+      },
+      "vt": {
+        "indicator": "Indicator",
+        "malicious": "Malicious",
+        "suspicious": "Suspicious",
+        "harmless": "Harmless",
+        "label": "Label / category",
+        "notFound": "unknown to VirusTotal",
+        "cached": "cached",
+        "none": "No indicator was checked against VirusTotal.",
+        "skip": {
+          "synthetic": "test domain, not sent",
+          "official": "official domain, not sent",
+          "private_ip": "private IP, not sent",
+          "quota": "quota reached",
+          "error": "provider error",
+          "limit": "per-scan limit"
+        }
+      },
+      "finding": {
+        "spf_fail": "SPF failed",
+        "dkim_fail": "DKIM signature did not verify",
+        "dmarc_fail": "DMARC failed",
+        "reply_to_mismatch": "Reply-To differs from the sender",
+        "return_path_mismatch": "Return-Path differs from the sender",
+        "display_name_spoof": "Display name contains another domain",
+        "message_id_mismatch": "Message-ID domain differs from the sender",
+        "link_text_mismatch": "Link text shows one address but opens another",
+        "javascript_link": "Link runs JavaScript",
+        "html_form": "Contains a form that submits data",
+        "password_field": "Contains a password field",
+        "html_script": "Contains script code",
+        "meta_refresh": "Redirects automatically",
+        "data_uri_html": "Embeds HTML or script as a data URI",
+        "html_obfuscation": "Heavily encoded HTML",
+        "hidden_content": "Hides content from the reader",
+        "disguised_executable": "Executable disguised as a document",
+        "type_mismatch": "File content does not match its extension",
+        "html_attachment": "HTML attachment (fake login page pattern)",
+        "svg_attachment": "SVG attachment",
+        "disk_image": "Disk image attachment",
+        "rtl_override": "Bidirectional override characters",
+        "mixed_script": "Lookalike letters from other alphabets",
+        "app_install_lure": "Asks to install an app / APK",
+        "remote_access_lure": "Mentions remote-access software",
+        "disable_protection": "Asks to disable device protection",
+        "channel_switch": "Pushes to another messaging app",
+        "otp_request": "Asks to share a one-time code",
+        "payment_handle": "Contains a bank account for payment",
+        "callback_lure": "Asks to call a number back",
+        "malformed_sender": "Malformed sender number",
+        "international_sender": "Foreign sender number",
+        "exfil_telegram": "Captured data is sent to a Telegram bot",
+        "exfil_webhook": "Captured data is sent to a chat webhook",
+        "exfil_google": "Captured data is sent to a Google Apps Script or Form",
+        "exfil_form_service": "Captured data is sent to a form-collection service",
+        "exfil_php": "Captured data is sent to a PHP script on another server",
+        "exfil_endpoint": "A form or script sends captured data to another server",
+        "exfil_mailto": "A form emails the captured data to an address",
+        "obfuscated_exfil": "The data destination is hidden with encoding",
+        "victim_ip_lookup": "The page looks up the victim's IP address and location"
+      },
+      "live": {
+        "on": "Live",
+        "off": "Connecting…",
+        "newScan": "New {channel} scan",
+        "maliciousScan": "{channel} scan flagged: {engines} VirusTotal engines"
+      },
+      "exfilOnly": "Data destination found",
+      "exfil": {
+        "title": "Where the data is sent",
+        "none": "No data destination was found in the email or its attachments. Links were not opened, so a linked page may still send data elsewhere.",
+        "note": "Static analysis of the email and its attachments: nothing was executed or contacted. Bot tokens and webhook keys are redacted and never stored.",
+        "abuseHint": "Do not use the bot or webhook. Report it to the service's abuse team (Telegram: abuse@telegram.org, Discord: Trust & Safety) with the ID shown here.",
+        "chat": "Chat",
+        "sharedService": "shared service",
+        "firstSeen": "first time seen",
+        "otherScansN": "{n, plural, one {# other scan} other {# other scans}}",
+        "col": {
+          "kind": "Type",
+          "destination": "Destination",
+          "foundIn": "Found in",
+          "vt": "VirusTotal",
+          "otherScans": "Same destination"
+        },
+        "kind": {
+          "telegram_bot": "Telegram bot",
+          "discord_webhook": "Discord webhook",
+          "webhook": "Webhook",
+          "google_apps_script": "Google Apps Script",
+          "google_form": "Google Form",
+          "form_service": "Form service",
+          "php_handler": "PHP script",
+          "form_action": "Form",
+          "js_endpoint": "Script request",
+          "mailto": "Email (mailto)"
+        },
+        "source": {
+          "email_html": "Email HTML",
+          "attachment": "Attachment",
+          "text": "Email text",
+          "landing_page": "Linked page (sandbox)"
+        },
+        "via": {
+          "base64": "hidden: base64",
+          "percent": "hidden: URL encoding",
+          "charcode": "hidden: fromCharCode",
+          "escape": "hidden: \\x escapes",
+          "entities": "hidden: HTML entities",
+          "plain": "plain"
+        }
+      },
+      "landing": {
+        "title": "Linked page (urlscan.io sandbox)",
+        "intro": "urlscan.io opens the page in its own sandbox; this platform only sends the URL and reads back what urlscan recorded. Observation only: nothing is typed into or submitted on the page.",
+        "notConfigured": "The sandbox is not configured. Add URLSCAN_API_KEY to the server environment (a free urlscan.io account is enough).",
+        "noLinks": "This scan has no links to analyse.",
+        "analyze": "Analyse with urlscan.io",
+        "again": "Analyse again",
+        "confirm": "Send to urlscan.io",
+        "cancel": "Cancel",
+        "sending": "Sending…",
+        "running": "urlscan.io is analysing the page…",
+        "submitted": "Sent to urlscan.io. The result appears here in about 30 seconds.",
+        "reused": "This page was analysed in the last 24 hours: the result was reused without spending quota.",
+        "confirmText": "The URL above (with victim e-mails and phone numbers replaced) will be sent to urlscan.io as “{visibility}”. urlscan.io will open it in its sandbox.",
+        "sanitized": "Replaced before sending: {what}",
+        "replaced": {
+          "email": "e-mail address",
+          "email_encoded": "encoded e-mail address",
+          "email_base64": "base64 e-mail address",
+          "phone": "phone number",
+          "credentials": "username/password in the URL"
+        },
+        "block": {
+          "synthetic": "test domain, cannot be opened",
+          "private_ip": "private network address, not sent",
+          "invalid": "not a web address"
+        },
+        "error": {
+          "generic": "The analysis could not be started.",
+          "not_configured": "URLSCAN_API_KEY is missing on the server.",
+          "not_in_scan": "This URL is not one of the scan's indicators.",
+          "synthetic": "Test domains (.example, .test) cannot be opened.",
+          "private_ip": "Private network addresses are never sent.",
+          "invalid": "Not a valid web address.",
+          "rate_limited_user": "You reached your hourly limit of sandbox analyses.",
+          "rate_limited_day": "The daily sandbox quota is used up.",
+          "urlscan_unauthorized": "urlscan.io rejected the API key.",
+          "urlscan_quota": "urlscan.io quota reached. Try again later.",
+          "urlscan_rejected": "urlscan.io refused the URL (for example the domain no longer resolves).",
+          "urlscan_timeout": "urlscan.io did not answer in time.",
+          "urlscan_upstream": "urlscan.io returned an error.",
+          "urlscan_bad_response": "urlscan.io returned an unexpected answer."
+        },
+        "status": {
+          "queued": "Queued",
+          "submitted": "Analysing",
+          "completed": "Completed",
+          "failed": "Failed"
+        },
+        "malicious": "urlscan: malicious",
+        "notMalicious": "urlscan: no verdict",
+        "openReport": "Report on urlscan.io",
+        "screenshot": "Screenshot",
+        "submittedUrl": "Sent",
+        "finalUrl": "Final page",
+        "pendingNote": "urlscan.io is rendering the page. This updates live.",
+        "page": {
+          "title": "Title",
+          "ip": "IP",
+          "asnname": "Network",
+          "country": "Country",
+          "server": "Server",
+          "status": "HTTP",
+          "domainAgeDays": "Domain age (days)",
+          "tlsIssuer": "TLS issuer"
+        },
+        "forms": "Forms on the page",
+        "passwordForm": "asks for a password",
+        "sameUrl": "submits to the same page",
+        "noForms": "No forms on the page.",
+        "noExfil": "No data destination found on the page or in its scripts.",
+        "requests": "{n, plural, one {# request} other {# requests}} while loading",
+        "redirects": "{n, plural, one {# redirect} other {# redirects}}"
+      }
     }
   },
   "admin": {
@@ -750,7 +1081,10 @@
       "cert": "Certificate",
       "phone": "Phone",
       "email": "Email",
-      "file_hash": "File hash"
+      "file_hash": "File hash",
+      "phone_number": "Phone",
+      "short_code": "Short code",
+      "exfil_endpoint": "Data destination"
     }
   },
   "reportStatus": {
@@ -1433,22 +1767,24 @@
   },
   "extensionPage": {
     "title": "The Mburoja browser extension",
-    "description": "Scan suspicious emails in Gmail and Outlook in one click.",
+    "description": "Scan suspicious emails and SMS in one click, in Chrome, Edge and Firefox.",
     "install": "Installation",
     "installSteps": [
-      "Download the extension package (zip) and unzip it.",
-      "Open chrome://extensions and turn on “Developer mode”.",
-      "Click “Load unpacked” and choose the extension folder.",
-      "Open an email in Gmail or Outlook and click the “Scan” button."
+      "Download the Chrome/Edge package (zip) and unzip it into a folder.",
+      "Open chrome://extensions (or edge://extensions) and turn on “Developer mode”.",
+      "Click “Load unpacked” and choose the unzipped folder.",
+      "Open an email in Gmail or Outlook, click the Mburoja icon, then “Scan”."
     ],
-    "download": "Download the extension (zip)",
-    "downloadNote": "The Chrome Web Store is out of scope for this pilot; the extension is loaded manually.",
+    "installFirefox": "download the .xpi file, open about:debugging#/runtime/this-firefox, click “Load Temporary Add-on” and choose the file. A permanent install needs signing by addons.mozilla.org.",
+    "download": "Download for Chrome / Edge (zip)",
+    "downloadFirefox": "Download for Firefox (xpi)",
+    "downloadNote": "The packages are also ready for the Chrome Web Store, Edge Add-ons and addons.mozilla.org, but store publishing is out of scope for this pilot.",
     "reads": "What it reads",
     "readsItems": [
       "Only the email you open, and only when you click “Scan”",
       "The subject, sender, visible text and links",
       "Attachment names and types (not their contents)",
-      "SPF, DKIM, DMARC results if shown"
+      "SPF, DKIM, DMARC and attachment hashes only when you upload an .eml file yourself"
     ],
     "never": "What it never reads",
     "neverItems": [
@@ -1468,9 +1804,10 @@
     ],
     "permissions": "Permissions it asks for",
     "permissionsItems": [
-      "storage: keeps the last result and your consent",
+      "storage: keeps your recent results and settings",
       "activeTab and scripting: read the open email only when you click",
-      "Access only to mail.google.com, outlook.live.com, outlook.office.com and the Mburoja API"
+      "notifications and contextMenus: tell you when a scan finishes and scan selected text",
+      "Access only to the Mburoja API, no permanent access to Gmail or Outlook"
     ],
     "manage": "Manage the extension from your account",
     "worksWith": "Works in Chrome with Gmail and Outlook",

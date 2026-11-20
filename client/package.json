@@ -21,7 +21,10 @@
     "db:types": "supabase gen types typescript --remote > src/types/database.ts",
     "seed": "tsx scripts/seed.ts",
     "train": "tsx scripts/train-classifier.ts",
-    "cron:run": "tsx scripts/cron-run.ts"
+    "cron:run": "tsx scripts/cron-run.ts",
+    "ext:build": "node scripts/build-extension.mjs",
+    "ext:typecheck": "tsc --noEmit -p extension/tsconfig.json",
+    "seed:alerts": "tsx scripts/seed-citizen-alerts.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.11.0",
@@ -45,6 +48,7 @@
     "next-themes": "^0.4.6",
     "nodemailer": "^10.6.1",
     "papaparse": "^5.7.1",
+    "postal-mime": "^4.2.1",
     "radix-ui": "^1.8.1",
     "react": "19.3.0",
     "react-day-picker": "^10.0.2",
@@ -63,6 +67,7 @@
   "devDependencies": {
     "@playwright/test": "^1.65.1",
     "@tailwindcss/postcss": "^4.3.3",
+    "@types/chrome": "^0.3.7",
     "@types/node": "^24.19.2",
     "@types/nodemailer": "^8.0.2",
     "@types/papaparse": "^5.5.2",

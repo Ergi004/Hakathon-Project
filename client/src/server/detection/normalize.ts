@@ -70,7 +70,15 @@ const URL_RE =
 /** URLs and bare domains in free text, refanged and de-duplicated. */
 export function extractUrls(text: string): string[] {
   const out = new Set<string>();
-  for (const match of normalizeText(text).matchAll(URL_RE)) {
+  const normalized = normalizeText(text);
+  for (const match of normalized.matchAll(URL_RE)) {
+    // Part of an email address ("ana.hoxha@gmail.com" → "ana.hoxha" / "gmail.com"), not a link:
+    // treating the local part as a domain would leak personal names into indicators.
+    const start = match.index ?? 0;
+    const end = start + match[0].length;
+    const head = normalized.slice(Math.max(0, start - 4), start).toLowerCase();
+    const tail = normalized.slice(end, end + 4).toLowerCase();
+    if (head.endsWith("@") || head === "[at]" || tail.startsWith("@") || tail === "[at]") continue;
     const raw = match[0].replace(/[.,;:!?)\]]+$/, "");
     const value = refang(raw);
     // Ignore things like "p.sh." or file names without a real host.

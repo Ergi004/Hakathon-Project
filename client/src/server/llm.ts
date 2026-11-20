@@ -91,7 +91,7 @@ async function viaGemini(system: string, user: string): Promise<string | null> {
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   try {
     const response = await ai.models.generateContent({
-      model: process.env.GEMINI_MODEL ?? "gemini-2.5-flash",
+      model: process.env.GEMINI_MODEL ?? "gemini-3.8-flash",
       contents: user,
       config: { systemInstruction: system, abortSignal: controller.signal, maxOutputTokens: 300 },
     });

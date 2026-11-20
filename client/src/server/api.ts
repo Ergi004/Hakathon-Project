@@ -32,12 +32,17 @@ export function preflight(req: NextRequest) {
   return new NextResponse(null, { status: 204, headers: corsHeaders(req) });
 }
 
-/** Reads and validates a JSON body, rejecting anything over 64 KB. */
-export async function readJson<S extends z.ZodType>(req: NextRequest, schema: S): Promise<{ ok: true; data: z.infer<S> } | { ok: false; res: NextResponse }> {
+/** Reads and validates a JSON body, rejecting anything over `maxBytes` (default 64 KB). */
+export async function readJson<S extends z.ZodType>(
+  req: NextRequest,
+  schema: S,
+  maxBytes: number = MAX_BODY,
+): Promise<{ ok: true; data: z.infer<S> } | { ok: false; res: NextResponse }> {
+  const limitText = `Body exceeds ${Math.round(maxBytes / 1024)} KB`;
   const len = Number(req.headers.get("content-length") ?? 0);
-  if (len > MAX_BODY) return { ok: false, res: apiError(413, "payload_too_large", "Body exceeds 64 KB") };
+  if (len > maxBytes) return { ok: false, res: apiError(413, "payload_too_large", limitText) };
   const text = await req.text();
-  if (text.length > MAX_BODY) return { ok: false, res: apiError(413, "payload_too_large", "Body exceeds 64 KB") };
+  if (text.length > maxBytes) return { ok: false, res: apiError(413, "payload_too_large", limitText) };
   let raw: unknown;
   try {
     raw = JSON.parse(text);

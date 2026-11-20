@@ -220,6 +220,16 @@ chrome.runtime.onInstalled.addListener(async () => {
   chrome.contextMenus.create({ id: "mburoja-sms", title: t.menuSms, contexts: ["selection"] });
 });
 
+// The popup's SQ | EN switch saves `lang`: relabel the right-click menu right away.
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area !== "local" || !changes.lang) return;
+  const t = STRINGS[(changes.lang.newValue as "sq" | "en" | undefined) ?? "sq"];
+  // Callback form works in Chrome and Firefox; reading lastError silences "no such menu item".
+  for (const [id, title] of [["mburoja-email", t.menuEmail], ["mburoja-sms", t.menuSms]] as const) {
+    try { chrome.contextMenus.update(id, { title }, () => void chrome.runtime.lastError); } catch { /* menus not created yet */ }
+  }
+});
+
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   const text = (info.selectionText ?? "").trim();
   if (!text) return;
