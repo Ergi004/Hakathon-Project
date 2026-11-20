@@ -80,14 +80,15 @@
       "submit": "Sign in",
       "submitting": "Signing in…",
       "noAccount": "No account yet?",
-      "createAccount": "Create an account",
-      "confirmFailed": "The confirmation link is invalid or has expired. Try signing in, or sign up again."
+      "createAccount": "Create an account"
     },
     "errors": {
       "invalidInput": "Check your email and password.",
       "invalidCredentials": "The email or password is incorrect.",
       "unavailable": "Sign-in is not available right now. Try again later.",
-      "generic": "Something went wrong. Try again."
+      "generic": "Something went wrong. Try again.",
+      "confirmationRequired": "The Supabase project still requires email confirmation. Add SUPABASE_SECRET_KEY to .env.local or turn off “Confirm email” in Supabase.",
+      "emailTaken": "This email already has an account. Sign in with your password."
     },
     "register": {
       "title": "Create an account",
@@ -110,11 +111,7 @@
       "submit": "Create account",
       "submitting": "Creating…",
       "haveAccount": "Already have an account?",
-      "signIn": "Sign in",
-      "checkEmailTitle": "Check your email",
-      "checkEmailBody": "If this email can be used, we sent a confirmation link to {email}. Open it to finish signing up.",
-      "checkEmailBusiness": "Your organization is created as soon as you confirm your email.",
-      "backToLogin": "Back to sign in"
+      "signIn": "Sign in"
     },
     "fieldErrors": {
       "required": "This field is required.",
@@ -129,7 +126,9 @@
       "rateLimited": "Too many attempts. Try again in a little while.",
       "signupDisabled": "Sign-up is turned off right now.",
       "unavailable": "Sign-up is not available right now. Try again later.",
-      "generic": "Something went wrong. Try again."
+      "generic": "Something went wrong. Try again.",
+      "emailTaken": "This email already has an account. Sign in with your password.",
+      "confirmationRequired": "The Supabase project still requires email confirmation. Add SUPABASE_SECRET_KEY to .env.local or turn off “Confirm email” in Supabase."
     }
   },
   "roles": {

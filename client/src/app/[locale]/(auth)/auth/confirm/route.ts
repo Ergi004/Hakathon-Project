@@ -43,7 +43,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   }
   if (!user) return fail();
 
-  const hasOrg = await finalizeBusinessSignup(user);
+  const hasOrg = await finalizeBusinessSignup(user, supabase);
   const target = next ?? `/${locale}/${hasOrg ? "business" : "citizen"}`;
   return NextResponse.redirect(new URL(target, url.origin));
 }

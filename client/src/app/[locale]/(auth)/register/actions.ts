@@ -5,27 +5,52 @@ import { getLocale } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
 import type { ActionResult } from "@/lib/result";
 import { signUpSchema } from "@/lib/schemas/auth";
-import { appUrl } from "@/server/app-url";
-import { createConfirmedUser, skipEmailConfirmation } from "@/server/auth-bypass";
+import { canSkipVerification, confirmUserByEmail, createConfirmedUser } from "@/server/auth-direct";
 import { ipHash } from "@/server/hash";
 import { finalizeBusinessSignup } from "@/server/onboarding";
 import { limit } from "@/server/rate-limit";
 import { createClient, SupabaseNotConfiguredError } from "@/server/supabase/server";
 
-export type SignUpError = "invalidInput" | "weakPassword" | "rateLimited" | "signupDisabled" | "unavailable" | "generic";
+export type SignUpError =
+  | "invalidInput"
+  | "weakPassword"
+  | "emailTaken"
+  | "confirmationRequired"
+  | "rateLimited"
+  | "signupDisabled"
+  | "unavailable"
+  | "generic";
+
+function mapError(code: string | undefined): SignUpError {
+  switch (code) {
+    case "weak_password":
+      return "weakPassword";
+    case "user_already_exists":
+    case "email_exists":
+      return "emailTaken";
+    case "over_email_send_rate_limit":
+    case "over_request_rate_limit":
+      return "rateLimited";
+    case "signup_disabled":
+    case "email_provider_disabled":
+      return "signupDisabled";
+    case "unavailable":
+      return "unavailable";
+    default:
+      return "generic";
+  }
+}
 
 /**
- * Citizen or business sign-up. Always returns the same "check your email"
- * result for new and existing addresses, so the form cannot be used to find
- * out who has an account.
+ * Citizen or business sign-up with no email verification: the user is signed in
+ * immediately and redirected to their dashboard (/citizen or /business).
  */
-export async function signUp(input: unknown): Promise<ActionResult<{ status: "check_email" }, SignUpError>> {
+export async function signUp(input: unknown): Promise<ActionResult<undefined, SignUpError>> {
   const parsed = signUpSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "invalidInput" };
   const { accountType, email, password, fullName, orgName } = parsed.data;
 
-  const rl = await limit(`signup:${ipHash(await headers())}`, 5, 3600);
-  if (!rl.allowed) return { ok: false, error: "rateLimited" };
+  if (!(await limit(`signup:${ipHash(await headers())}`, 5, 3600)).allowed) return { ok: false, error: "rateLimited" };
 
   let supabase;
   try {
@@ -42,49 +67,27 @@ export async function signUp(input: unknown): Promise<ActionResult<{ status: "ch
     ...(accountType === "business" ? { pending_org: { name: orgName } } : {}),
   };
 
-  // TEMPORARY (AUTH_SKIP_EMAIL_CONFIRMATION=true): create the account confirmed and sign in now.
-  if (skipEmailConfirmation()) {
+  if (canSkipVerification()) {
+    // Create the account already confirmed, then sign in with the same password.
     const created = await createConfirmedUser(email, password, metadata);
-    if (created.error && created.error.code !== "email_exists" && created.error.code !== "user_already_exists") {
-      return { ok: false, error: created.error.code === "weak_password" ? "weakPassword" : created.error.code === "unavailable" ? "unavailable" : "generic" };
+    if (created.error) {
+      const err = mapError(created.error.code);
+      // Existing account: let it through only if the password is right (that is just a sign-in).
+      if (err !== "emailTaken") return { ok: false, error: err };
+      await confirmUserByEmail(email);
     }
-    const signedIn = await supabase.auth.signInWithPassword({ email, password });
-    if (signedIn.error || !signedIn.data.user) return { ok: true, data: { status: "check_email" } };
-    const hasOrg = accountType === "business" && (await finalizeBusinessSignup(signedIn.data.user));
-    return redirect({ href: hasOrg ? "/business" : "/citizen", locale });
+  } else {
+    const { error } = await supabase.auth.signUp({ email, password, options: { data: metadata } });
+    if (error) return { ok: false, error: mapError(error.code) };
   }
 
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      emailRedirectTo: `${await appUrl()}/${locale}/auth/confirm`,
-      data: metadata,
-    },
-  });
-
-  if (error) {
-    switch (error.code) {
-      case "user_already_exists":
-      case "email_exists":
-        return { ok: true, data: { status: "check_email" } };
-      case "weak_password":
-        return { ok: false, error: "weakPassword" };
-      case "over_email_send_rate_limit":
-      case "over_request_rate_limit":
-        return { ok: false, error: "rateLimited" };
-      case "signup_disabled":
-      case "email_provider_disabled":
-        return { ok: false, error: "signupDisabled" };
-      default:
-        return { ok: false, error: "generic" };
-    }
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error || !data.user) {
+    if (error?.code === "email_not_confirmed") return { ok: false, error: "confirmationRequired" };
+    if (error?.code === "invalid_credentials") return { ok: false, error: "emailTaken" };
+    return { ok: false, error: "generic" };
   }
 
-  // Email confirmation turned off in the project: the user is signed in already.
-  if (data.session && data.user) {
-    const hasOrg = accountType === "business" && (await finalizeBusinessSignup(data.user));
-    return redirect({ href: hasOrg ? "/business" : "/citizen", locale });
-  }
-  return { ok: true, data: { status: "check_email" } };
+  const hasOrg = accountType === "business" && (await finalizeBusinessSignup(data.user, supabase));
+  return redirect({ href: hasOrg ? "/business" : "/citizen", locale });
 }

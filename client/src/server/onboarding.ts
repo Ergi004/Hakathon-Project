@@ -1,6 +1,7 @@
 import "server-only";
 
-import type { User } from "@supabase/supabase-js";
+import type { SupabaseClient, User } from "@supabase/supabase-js";
+import type { Database } from "@/types/database";
 import { randomBytes } from "node:crypto";
 import { orgSlug, pendingOrgSchema } from "@/lib/schemas/auth";
 import { audit } from "./audit";
@@ -13,9 +14,19 @@ import { createAdminClient } from "./supabase/admin";
  * control. Idempotent: does nothing once the user belongs to an organization.
  * Returns true when the user has (or now has) an organization.
  */
-export async function finalizeBusinessSignup(user: User): Promise<boolean> {
+export async function finalizeBusinessSignup(user: User, session?: SupabaseClient<Database>): Promise<boolean> {
   const pending = pendingOrgSchema.safeParse(user.user_metadata?.pending_org);
   if (!pending.success) return false;
+
+  // Preferred path: the signed-in user creates their own org through the
+  // create_business_org() database function (no secret key needed).
+  if (session) {
+    const { error } = await session.rpc("create_business_org", { p_name: pending.data.name });
+    if (!error) {
+      await session.auth.updateUser({ data: { ...user.user_metadata, pending_org: null } });
+      return true;
+    }
+  }
 
   try {
     const admin = createAdminClient();

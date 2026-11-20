@@ -13,11 +13,11 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return { title: t("title"), robots: { index: false } };
 }
 
-type LoginSearch = Promise<{ next?: string | string[]; error?: string | string[] }>;
+type LoginSearch = Promise<{ next?: string | string[] }>;
 
 async function LoginFormWithNext({ searchParams }: { searchParams: LoginSearch }) {
-  const { next, error } = await searchParams;
-  return <LoginForm next={typeof next === "string" ? next : undefined} confirmFailed={error === "confirm"} />;
+  const { next } = await searchParams;
+  return <LoginForm next={typeof next === "string" ? next : undefined} />;
 }
 
 export default async function LoginPage({

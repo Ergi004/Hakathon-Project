@@ -51,6 +51,7 @@ The Next.js project root is `client/` (this folder). All spec paths (`supabase/`
 
 Docker is not used in this project. Supabase is a hosted project (no `supabase start`, no local stack). Link it once with `npm run db:link`; every Supabase CLI command targets it with `--remote` (`db:push`, `db:test`, `db:types`). This overrides the Docker / local-Supabase steps in docs/SPEC.md sections 2, 15.3 and 16. `npm run db:reset` wipes the hosted database: run it only on a development project and only when asked.
 
-# Temporary: email confirmation bypass
 
-`AUTH_SKIP_EMAIL_CONFIRMATION=true` lets users with an unverified email sign in (src/server/auth-bypass.ts). It is temporary: before any real pilot, set it to false or remove the module and its two call sites in the sign-up and sign-in actions.
+# Auth: no email verification
+
+Sign-up creates accounts already confirmed (src/server/auth-direct.ts, needs SUPABASE_SECRET_KEY) and redirects straight to /citizen or /business. There is no check-your-email step.

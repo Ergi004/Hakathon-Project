@@ -1,0 +1,16 @@
+begin;
+create extension if not exists pgtap with schema extensions;
+select plan(4);
+insert into auth.users (id, email, aud, role) values ('00000000-0000-0000-0000-0000000005b1', 'new@biz.example', 'authenticated', 'authenticated');
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-0000000005b1","role":"authenticated"}', true);
+set local role authenticated;
+select isnt(public.create_business_org('Banka Re'), null, 'signed-in user creates their business org');
+select is((select role::text from public.organization_members where user_id = '00000000-0000-0000-0000-0000000005b1'), 'owner', 'creator becomes owner');
+select is((select count(*)::int from public.organizations), 1, 'second call does not create another org');
+reset role;
+select set_config('request.jwt.claims', '{"role":"anon"}', true);
+set local role anon;
+select throws_ok($$ select public.create_business_org('x y') $$, '42501', null, 'anon cannot call it');
+reset role;
+select * from finish();
+rollback;

@@ -80,14 +80,15 @@
       "submit": "Hyr",
       "submitting": "Duke hyrë…",
       "noAccount": "Nuk ke llogari?",
-      "createAccount": "Krijo një llogari",
-      "confirmFailed": "Lidhja e konfirmimit nuk është e vlefshme ose ka skaduar. Provo të hysh ose regjistrohu përsëri."
+      "createAccount": "Krijo një llogari"
     },
     "errors": {
       "invalidInput": "Kontrollo emailin dhe fjalëkalimin.",
       "invalidCredentials": "Emaili ose fjalëkalimi nuk është i saktë.",
       "unavailable": "Shërbimi i hyrjes nuk është i disponueshëm tani. Provo përsëri më vonë.",
-      "generic": "Diçka shkoi keq. Provo përsëri."
+      "generic": "Diçka shkoi keq. Provo përsëri.",
+      "confirmationRequired": "Projekti Supabase ende kërkon konfirmimin e email-it. Shto SUPABASE_SECRET_KEY në .env.local ose çaktivizo „Confirm email” te Supabase.",
+      "emailTaken": "Ky email ka tashmë llogari. Hyr me fjalëkalimin tënd."
     },
     "register": {
       "title": "Krijo një llogari",
@@ -110,11 +111,7 @@
       "submit": "Krijo llogarinë",
       "submitting": "Duke krijuar…",
       "haveAccount": "Ke tashmë llogari?",
-      "signIn": "Hyr",
-      "checkEmailTitle": "Kontrollo email-in",
-      "checkEmailBody": "Nëse ky email mund të përdoret, të dërguam një lidhje konfirmimi në {email}. Hap lidhjen për të përfunduar regjistrimin.",
-      "checkEmailBusiness": "Organizata jote krijohet sapo të konfirmosh email-in.",
-      "backToLogin": "Kthehu te hyrja"
+      "signIn": "Hyr"
     },
     "fieldErrors": {
       "required": "Kjo fushë kërkohet.",
@@ -129,7 +126,9 @@
       "rateLimited": "Shumë përpjekje. Provo përsëri pas pak.",
       "signupDisabled": "Regjistrimi është i çaktivizuar për momentin.",
       "unavailable": "Regjistrimi nuk është i disponueshëm tani. Provo përsëri më vonë.",
-      "generic": "Diçka shkoi keq. Provo përsëri."
+      "generic": "Diçka shkoi keq. Provo përsëri.",
+      "emailTaken": "Ky email ka tashmë llogari. Hyr me fjalëkalimin tënd.",
+      "confirmationRequired": "Projekti Supabase ende kërkon konfirmimin e email-it. Shto SUPABASE_SECRET_KEY në .env.local ose çaktivizo „Confirm email” te Supabase."
     }
   },
   "roles": {

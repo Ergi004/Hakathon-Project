@@ -2063,6 +2063,7 @@ export type Database = {
       similar_campaign_by_body: { Args: { p_body: string; p_min?: number; p_days?: number }; Returns: { campaign_id: string; similarity: number }[] };
       search_messages: { Args: { p_q: string; p_limit?: number }; Returns: { id: string; body_masked: string; similarity: number; campaign_id: string | null; label: Database["public"]["Enums"]["msg_label"] }[] };
       my_institution_ids: { Args: Record<PropertyKey, never>; Returns: string[] };
+      create_business_org: { Args: { p_name: string }; Returns: string };
       rate_limit_hit: { Args: { p_key: string; p_window_sec: number; p_max: number }; Returns: { allowed: boolean; current_hits: number; reset_at: string }[] };
     };
     Enums: {

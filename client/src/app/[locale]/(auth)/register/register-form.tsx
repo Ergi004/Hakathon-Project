@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Building2, MailCheck, UserRound } from "lucide-react";
+import { Building2, UserRound } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 import { Controller, useForm, useWatch, type FieldPath } from "react-hook-form";
@@ -31,7 +31,6 @@ export function RegisterForm({ initialType }: { initialType: AccountType }) {
   const tf = useTranslations("auth.fieldErrors");
   const te = useTranslations("auth.signUpErrors");
   const [serverError, setServerError] = useState<SignUpError | null>(null);
-  const [sentTo, setSentTo] = useState<{ email: string; business: boolean } | null>(null);
   const [pending, startTransition] = useTransition();
 
   const form = useForm<SignUpInput>({
@@ -53,27 +52,11 @@ export function RegisterForm({ initialType }: { initialType: AccountType }) {
     setServerError(null);
     startTransition(async () => {
       const result = await signUp(values);
-      if (!result) return; // redirected
-      if (result.ok) setSentTo({ email: values.email, business: values.accountType === "business" });
-      else setServerError(result.error);
+      // On success the server redirects to the dashboard.
+      if (result && !result.ok) setServerError(result.error);
     });
   });
 
-  if (sentTo) {
-    return (
-      <div className="space-y-4 text-center" role="status" aria-live="polite">
-        <div className="mx-auto grid size-12 place-items-center rounded-full bg-primary/15 text-primary">
-          <MailCheck className="size-6" aria-hidden="true" />
-        </div>
-        <h2 className="font-display text-xl font-bold">{t("checkEmailTitle")}</h2>
-        <p className="text-sm text-muted-foreground">{t("checkEmailBody", { email: sentTo.email })}</p>
-        {sentTo.business && <p className="text-sm text-muted-foreground">{t("checkEmailBusiness")}</p>}
-        <Button asChild variant="outline" className="w-full">
-          <Link href="/login">{t("backToLogin")}</Link>
-        </Button>
-      </div>
-    );
-  }
 
   const err = (name: FieldPath<SignUpInput>) => tf(FIELD_ERROR[name]);
 
