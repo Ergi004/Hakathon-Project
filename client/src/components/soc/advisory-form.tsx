@@ -39,7 +39,7 @@ export function AdvisoryForm({ campaigns, initialCampaign }: { campaigns: Camp[]
 
   return (
     <form
-      className="glass-card space-y-3 rounded-xl p-4"
+      className="space-y-4 rounded-xl bg-card p-5 ring-1 ring-foreground/10"
       onSubmit={(e) => {
         e.preventDefault();
         start(async () => {
@@ -49,7 +49,7 @@ export function AdvisoryForm({ campaigns, initialCampaign }: { campaigns: Camp[]
         });
       }}
     >
-      <h2 className="inline-flex items-center gap-2 font-medium"><Megaphone className="size-4" aria-hidden="true" />{t("new")}</h2>
+      <h2 className="inline-flex items-center gap-2 font-display text-lg font-medium"><Megaphone className="size-5 text-primary" aria-hidden="true" />{t("new")}</h2>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
         <div className="flex-1 space-y-1.5"><Label htmlFor="adv-c">{t("fromCampaign")}</Label>
           <Select value={v.campaignId} onValueChange={(x) => setV({ ...v, campaignId: x })}><SelectTrigger id="adv-c" className="w-full"><SelectValue /></SelectTrigger>

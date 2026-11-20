@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import type { Locale } from "@/i18n/routing";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
-import { PageHeader } from "@/components/layout/page-header";
+import { DashPage } from "@/components/layout/dash";
 import { Pager } from "@/components/shared/pager";
 import { UrlSearch } from "@/components/shared/url-search";
 import { UrlSelect } from "@/components/shared/url-select";
@@ -25,8 +25,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 async function Filters() {
   const [t, tu, tc] = await Promise.all([getTranslations("soc.domains"), getTranslations("ui"), getTranslations("domainClass")]);
   return (
-    <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
-      <UrlSearch label={tu("search")} className="sm:w-64" />
+    <div className="grid gap-3 rounded-xl bg-card p-4 ring-1 ring-foreground/10 sm:grid-cols-3 sm:items-end [&_button[role=combobox]]:w-full">
+      <UrlSearch label={tu("search")} />
       <UrlSelect name="status" label={t("status")} anyLabel={tu("all")} options={STATUS.map((s) => ({ value: s, label: t(`statuses.${s}`) }))} />
       <UrlSelect name="cls" label={t("class")} anyLabel={tu("all")} options={CLASSES.map((c) => ({ value: c, label: tc(c) }))} />
     </div>
@@ -36,7 +36,7 @@ async function Filters() {
 async function Results({ searchParams }: { searchParams: Search }) {
   const sp = await searchParams;
   const ctx = await requireRole("soc_analyst");
-  const tu = await getTranslations("ui");
+  const [tu, tx] = await Promise.all([getTranslations("ui"), getTranslations("socx")]);
   const data = await getDomains(ctx.supabase, { status: STATUS.find((s) => s === sp.status), cls: CLASSES.find((c) => c === sp.cls), q: sp.q?.slice(0, 200), page: Number(sp.page) || 1 });
   const { data: links } = data.rows.length
     ? await ctx.supabase.from("campaign_domains").select("domain_id, campaigns(id, code)").in("domain_id", data.rows.map((r) => r.id))
@@ -49,7 +49,7 @@ async function Results({ searchParams }: { searchParams: Search }) {
   const qs = new URLSearchParams(Object.entries(sp).filter(([k, v]) => v && k !== "page") as [string, string][]);
   return (
     <div className="space-y-3">
-      <div className="flex justify-end"><Button asChild variant="outline" size="sm"><a href={`/api/soc/export/domains?${qs}`}><Download className="size-3.5" aria-hidden="true" />{tu("exportCsv")}</a></Button></div>
+      <div className="flex items-center justify-between gap-3"><span className="text-sm text-muted-foreground tabular-nums">{tx("results", { count: data.total })}</span><Button asChild variant="outline" size="sm" className="rounded-full"><a href={`/api/soc/export/domains?${qs}`}><Download className="size-3.5" aria-hidden="true" />{tu("exportCsv")}</a></Button></div>
       <DomainsTable rows={data.rows} campaignsByDomain={byDomain} />
       <Pager page={data.page} pages={data.pages} />
     </div>
@@ -58,12 +58,11 @@ async function Results({ searchParams }: { searchParams: Search }) {
 
 export default async function DomainsPage({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Search }) {
   setRequestLocale((await params).locale as Locale);
-  const t = await getTranslations("soc.nav");
+  const [t, tx] = await Promise.all([getTranslations("soc.nav"), getTranslations("socx")]);
   return (
-    <div className="space-y-5">
-      <PageHeader title={t("domains")} />
-      <Suspense fallback={<Skeleton className="h-12 w-full" />}><Filters /></Suspense>
-      <Suspense fallback={<Skeleton className="h-96 w-full" />}><Results searchParams={searchParams} /></Suspense>
-    </div>
+    <DashPage title={t("domains")} subtitle={tx("pages.domains")}>
+      <Suspense fallback={<Skeleton className="h-20 w-full rounded-xl" />}><Filters /></Suspense>
+      <Suspense fallback={<Skeleton className="h-96 w-full rounded-xl" />}><Results searchParams={searchParams} /></Suspense>
+    </DashPage>
   );
 }

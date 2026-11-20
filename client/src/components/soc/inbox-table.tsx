@@ -86,7 +86,7 @@ export function InboxTable({ rows }: { rows: InboxRow[] }) {
     rowRefs.current[cursor]?.focus({ preventScroll: false });
   }, [cursor]);
 
-  if (!rows.length) return <p className="rounded-xl border border-dashed border-border p-10 text-center text-sm text-muted-foreground">{t("empty")}</p>;
+  if (!rows.length) return <p className="rounded-xl bg-card p-14 text-center text-sm text-muted-foreground ring-1 ring-foreground/10">{t("empty")}</p>;
   const ids = [...selected];
 
   return (
@@ -107,7 +107,7 @@ export function InboxTable({ rows }: { rows: InboxRow[] }) {
           <Button size="sm" variant="ghost" onClick={() => setSelected(new Set())}>{tu("clear")}</Button>
         </div>
       )}
-      <div className="overflow-x-auto rounded-xl border border-border">
+      <div className="overflow-x-auto rounded-xl bg-card ring-1 ring-foreground/10 [&_th]:h-11 [&_th]:bg-muted/40">
         <Table>
           <TableHeader className="sticky top-0 bg-card/95 backdrop-blur">
             <TableRow>

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import type { Locale } from "@/i18n/routing";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
-import { PageHeader } from "@/components/layout/page-header";
+import { DashPage } from "@/components/layout/dash";
 import { Pager } from "@/components/shared/pager";
 import { UrlSearch } from "@/components/shared/url-search";
 import { UrlSelect } from "@/components/shared/url-select";
@@ -37,8 +37,8 @@ async function Filters() {
   const tf = await getTranslations("flags");
   const tc = await getTranslations("channel");
   return (
-    <div className="flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-end">
-      <UrlSearch label={t("search")} className="lg:w-72" />
+    <div className="grid gap-3 rounded-xl bg-card p-4 ring-1 ring-foreground/10 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 2xl:items-end [&_button[role=combobox]]:w-full">
+      <UrlSearch label={t("search")} className="sm:col-span-2 lg:col-span-3 2xl:col-span-1" />
       <UrlSelect name="status" label={t("status")} anyLabel={tu("all")} options={STATUSES.map((s) => ({ value: s, label: ts(s) }))} />
       <UrlSelect name="flag" label={t("flag")} anyLabel={tu("all")} options={FLAG_LEVELS.map((f) => ({ value: f, label: tf(f) }))} />
       <UrlSelect name="channel" label={t("channel")} anyLabel={tu("all")} options={CHANNELS.map((c) => ({ value: c, label: tc(c) }))} />
@@ -51,7 +51,7 @@ async function Filters() {
 async function Results({ searchParams }: { searchParams: Search }) {
   const sp = await searchParams;
   const ctx = await requireRole("soc_analyst");
-  const t = await getTranslations("soc.inbox");
+  const [t, tx] = await Promise.all([getTranslations("soc.inbox"), getTranslations("socx")]);
   const f: InboxFilters = {
     q: sp.q?.slice(0, 200),
     status: pick(sp.status, STATUSES),
@@ -68,11 +68,11 @@ async function Results({ searchParams }: { searchParams: Search }) {
   const exportQs = new URLSearchParams(Object.entries(sp).filter(([k, v]) => v && k !== "page") as [string, string][]);
   return (
     <div className="space-y-3">
-      <div className="flex flex-wrap items-center justify-between gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <SavedViews views={(views.data ?? []).map((v) => ({ ...v, filters: v.filters as Record<string, string> }))} />
         <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground">{data.total}</span>
-          <Button asChild variant="outline" size="sm"><a href={`/api/soc/export/reports?${exportQs}`}><Download className="size-3.5" aria-hidden="true" />{t("export")}</a></Button>
+          <span className="text-sm text-muted-foreground tabular-nums">{tx("results", { count: data.total })}</span>
+          <Button asChild variant="outline" size="sm" className="rounded-full"><a href={`/api/soc/export/reports?${exportQs}`}><Download className="size-3.5" aria-hidden="true" />{t("export")}</a></Button>
           <ShortcutHelp />
         </div>
       </div>
@@ -84,14 +84,13 @@ async function Results({ searchParams }: { searchParams: Search }) {
 
 export default async function InboxPage({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Search }) {
   setRequestLocale((await params).locale as Locale);
-  const t = await getTranslations("soc.nav");
+  const [t, tx] = await Promise.all([getTranslations("soc.nav"), getTranslations("socx")]);
   return (
-    <div className="space-y-5">
-      <PageHeader title={t("inbox")} />
-      <Suspense fallback={<Skeleton className="h-16 w-full" />}><Filters /></Suspense>
+    <DashPage title={t("inbox")} subtitle={tx("pages.inbox")}>
+      <Suspense fallback={<Skeleton className="h-20 w-full rounded-xl" />}><Filters /></Suspense>
       <Suspense fallback={<div className="space-y-2">{Array.from({ length: 8 }).map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}</div>}>
         <Results searchParams={searchParams} />
       </Suspense>
-    </div>
+    </DashPage>
   );
 }
