@@ -38,7 +38,6 @@ export const CITIZEN_NAV = [
   { key: "alerts", href: "/citizen/alerts", icon: "bell", mobile: true },
   { key: "watchlist", href: "/citizen/watchlist", icon: "eye" },
   { key: "learn", href: "/citizen/learn", icon: "book" },
-  { key: "family", href: "/citizen/family", icon: "users" },
   { key: "extension", href: "/citizen/extension", icon: "puzzle" },
   { key: "privacy", href: "/citizen/privacy", icon: "lock" },
   { key: "settings", href: "/citizen/settings", icon: "settings" },

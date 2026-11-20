@@ -155,7 +155,6 @@
       "alerts": "Alerts",
       "watchlist": "My watchlist",
       "learn": "Learning path",
-      "family": "Family protection",
       "extension": "Extension",
       "privacy": "Privacy centre",
       "settings": "Settings"
@@ -1533,24 +1532,6 @@
       "notStarted": "Not started",
       "open": "Open",
       "quiz": "Play the general quiz"
-    },
-    "family": {
-      "intro": "Make a one-page safety card for a relative, or share the guide for their main risk.",
-      "name": "Relative’s name (optional)",
-      "threat": "Main risk",
-      "language": "Card language",
-      "download": "Download the card (PDF)",
-      "preparing": "Preparing…",
-      "share": "Share the guide",
-      "cardTitle": "My safety card",
-      "cardFor": "For: {name}",
-      "rules": [
-        "Institutions never ask for codes, PINs or card details by SMS or email.",
-        "Do not click links in messages that rush or threaten you.",
-        "When in doubt, call the institution on its official number.",
-        "Check any message on Mburoja (the check page)."
-      ],
-      "emergency": "If you paid or shared details: call your bank right away."
     },
     "extension": {
       "intro": "The extension scans only the email you choose. Here you see what was sent and manage consent.",

@@ -155,7 +155,6 @@
       "alerts": "Njoftimet",
       "watchlist": "Lista ime e vëzhgimit",
       "learn": "Rruga e të mësuarit",
-      "family": "Mbrojtja e familjes",
       "extension": "Shtesa",
       "privacy": "Qendra e privatësisë",
       "settings": "Cilësimet"
@@ -1533,24 +1532,6 @@
       "notStarted": "Pa filluar",
       "open": "Hap",
       "quiz": "Luaj kuizin e përgjithshëm"
-    },
-    "family": {
-      "intro": "Krijo një kartë sigurie një-faqëshe për një të afërm, ose ndaj me të udhëzuesin për rrezikun kryesor.",
-      "name": "Emri i të afërmit (opsional)",
-      "threat": "Rreziku kryesor",
-      "language": "Gjuha e kartës",
-      "download": "Shkarko kartën (PDF)",
-      "preparing": "Duke përgatitur…",
-      "share": "Ndaj udhëzuesin",
-      "cardTitle": "Karta ime e sigurisë",
-      "cardFor": "Për: {name}",
-      "rules": [
-        "Institucionet nuk të kërkojnë kurrë kode, PIN ose të dhëna karte me SMS ose email.",
-        "Mos kliko lidhjet në mesazhe që të ngutin ose të kërcënojnë.",
-        "Kur ke dyshime, telefono institucionin në numrin zyrtar.",
-        "Kontrollo çdo mesazh në mburoja (faqja e kontrollit)."
-      ],
-      "emergency": "Nëse ke paguar ose ke dhënë të dhëna: telefono bankën menjëherë."
     },
     "extension": {
       "intro": "Shtesa skanon vetëm email-in që zgjedh ti. Këtu sheh çfarë është dërguar dhe e menaxhon pëlqimin.",

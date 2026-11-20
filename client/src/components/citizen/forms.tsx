@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Check, Download, FileDown, Plus, Share2, Trash2, Unplug } from "lucide-react";
+import { Bell, Check, Download, Plus, Trash2, Unplug } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
@@ -15,7 +15,6 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { GUIDES } from "@/content/learn";
 import { Link, useRouter } from "@/i18n/navigation";
 import { fmtAgo } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -142,79 +141,6 @@ export function RemoveWatchButton({ id, label }: { id: string; label: string }) 
 }
 
 /** C7: one-page safety card generated in the browser with @react-pdf/renderer. */
-export function FamilyCard() {
-  const t = useTranslations("cit.family");
-  const tu = useTranslations("ui");
-  const locale = useLocale() as "sq" | "en";
-  const [name, setName] = useState("");
-  const [slug, setSlug] = useState<string>(GUIDES[0].slug);
-  const [lang, setLang] = useState<"sq" | "en">(locale);
-  const [busy, setBusy] = useState(false);
-  const guide = GUIDES.find((g) => g.slug === slug)!;
-
-  async function download() {
-    setBusy(true);
-    try {
-      const { pdf, Document, Page, Text, View, StyleSheet } = await import("@react-pdf/renderer");
-      const { createElement: h } = await import("react");
-      const msgs = (await import(`../../../messages/${lang}.json`)).default.cit.family as { cardTitle: string; cardFor: string; rules: string[]; emergency: string };
-      const s = StyleSheet.create({ page: { padding: 36, fontFamily: "Helvetica", fontSize: 12, lineHeight: 1.5 }, h1: { fontSize: 24, marginBottom: 4 }, h2: { fontSize: 14, marginTop: 14, marginBottom: 4 }, box: { border: "1 solid #999", padding: 10, marginTop: 6 }, warn: { marginTop: 16, padding: 10, backgroundColor: "#fdecea" } });
-      const doc = h(Document, null, h(Page, { size: "A4", style: s.page },
-        h(Text, { style: s.h1 }, msgs.cardTitle),
-        name ? h(Text, null, msgs.cardFor.replace("{name}", name)) : null,
-        h(View, { style: s.box }, ...msgs.rules.map((r, i) => h(Text, { key: i }, `${i + 1}. ${r}`))),
-        h(Text, { style: s.h2 }, guide.title[lang]),
-        h(Text, null, guide.summary[lang]),
-        ...guide.signs.map((x, i) => h(Text, { key: `s${i}` }, `• ${x[lang]}`)),
-        h(Text, { style: s.warn }, msgs.emergency),
-      ));
-      const blob = await pdf(doc).toBlob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `mburoja-${guide.slug}.pdf`;
-      a.click();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function share() {
-    const url = `${window.location.origin}/${lang}/learn/${slug}`;
-    try {
-      if (navigator.share) await navigator.share({ title: guide.title[lang], url });
-      else { await navigator.clipboard.writeText(url); toast.success(tu("copied")); }
-    } catch { /* cancelled */ }
-  }
-
-  return (
-    <div className="grid gap-5 lg:grid-cols-[1fr_1fr]">
-      <div className="glass-card space-y-4 rounded-xl p-5">
-        <div className="space-y-1.5"><Label htmlFor="fc-name">{t("name")}</Label><Input id="fc-name" value={name} onChange={(e) => setName(e.target.value)} maxLength={60} /></div>
-        <div className="space-y-1.5"><Label htmlFor="fc-threat">{t("threat")}</Label>
-          <Select value={slug} onValueChange={setSlug}><SelectTrigger id="fc-threat" className="w-full"><SelectValue /></SelectTrigger>
-            <SelectContent>{GUIDES.map((g) => <SelectItem key={g.slug} value={g.slug}>{g.title[locale]}</SelectItem>)}</SelectContent></Select></div>
-        <div className="space-y-1.5"><Label htmlFor="fc-lang">{t("language")}</Label>
-          <Select value={lang} onValueChange={(v) => setLang(v as "sq")}><SelectTrigger id="fc-lang" className="w-40"><SelectValue /></SelectTrigger>
-            <SelectContent><SelectItem value="sq">Shqip</SelectItem><SelectItem value="en">English</SelectItem></SelectContent></Select></div>
-        <div className="flex flex-wrap gap-2">
-          <Button onClick={download} disabled={busy}><FileDown className="size-4" aria-hidden="true" />{busy ? t("preparing") : t("download")}</Button>
-          <Button variant="outline" onClick={share}><Share2 className="size-4" aria-hidden="true" />{t("share")}</Button>
-        </div>
-      </div>
-      <div className="rounded-xl border-2 border-dashed border-border bg-background p-6 text-sm" aria-label={t("cardTitle")}>
-        <p className="font-display text-xl font-bold">{t("cardTitle")}</p>
-        {name && <p className="text-muted-foreground">{t("cardFor", { name })}</p>}
-        <ol className="mt-3 list-decimal space-y-1 pl-5">{(t.raw("rules") as string[]).map((r) => <li key={r}>{r}</li>)}</ol>
-        <p className="mt-4 font-medium">{guide.title[locale]}</p>
-        <ul className="list-disc pl-5 text-muted-foreground">{guide.signs.map((x) => <li key={x.en}>{x[locale]}</li>)}</ul>
-        <p className="mt-4 rounded-lg bg-flag-red/10 p-2 font-medium">{t("emergency")}</p>
-      </div>
-    </div>
-  );
-}
-
 export function ExtensionControls({ id, autoSubmit }: { id: string; autoSubmit: boolean }) {
   const t = useTranslations("cit.extension");
   const { pending, run } = useRun();
