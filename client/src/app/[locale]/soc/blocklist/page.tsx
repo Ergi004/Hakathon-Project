@@ -1,10 +1,9 @@
-import { Download } from "lucide-react";
+import { Clock, Download, ListX, ShieldBan } from "lucide-react";
 import type { Metadata } from "next";
 import type { Locale } from "@/i18n/routing";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
-import { EmptyState } from "@/components/layout/empty-state";
-import { PageHeader } from "@/components/layout/page-header";
+import { DashPage, EmptyPanel, StatCard } from "@/components/layout/dash";
 import { BlocklistForm, RemoveBlocklistButton } from "@/components/soc/blocklist-form";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -21,16 +20,25 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 async function List_() {
   const ctx = await requireRole("soc_analyst");
-  const [t, ti, locale] = await Promise.all([getTranslations("soc.blocklist"), getTranslations("ioc.types"), getLocale()]);
+  const [t, ti, tx, locale] = await Promise.all([getTranslations("soc.blocklist"), getTranslations("ioc.types"), getTranslations("socx"), getLocale()]);
   const { data } = await ctx.supabase.from("blocklist_entries").select("id, type, value, reason, expires_at, created_at, campaigns(code)").order("created_at", { ascending: false }).limit(1000);
-  if (!data?.length) return <EmptyState title={t("empty")} />;
   const now = nowMs();
+  const all = data ?? [];
+  const expiredN = all.filter((b) => b.expires_at && Date.parse(b.expires_at) < now).length;
   return (
-    <div className="overflow-x-auto rounded-xl border border-border">
+    <div className="space-y-6">
+    <ul className="grid grid-cols-3 gap-3">
+      <li><StatCard icon={ListX} label={tx("bl.total")} value={all.length} /></li>
+      <li><StatCard icon={ShieldBan} tone="text-flag-red" label={tx("bl.active")} value={all.length - expiredN} /></li>
+      <li><StatCard icon={Clock} tone="text-muted-foreground" label={tx("bl.expired")} value={expiredN} /></li>
+    </ul>
+    <BlocklistForm />
+    {!all.length ? <div className="rounded-xl bg-card ring-1 ring-foreground/10"><EmptyPanel icon={ShieldBan} title={t("empty")} /></div> : (
+    <div className="overflow-x-auto rounded-xl bg-card ring-1 ring-foreground/10 [&_th]:h-11 [&_th]:bg-muted/40">
       <Table>
         <TableHeader><TableRow><TableHead>{t("type")}</TableHead><TableHead>{t("value")}</TableHead><TableHead className="hidden md:table-cell">{t("reason")}</TableHead><TableHead>{t("expires")}</TableHead><TableHead className="w-10" /></TableRow></TableHeader>
         <TableBody>
-          {data.map((b) => {
+          {all.map((b) => {
             const shown = b.value.replace(/^http/i, "hxxp").replace(/(?<!\[)\.(?!\])/g, "[.]");
             const expired = b.expires_at && Date.parse(b.expires_at) < now;
             return (
@@ -46,17 +54,17 @@ async function List_() {
         </TableBody>
       </Table>
     </div>
+    )}
+    </div>
   );
 }
 
 export default async function BlocklistPage({ params }: { params: Promise<{ locale: string }> }) {
   setRequestLocale((await params).locale as Locale);
-  const [t, tb] = await Promise.all([getTranslations("soc.nav"), getTranslations("soc.blocklist")]);
+  const [t, tb, tx] = await Promise.all([getTranslations("soc.nav"), getTranslations("soc.blocklist"), getTranslations("socx")]);
   return (
-    <div className="space-y-5">
-      <PageHeader title={t("blocklist")} actions={<Button asChild variant="outline"><a href="/api/soc/export/blocklist"><Download className="size-4" aria-hidden="true" />{tb("export")}</a></Button>} />
-      <BlocklistForm />
-      <Suspense fallback={<Skeleton className="h-64 w-full" />}><List_ /></Suspense>
-    </div>
+    <DashPage title={t("blocklist")} subtitle={tx("pages.blocklist")} actions={<Button asChild variant="outline" className="rounded-full"><a href="/api/soc/export/blocklist"><Download className="size-4" aria-hidden="true" />{tb("export")}</a></Button>}>
+      <Suspense fallback={<Skeleton className="h-96 w-full rounded-xl" />}><List_ /></Suspense>
+    </DashPage>
   );
 }

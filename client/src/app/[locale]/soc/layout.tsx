@@ -23,7 +23,7 @@ async function SocShell({ children, params }: { children: React.ReactNode; param
   ]);
   const items = SOC_NAV.filter((i) => isLead || !LEAD_ONLY.has(i.key)).map((i) => ({
     href: i.href,
-    icon: i.icon,
+    icon: i.icon, group: i.group,
     label: t(`nav.${i.key}`),
     ...(i.key === "inbox" ? { count: open ?? 0, liveBadge: "inbox" as const } : {}),
   }));

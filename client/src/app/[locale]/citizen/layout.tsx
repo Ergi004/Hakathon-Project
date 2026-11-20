@@ -11,7 +11,7 @@ async function CitizenShell({ children, params }: { children: React.ReactNode; p
   const ctx = await requireUser();
   const t = await getTranslations("citizen");
   const tr = await getTranslations("roles");
-  const items = CITIZEN_NAV.map((i) => ({ href: i.href, icon: i.icon, mobile: "mobile" in i, label: t(`nav.${i.key}`) }));
+  const items = CITIZEN_NAV.map((i) => ({ href: i.href, icon: i.icon, group: i.group, mobile: "mobile" in i, label: t(`nav.${i.key}`) }));
 
   return (
     <AppShell

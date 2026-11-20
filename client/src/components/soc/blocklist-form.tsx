@@ -21,7 +21,7 @@ export function BlocklistForm() {
   const [v, setV] = useState({ type: "domain", value: "", reason: "", expiresAt: "" });
   const [pending, start] = useTransition();
   return (
-    <form className="glass-card grid gap-3 rounded-xl p-4 md:grid-cols-[9rem_1fr_1fr_10rem_auto] md:items-end" onSubmit={(e) => {
+    <form className="grid gap-3 rounded-xl bg-card p-5 ring-1 ring-foreground/10 md:grid-cols-[9rem_1fr_1fr_10rem_auto] md:items-end" onSubmit={(e) => {
       e.preventDefault();
       start(async () => {
         const r = await addBlocklistEntry({ ...v, expiresAt: v.expiresAt || undefined, reason: v.reason || undefined });

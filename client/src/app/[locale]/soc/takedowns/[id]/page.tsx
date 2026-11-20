@@ -50,10 +50,10 @@ async function Editor({ params }: { params: Params }) {
   const idx = FLOW.indexOf(n.status as (typeof FLOW)[number]);
 
   return (
-    <div className="space-y-5">
-      <header className="space-y-2">
+    <div className="space-y-6">
+      <header className="space-y-4 rounded-xl bg-card p-5 ring-1 ring-foreground/10">
+        <h1 className="font-mono text-2xl font-bold tracking-tight md:text-3xl">{n.protocol}</h1>
         <div className="flex flex-wrap items-center gap-2">
-          <span className="font-mono text-sm">{n.protocol}</span>
           <Badge variant="secondary">{tk(n.kind)}</Badge>
           <Badge variant="outline">{tn(n.status)}</Badge>
           {n.status === "sent" && <SlaChip due={n.due_at} />}
@@ -62,7 +62,7 @@ async function Editor({ params }: { params: Params }) {
         <p className="text-xs text-muted-foreground">{t("createdBy")}: {creator?.full_name ?? "—"}{approver ? ` · ${t("approvedBy")}: ${approver.full_name}` : ""}</p>
         <StatusTimeline orientation="horizontal" steps={FLOW.map((s, i) => ({ key: s, label: tn(s), state: idx === -1 ? "pending" : i < idx ? "done" : i === idx ? "current" : "pending" }))} />
       </header>
-      <div className="grid gap-5 xl:grid-cols-2">
+      <div className="grid items-start gap-6 xl:grid-cols-2">
         <NoticeEditor
           id={n.id}
           status={n.status}
@@ -75,10 +75,10 @@ async function Editor({ params }: { params: Params }) {
           recipients={d.recipients}
           locked={locked}
         />
-        <div className="space-y-5">
+        <div className="space-y-6">
           {other && <NoticePreview subject={other.subject} body={other.body} locked={locked} label={t("editor.otherLocale")} />}
-          <section className="glass-card space-y-2 rounded-xl p-4">
-            <h2 className="font-medium">{t("editor.events")}</h2>
+          <section className="space-y-4 rounded-xl bg-card p-5 ring-1 ring-foreground/10">
+            <h2 className="font-display text-lg font-medium">{t("editor.events")}</h2>
             <ol className="space-y-1.5 text-sm">
               {d.events.map((e) => (
                 <li key={e.id} className="flex justify-between gap-3">
@@ -96,7 +96,7 @@ async function Editor({ params }: { params: Params }) {
 
 export default function NoticePage({ params }: { params: Params }) {
   return (
-    <div className="space-y-4">
+    <div className="mx-auto w-full max-w-[100rem] space-y-4">
       <BackLink href="/soc/takedowns" namespace="soc.nav" label="takedowns" />
       <Suspense fallback={<Skeleton className="h-[40rem] w-full" />}><Editor params={params} /></Suspense>
     </div>

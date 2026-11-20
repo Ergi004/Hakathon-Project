@@ -44,6 +44,7 @@ next-env.d.ts
 
 # browser extension build output
 /extension/dist/
+/extension/node_modules/
 
 # extension packages copied by npm run ext:build
 /public/downloads/
