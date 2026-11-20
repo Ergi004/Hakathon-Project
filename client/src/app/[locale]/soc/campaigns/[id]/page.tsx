@@ -17,14 +17,18 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Link } from "@/i18n/navigation";
 import { fmtAgo, fmtDate } from "@/lib/format";
+import { asBrandCategory, asScamType } from "@/lib/pattern-labels";
 import { hasMinRole, requireRole } from "@/server/auth";
 import { IntelCell } from "@/components/intel/intel-cell";
 import { VerdictChip } from "@/components/intel/intel-panel";
 import { latestVerdicts } from "@/server/intel/staff-view";
-import { getCampaignDetail, getStaff } from "@/server/queries/soc";
+import { getCampaignDetail, getCampaignPattern, getStaff } from "@/server/queries/soc";
 import { CampaignGeography } from "@/components/geo/CampaignGeography";
 
 type Params = Promise<{ locale: string; id: string }>;
+
+/** Auth + campaign data are request-time; allow blocking navigations under Cache Components. */
+export const instant = false;
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -34,6 +38,9 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 async function Workspace({ params }: { params: Params }) {
   const { id } = await params;
   const t = await getTranslations("soc.campaign");
+  const tScam = await getTranslations("scamType");
+  const tBrand = await getTranslations("brandCategory");
+  const tSignal = await getTranslations("signalCode");
   const tc = await getTranslations("campaignStatus");
   const tn = await getTranslations("noticeStatus");
   const tk = await getTranslations("noticeType");
@@ -42,7 +49,7 @@ async function Workspace({ params }: { params: Params }) {
   const locale = await getLocale();
   if (!z.uuid().safeParse(id).success) return <EmptyState title="404" />;
   const ctx = await requireRole("soc_analyst");
-  const [d, staff] = await Promise.all([getCampaignDetail(ctx.supabase, id), getStaff(ctx.supabase)]);
+  const [d, staff, pattern] = await Promise.all([getCampaignDetail(ctx.supabase, id), getStaff(ctx.supabase), getCampaignPattern(ctx.supabase, id)]);
   if (!d) return <EmptyState title="404" />;
   const c = d.campaign;
   const isLead = hasMinRole(ctx.profile.platform_role, "soc_lead");
@@ -53,8 +60,53 @@ async function Workspace({ params }: { params: Params }) {
   const order = ["monitoring", "confirmed", "takedown_in_progress", "resolved"] as const;
   const idx = order.indexOf(c.status);
 
+  const scamKey = asScamType(pattern?.scamType);
+  const brandKey = asBrandCategory(pattern?.brand);
+  const patternSection = (
+    <section className="glass-card space-y-3 rounded-xl p-4">
+      <h3 className="font-medium">{t("patternTitle")}</h3>
+      {pattern ? (
+        <>
+          <dl className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            <div><dt className="text-xs text-muted-foreground">{t("scamType")}</dt><dd className="text-sm">{scamKey ? tScam(scamKey) : "—"}</dd></div>
+            <div><dt className="text-xs text-muted-foreground">{t("brand")}</dt><dd className="text-sm">{brandKey ? tBrand(brandKey) : "—"}</dd></div>
+            <div><dt className="text-xs text-muted-foreground">{t("patternSize")}</dt><dd className="text-sm tabular-nums">{pattern.size}</dd></div>
+            <div><dt className="text-xs text-muted-foreground">{t("confidence")}</dt><dd className="text-sm tabular-nums">{pattern.confidence === null ? "—" : t("confidenceValue", { value: Math.round(pattern.confidence * 100) })}</dd></div>
+            <div><dt className="text-xs text-muted-foreground">{t("firstSeen")}</dt><dd className="text-sm">{fmtDate(pattern.firstSeen, locale)}</dd></div>
+            <div><dt className="text-xs text-muted-foreground">{t("lastSeen")}</dt><dd className="text-sm">{fmtDate(pattern.lastSeen, locale)}</dd></div>
+            {pattern.hostingCountry && <div><dt className="text-xs text-muted-foreground">{t("hostingCountry")}</dt><dd className="text-sm">{pattern.hostingCountry}</dd></div>}
+            {pattern.claimedPlace && <div><dt className="text-xs text-muted-foreground">{t("claimedPlace")}</dt><dd className="text-sm">{pattern.claimedPlace}</dd></div>}
+          </dl>
+          {pattern.matchedSignals.length ? (
+            <div className="overflow-x-auto rounded-xl border border-border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>{t("signal")}</TableHead>
+                    <TableHead className="text-right">{t("weight")}</TableHead>
+                    <TableHead>{t("evidence")}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {pattern.matchedSignals.map((signal, index) => (
+                    <TableRow key={`${signal.code}-${index}`}>
+                      <TableCell className="text-xs">{tSignal(signal.code)}</TableCell>
+                      <TableCell className="text-right text-xs tabular-nums">{signal.weight}</TableCell>
+                      <TableCell className="text-xs">{signal.evidence ? <DefangedText value={signal.evidence} /> : "—"}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          ) : <p className="text-sm text-muted-foreground">{t("noSignals")}</p>}
+        </>
+      ) : <p className="text-sm text-muted-foreground">{t("noPattern")}</p>}
+    </section>
+  );
+
   const overview = (
     <div className="space-y-5">
+      {patternSection}
       <dl className="grid grid-cols-2 gap-3 md:grid-cols-4">
         {[[t("reports"), d.reportCount], [t("domainsCount"), d.domains.length], ["IoC", d.iocs.length], [t("notices"), d.notices.length]].map(([k, v]) => (
           <div key={String(k)} className="rounded-xl bg-card p-4 ring-1 ring-foreground/10"><dt className="text-xs text-muted-foreground">{k}</dt><dd className="font-display text-2xl font-bold tabular-nums">{v}</dd></div>

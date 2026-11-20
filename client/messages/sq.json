@@ -360,7 +360,12 @@
       "grid": "Rrjetë",
       "table": "Tabelë",
       "empty": "Asnjë fushatë.",
-      "noInstitution": "Pa institucion"
+      "noInstitution": "Pa institucion",
+      "scamType": "Lloji i mashtrimit",
+      "brand": "Marka e imituar",
+      "patternSize": "Kontrollime",
+      "patternSizeCount": "{count} kontrollime",
+      "firstSeen": "Parë së pari"
     },
     "campaign": {
       "tabs": {
@@ -390,7 +395,22 @@
       "noMessages": "Asnjë mesazh.",
       "noNotices": "Asnjë njoftim bllokimi.",
       "createAdvisory": "Krijo paralajmërim nga kjo fushatë",
-      "severity": "Rëndësia"
+      "severity": "Rëndësia",
+      "patternTitle": "Klasifikimi",
+      "scamType": "Lloji i mashtrimit",
+      "brand": "Marka e imituar",
+      "patternSize": "Kontrollime të klasifikuara",
+      "firstSeen": "Parë së pari",
+      "lastSeen": "Parë së fundi",
+      "confidence": "Besueshmëria",
+      "confidenceValue": "{value}%",
+      "hostingCountry": "Shteti i hostimit",
+      "claimedPlace": "Vendi i përmendur në mashtrim",
+      "signal": "Sinjali",
+      "weight": "Pesha",
+      "evidence": "Prova",
+      "noPattern": "Ende nuk ka kontrollime të klasifikuara të lidhura me këtë fushatë.",
+      "noSignals": "Ky kontrollim nuk ka sinjale të përputhura."
     },
     "domains": {
       "class": "Klasa",
@@ -1121,6 +1141,55 @@
     "telecom": "Telekomunikacion",
     "police": "Policia",
     "other": "Tjetër"
+  },
+  "scamType": {
+    "fake_institution_login": "Hyrje e rreme në institucion",
+    "parcel_postal_fee": "Tarifë postare për pako",
+    "fine_or_tax_refund": "Gjobë ose rimbursim tatimor",
+    "fake_bank": "Bankë e rreme",
+    "fake_app": "Aplikacion i rremë",
+    "other": "Tjetër"
+  },
+  "brandCategory": {
+    "e_albania": "e-Albania",
+    "tax": "Tatimet",
+    "postal": "Posta",
+    "municipality": "Bashkia",
+    "bank": "Banka",
+    "police": "Policia",
+    "utility": "Shërbime publike",
+    "telecom": "Telekomunikacion",
+    "other": "Tjetër"
+  },
+  "signalCode": {
+    "lookalike": "Domen i ngjashëm",
+    "young_domain": "Domen nën 30 ditë",
+    "odd_tld": "Prapashtesë e pazakontë",
+    "punycode": "Domen punycode",
+    "shortener": "Shkurtues lidhjeje",
+    "urgency": "Urgjencë",
+    "payment": "Kërkesë pagese",
+    "threat": "Kërcënim",
+    "secrets": "Kërkon të dhëna sekrete",
+    "exfil_telegram": "Lidhje Telegram",
+    "exfil_webhook": "Lidhje webhook",
+    "exfil_php": "Pikë PHP",
+    "brand_mention": "Përmendje marke",
+    "theme_parcel": "Temë pakoje",
+    "theme_tax_refund": "Temë tatimi ose rimbursimi",
+    "theme_login": "Temë hyrjeje",
+    "theme_app": "Temë aplikacioni"
+  },
+  "aggregates": {
+    "title": "Modelet e kontrollimeve",
+    "note": "Numërime nga kontrollimet e fundit. Një rajon shfaqet vetëm pas të paktën 3 kontrollimeve. Vendndodhja e viktimës nuk ruhet.",
+    "scamType": "Lloji i mashtrimit",
+    "brand": "Marka e imituar",
+    "week": "Java",
+    "regions": "Rajonet",
+    "hostingCountry": "Shteti i hostimit",
+    "claimedPlace": "Vendi i përmendur në mashtrim",
+    "regionItem": "{kind}: {name}"
   },
   "domainClass": {
     "typosquat": "Gabim shkrimi",

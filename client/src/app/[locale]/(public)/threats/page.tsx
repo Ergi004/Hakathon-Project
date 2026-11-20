@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { WIDE } from "@/components/home/section";
 import { EmptyState } from "@/components/layout/empty-state";
 import { CampaignCard } from "@/components/shared/campaign-card";
+import { CheckAggregates } from "@/components/shared/check-aggregates";
 import { UrlSelect } from "@/components/shared/url-select";
 import { UrlToggle } from "@/components/shared/url-toggle";
 import { ThreatTable } from "@/components/threats/threat-table";
@@ -135,6 +136,10 @@ export default async function ThreatsPage({ params, searchParams }: { params: Pr
 
       <Suspense fallback={<div className="grid grid-cols-2 gap-3 lg:grid-cols-4">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-[4.5rem] rounded-xl" />)}</div>}>
         <Overview />
+      </Suspense>
+
+      <Suspense fallback={<Skeleton className="h-28 w-full rounded-xl" />}>
+        <CheckAggregates />
       </Suspense>
 
       <Suspense fallback={<Skeleton className="h-36 w-full rounded-xl" />}>

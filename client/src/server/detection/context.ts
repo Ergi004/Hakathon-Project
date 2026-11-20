@@ -33,6 +33,26 @@ export interface CampaignRef {
 
 export type IocKind = "domain" | "url" | "phone" | "email" | "sender";
 
+/** A blocklist row. Missing provenance stays unverified and undated, so it is not treated as stale. */
+export interface BlocklistEntry {
+  kind: IocKind;
+  value: string;
+  source?: string;
+  /** ISO time the entry was added. */
+  addedAt?: string;
+  /** True only when an analyst or a trusted feed has confirmed the listing. */
+  verified?: boolean;
+  /** ISO time of the latest confirmation. A recent one keeps an old entry from going stale. */
+  confirmedAt?: string | null;
+}
+
+export interface BlocklistHit {
+  source: string;
+  addedAt: string | null;
+  verified: boolean;
+  confirmedAt: string | null;
+}
+
 export interface ContextData {
   institutions: Institution[];
   officialDomains: { domain: string; institutionId: string }[];
@@ -40,7 +60,7 @@ export interface ContextData {
   domainIntel?: DomainIntel[];
   /** IoCs already linked to campaigns (SPEC 6.4 step 1). */
   campaignIocs?: { kind: IocKind; value: string; campaign: CampaignRef }[];
-  blocklist?: { kind: IocKind; value: string }[];
+  blocklist?: BlocklistEntry[];
   /** sha256 hashes from known_hashes (see hash.ts hashInput). */
   knownHashes?: string[];
   /** Independent reporters in the last 24 h per IoC value. */
@@ -56,7 +76,7 @@ export interface DetectionContext {
   officialChannels: Map<string, string>;
   domainIntel: Map<string, DomainIntel>;
   campaignIocs: Map<string, CampaignRef>;
-  blocklist: Set<string>;
+  blocklist: Map<string, BlocklistHit>;
   knownHashes: Set<string>;
   recentReporters: Map<string, number>;
   riskyInfra: Set<string>;
@@ -84,6 +104,15 @@ export function channelKey(kind: string, value: string): string {
   return `${kind}:${v}`;
 }
 
+function blocklistHit(entry: BlocklistEntry): BlocklistHit {
+  return {
+    source: entry.source?.trim() || "unspecified",
+    addedAt: entry.addedAt ?? null,
+    verified: entry.verified === true,
+    confirmedAt: entry.confirmedAt ?? null,
+  };
+}
+
 export function createContext(data: ContextData): DetectionContext {
   return {
     institutions: new Map(
@@ -96,7 +125,7 @@ export function createContext(data: ContextData): DetectionContext {
     officialChannels: new Map(data.officialChannels.map((c) => [channelKey(c.kind, c.value), c.institutionId])),
     domainIntel: new Map((data.domainIntel ?? []).map((d) => [d.domain.toLowerCase(), d])),
     campaignIocs: new Map((data.campaignIocs ?? []).map((i) => [iocKey(i.kind, i.value), i.campaign])),
-    blocklist: new Set((data.blocklist ?? []).map((b) => iocKey(b.kind, b.value))),
+    blocklist: new Map((data.blocklist ?? []).map((entry) => [iocKey(entry.kind, entry.value), blocklistHit(entry)])),
     knownHashes: new Set(data.knownHashes ?? []),
     recentReporters: new Map((data.recentReporters ?? []).map((r) => [iocKey(r.kind, r.value), r.count])),
     riskyInfra: new Set(

@@ -78,10 +78,12 @@ export default async function ExtensionPage({ params }: { params: Promise<{ loca
   const { locale } = await params;
   setRequestLocale(locale as Locale);
   const t = await getTranslations("extensionPage");
+  // Workers serve public/ via ASSETS; existsSync is a local-dev convenience only.
   // Packages are produced by `npm run ext:build` (scripts/build-extension.mjs).
   const downloads = path.join(process.cwd(), "public", "downloads");
   const hasZip = existsSync(path.join(downloads, "mburoja-extension.zip"));
   const hasXpi = existsSync(path.join(downloads, "mburoja-extension-firefox.xpi"));
+
   const list = (key: string) => t.raw(key) as string[];
 
   const sends: { flags: FlagLevel[]; label: string; tone: string }[] = [

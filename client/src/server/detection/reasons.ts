@@ -24,16 +24,24 @@ export const REASONS = {
   infra_pattern: { group: "links", sq: "Domeni {e} është në një regjistrues dhe hosting që shihen shpesh në fushata mashtrimi.", en: "The domain {e} uses a registrar and hosting often seen in scam campaigns." },
   // content
   classifier: { group: "content", sq: "Teksti i ngjan shumë mesazheve mashtruese të njohura.", en: "The text closely resembles known scam messages." },
+  gemini_review: { group: "content", sq: "Një model gjuhe e lexoi tekstin dhe gjeti shenja mashtrimi. Ky është një sinjal, jo vendimi përfundimtar.", en: "A language model read the text and found scam signs. This is one signal, not the final verdict." },
   urgency: { group: "content", sq: "Mesazhi të nxit të veprosh menjëherë.", en: "The message pushes you to act immediately." },
   payment_lure: { group: "content", sq: "Mesazhi kërkon një pagesë ose premton një rimbursim.", en: "The message asks for a payment or promises a refund." },
+  impersonated_link: { group: "links", sq: "Mesazhi paraqitet si {e}, por domeni nuk i përket asaj institucioni.", en: "The message presents itself as {e}, but the domain does not belong to that institution." },
+  lure_destination: { group: "links", sq: "Kjo lidhje që imiton një institucion është vendi ku mesazhi të kërkon të paguash, të hysh ose të dërgosh të dhëna.", en: "This link, which imitates an institution, is where the message asks you to pay, sign in, or send personal details." },
   threat: { group: "content", sq: "Mesazhi kërcënon me gjobë, bllokim ose pasoja ligjore.", en: "The message threatens a fine, a block or legal consequences." },
+  late_interest: { group: "content", sq: "Mesazhi përmend kamatë vonese bashkë me një afat ose një kërkesë pagese.", en: "The message mentions late interest together with a deadline or a payment demand." },
+  credential_ask: { group: "content", sq: "Mesazhi kërkon PIN, fjalëkalim, numër karte, ose që t'i dërgoni një kod.", en: "The message asks for a PIN, a password, a card number, or for you to send a code." },
+  unofficial_callback: { group: "content", sq: "Mesazhi ju kërkon të telefononi një numër që nuk është zyrtar ({e}).", en: "The message tells you to call a number that is not an official one ({e})." },
   asks_secrets: { group: "content", sq: "Mesazhi kërkon të dhëna të kartës, kode OTP ose dokument identiteti. Institucionet nuk i kërkojnë kurrë kështu.", en: "The message asks for card details, OTP codes or an ID document. Institutions never ask for these this way." },
   // sender
-  auth_fail: { group: "sender", sq: "Kontrolli i autenticitetit të emailit ({e}) dështoi.", en: "The email authenticity check ({e}) failed." },
+  auth_fail: { group: "sender", sq: "Kontrolli DMARC i emailit dështoi ({e}).", en: "The email DMARC check failed ({e})." },
+  institution_domain_spoof: { group: "sender", sq: "Domeni i institucionit {e} dështoi DMARC-un, dhe ai domen publikon një politikë që i kërkon marrësit ta refuzojë ose ta izolojë.", en: "The institution domain {e} failed DMARC, and that domain publishes a policy that tells receivers to reject or quarantine it." },
   display_spoof: { group: "sender", sq: "Emri i dërguesit imiton {e}, por adresa nuk është zyrtare.", en: "The sender name imitates {e}, but the address is not official." },
   reply_to_mismatch: { group: "sender", sq: "Përgjigjet shkojnë te një adresë tjetër ({e}).", en: "Replies go to a different address ({e})." },
   freemail_institution: { group: "sender", sq: "Mesazhi pretendon se vjen nga {e}, por është dërguar nga një email falas.", en: "The message claims to be from {e} but was sent from a free email account." },
-  unknown_sms_sender: { group: "sender", sq: "Dërguesi i SMS-së nuk është dërgues zyrtar i {e}.", en: "The SMS sender is not an official sender for {e}." },
+  unknown_sms_sender: { group: "sender", sq: "Dërguesi i SMS-së nuk është i njohur, dhe mesazhi ka një lidhje ose pretendon një institucion ({e}).", en: "The SMS sender is unknown, and the message has a link or claims an institution ({e})." },
+  unofficial_claim: { group: "sender", sq: "Mesazhi paraqitet si {e}, por nuk vjen nga një dërgues zyrtar i asaj institucioni.", en: "The message presents itself as {e}, but it does not come from an official sender for that institution." },
   // attachments
   attachment_exec: { group: "attachments", sq: "Bashkëngjitja {e} mund të ekzekutojë program ose makro.", en: "The attachment {e} can run a program or macro." },
   attachment_archive: { group: "attachments", sq: "Bashkëngjitja {e} është arkiv që mund të fshehë skedarë të rrezikshëm.", en: "The attachment {e} is an archive that can hide dangerous files." },
@@ -41,7 +49,7 @@ export const REASONS = {
   // reputation
   known_bad: { group: "reputation", sq: "{e} është tashmë në listën tonë të mashtrimeve të njohura.", en: "{e} is already on our list of known scams." },
   confirmed_campaign: { group: "reputation", sq: "{e} është pjesë e një fushate mashtrimi të konfirmuar.", en: "{e} is part of a confirmed scam campaign." },
-  many_reports: { group: "reputation", sq: "Disa persona e kanë raportuar {e} në 24 orët e fundit.", en: "Several people reported {e} in the last 24 hours." },
+  many_reports: { group: "reputation", sq: "Disa persona të ndryshëm e kanë raportuar {e} në 24 orët e fundit.", en: "Several different people reported {e} in the last 24 hours." },
   // live threat intelligence
   domain_age: { group: "links", sq: "Domeni u regjistrua vetëm {e} ditë më parë.", en: "The domain was registered only {e} days ago." },
   age_unknown: { group: "links", sq: "Nuk arritëm të gjejmë kur u regjistrua domeni {e}; e trajtojmë si të ri.", en: "We could not find when {e} was registered, so we treat it as new." },

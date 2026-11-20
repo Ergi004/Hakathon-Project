@@ -16,6 +16,7 @@ export const analysisInputSchema = z
         spf: authResult.optional(),
         dkim: authResult.optional(),
         dmarc: authResult.optional(),
+        dmarcPolicy: z.enum(["none", "quarantine", "reject"]).optional(),
         replyTo: z.string().max(320).optional(),
       })
       .optional(),

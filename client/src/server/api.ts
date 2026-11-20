@@ -17,7 +17,8 @@ const MAIL_ORIGINS = ["https://mail.google.com", "https://outlook.live.com", "ht
 export function corsHeaders(req: NextRequest): Record<string, string> {
   const origin = req.headers.get("origin");
   const allowed = [...MAIL_ORIGINS, ...(process.env.EXTENSION_ORIGINS ?? "").split(",").map((s) => s.trim()).filter(Boolean)];
-  if (!origin || !allowed.includes(origin)) return {};
+  const extensionOrigin = origin?.startsWith("chrome-extension://") || origin?.startsWith("moz-extension://");
+  if (!origin || (!allowed.includes(origin) && !extensionOrigin)) return {};
   return {
     "Access-Control-Allow-Origin": origin,
     "Access-Control-Allow-Methods": "GET,POST,DELETE,OPTIONS",
