@@ -6,7 +6,8 @@ import type { Locale } from "@/i18n/routing";
 import { BUSINESS_NAV } from "@/lib/nav";
 import { guardOrRedirect, requireActiveOrg } from "@/server/auth";
 
-async function BusinessShell({ children }: { children: React.ReactNode }) {
+async function BusinessShell({ children, params }: { children: React.ReactNode; params: Promise<{ locale: string }> }) {
+  setRequestLocale((await params).locale as Locale);
   // Active org comes from a cookie and is re-validated against organization_members.
   const ctx = await guardOrRedirect(() => requireActiveOrg());
   const t = await getTranslations("business");
@@ -26,18 +27,16 @@ async function BusinessShell({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default async function BusinessLayout({
+export default function BusinessLayout({
   children,
   params,
 }: {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;
-  setRequestLocale(locale as Locale);
   return (
     <Suspense fallback={<ShellFallback />}>
-      <BusinessShell>{children}</BusinessShell>
+      <BusinessShell params={params}>{children}</BusinessShell>
     </Suspense>
   );
 }

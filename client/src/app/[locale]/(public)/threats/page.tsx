@@ -59,8 +59,7 @@ export default async function ThreatsPage({ params, searchParams }: { params: Pr
       <Suspense fallback={<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-52 rounded-xl" />)}</div>}>
         <Results searchParams={searchParams} />
       </Suspense>
-      <p className="text-xs text-muted-foreground">{t("feedNote")} {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- JSON API endpoint, not a page */}
-        <a className="underline" href="/api/v1/feed">{t("rss")}</a></p>
+      <p className="text-xs text-muted-foreground">{t("feedNote")} <a className="underline" href="/api/v1/feed">{t("rss")}</a></p>
     </div>
   );
 }

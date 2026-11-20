@@ -6,7 +6,8 @@ import type { Locale } from "@/i18n/routing";
 import { CITIZEN_NAV } from "@/lib/nav";
 import { requireUser } from "@/server/auth";
 
-async function CitizenShell({ children }: { children: React.ReactNode }) {
+async function CitizenShell({ children, params }: { children: React.ReactNode; params: Promise<{ locale: string }> }) {
+  setRequestLocale((await params).locale as Locale);
   const ctx = await requireUser();
   const t = await getTranslations("citizen");
   const tr = await getTranslations("roles");
@@ -25,18 +26,16 @@ async function CitizenShell({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default async function CitizenLayout({
+export default function CitizenLayout({
   children,
   params,
 }: {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;
-  setRequestLocale(locale as Locale);
   return (
     <Suspense fallback={<ShellFallback />}>
-      <CitizenShell>{children}</CitizenShell>
+      <CitizenShell params={params}>{children}</CitizenShell>
     </Suspense>
   );
 }

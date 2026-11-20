@@ -24,6 +24,8 @@ import {
 import { Link, usePathname } from "@/i18n/navigation";
 import type { NavIcon as NavIconName } from "@/lib/nav";
 import { cn } from "@/lib/utils";
+import { useSocBadge } from "@/components/soc/realtime-provider";
+import { SidebarMenuBadge } from "@/components/ui/sidebar";
 import { signOut } from "@/server/auth-actions";
 import { LanguageSwitch } from "./language-switch";
 import { NavIcon } from "./nav-icon";
@@ -34,6 +36,10 @@ export interface ShellItem {
   label: string;
   icon: NavIconName;
   mobile?: boolean;
+  /** Static count shown as a badge (e.g. unread alerts). */
+  count?: number;
+  /** Live badge from the SOC realtime provider. */
+  liveBadge?: "inbox";
 }
 
 function useActiveHref(items: ShellItem[]) {
@@ -71,6 +77,7 @@ export function AppShell({
 }) {
   const t = useTranslations("common");
   const active = useActiveHref(items);
+  const live = useSocBadge();
   const mobileItems = items.filter((i) => i.mobile);
 
   return (
@@ -94,6 +101,11 @@ export function AppShell({
                         <span>{item.label}</span>
                       </Link>
                     </SidebarMenuButton>
+                    {(item.liveBadge === "inbox" ? live.inbox + (item.count ?? 0) : item.count ?? 0) > 0 && (
+                      <SidebarMenuBadge aria-label={String(item.liveBadge === "inbox" ? live.inbox + (item.count ?? 0) : item.count)}>
+                        {item.liveBadge === "inbox" ? live.inbox + (item.count ?? 0) : item.count}
+                      </SidebarMenuBadge>
+                    )}
                   </SidebarMenuItem>
                 ))}
               </SidebarMenu>

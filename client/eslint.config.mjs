@@ -5,6 +5,11 @@ import nextTs from "eslint-config-next/typescript";
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
+  {
+    // API downloads (/api/...) are plain <a> links; pages always use next-intl's <Link>.
+    // The rule mistakes /api routes for pages because of the [locale]/[...rest] catch-all.
+    rules: { "@next/next/no-html-link-for-pages": "off" },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:

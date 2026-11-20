@@ -6,7 +6,8 @@ import type { Locale } from "@/i18n/routing";
 import { ADMIN_NAV } from "@/lib/nav";
 import { guardOrRedirect, requireRole } from "@/server/auth";
 
-async function AdminShell({ children }: { children: React.ReactNode }) {
+async function AdminShell({ children, params }: { children: React.ReactNode; params: Promise<{ locale: string }> }) {
+  setRequestLocale((await params).locale as Locale);
   const ctx = await guardOrRedirect(() => requireRole("platform_admin"));
   const t = await getTranslations("admin");
   const tr = await getTranslations("roles");
@@ -23,18 +24,16 @@ async function AdminShell({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default async function AdminLayout({
+export default function AdminLayout({
   children,
   params,
 }: {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;
-  setRequestLocale(locale as Locale);
   return (
     <Suspense fallback={<ShellFallback />}>
-      <AdminShell>{children}</AdminShell>
+      <AdminShell params={params}>{children}</AdminShell>
     </Suspense>
   );
 }

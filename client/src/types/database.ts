@@ -1957,8 +1957,79 @@ export type Database = {
           },
         ];
       };
+      saved_views: {
+        Row: {
+          id: string;
+          user_id: string;
+          scope: string;
+          name: string;
+          filters: Json;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          scope?: string;
+          name: string;
+          filters?: Json;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          scope?: string;
+          name?: string;
+          filters?: Json;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "saved_views_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      alert_events: {
+        Row: {
+          id: string;
+          rule_id: string;
+          value: number;
+          data: Json;
+          fired_at: string;
+        };
+        Insert: {
+          id?: string;
+          rule_id: string;
+          value: number;
+          data?: Json;
+          fired_at?: string;
+        };
+        Update: {
+          id?: string;
+          rule_id?: string;
+          value?: number;
+          data?: Json;
+          fired_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "alert_events_rule_id_fkey";
+            columns: ["rule_id"];
+            isOneToOne: false;
+            referencedRelation: "alert_rules";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: {
+      soc_daily_volume: {
+        Row: { day: string | null; flag: string | null; n: number | null };
+        Relationships: [];
+      };
       public_threat_feed: {
         Row: {
           code: string | null;
@@ -1982,6 +2053,9 @@ export type Database = {
       is_org_member: { Args: { p_org: string }; Returns: boolean };
       next_protocol: { Args: Record<PropertyKey, never>; Returns: string };
       api_usage_hit: { Args: { p_key: string }; Returns: undefined };
+      similar_messages: { Args: { p_message: string; p_limit?: number }; Returns: { id: string; body_masked: string; similarity: number; campaign_id: string | null; created_at: string }[] };
+      similar_campaign_by_body: { Args: { p_body: string; p_min?: number; p_days?: number }; Returns: { campaign_id: string; similarity: number }[] };
+      search_messages: { Args: { p_q: string; p_limit?: number }; Returns: { id: string; body_masked: string; similarity: number; campaign_id: string | null; label: Database["public"]["Enums"]["msg_label"] }[] };
       rate_limit_hit: { Args: { p_key: string; p_window_sec: number; p_max: number }; Returns: { allowed: boolean; current_hits: number; reset_at: string }[] };
     };
     Enums: {
