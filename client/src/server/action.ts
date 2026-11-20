@@ -64,3 +64,21 @@ export function check<R extends DbResult>(res: R, what = "db"): DbSuccess<R> {
   }
   return res.data as DbSuccess<R>;
 }
+
+/** Business actions: the active organization is re-validated against organization_members each call. */
+export async function orgAction<S extends z.ZodType, T>(
+  roles: readonly import("./auth").OrgRole[],
+  schema: S,
+  input: unknown,
+  fn: (data: z.infer<S>, ctx: import("./auth").OrgCtx) => Promise<T>,
+): Promise<Res<T>> {
+  const parsed = schema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: "invalid", message: parsed.error.issues[0]?.message };
+  try {
+    const { requireActiveOrg } = await import("./auth");
+    const ctx = await requireActiveOrg(roles);
+    return { ok: true, data: await fn(parsed.data, ctx) };
+  } catch (e) {
+    return toError(e);
+  }
+}

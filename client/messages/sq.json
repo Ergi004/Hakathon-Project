@@ -1236,5 +1236,181 @@
       "press": "Media",
       "security": "Raportim i dobësive të sigurisë"
     }
+  },
+  "biz": {
+    "switchOrg": "Ndrysho organizatën",
+    "noInstitution": "Organizata jote nuk është lidhur ende me një institucion të monitoruar. Shto domenet te Konfigurimi i markës; SOC e lidh pasi t'i verifikosh.",
+    "overview": {
+      "openAlerts": "Sinjalizime të hapura",
+      "activeCampaigns": "Fushata aktive kundër nesh",
+      "takedowns": "Bllokime në proces",
+      "customerReports": "Raporte nga klientët",
+      "trend": "Raportet për markën tënde (30 ditë)",
+      "trendSr": "Raportet ditore në 30 ditët e fundit: {summary}",
+      "urgent": "Sinjalizimet më urgjente",
+      "noUrgent": "Asnjë sinjalizim i hapur. Mirë!",
+      "setupCta": "Përfundo konfigurimin e markës"
+    },
+    "onboarding": {
+      "intro": "Shto atë që i përket markës tënde. I përdorim për të gjetur domene dhe mesazhe që të imitojnë.",
+      "kinds": {
+        "domain": "Domene",
+        "brand_name": "Emra marke",
+        "sms_sender": "Dërgues SMS",
+        "phone": "Numra telefoni",
+        "social": "Llogari sociale",
+        "logo_hash": "Logo"
+      },
+      "placeholders": {
+        "domain": "banka-ime.al.example",
+        "brand_name": "Banka Ime",
+        "sms_sender": "BankaIme",
+        "phone": "+355 4 222 2222",
+        "social": "@bankaime"
+      },
+      "add": "Shto",
+      "verified": "Verifikuar",
+      "unverified": "Pa verifikuar",
+      "verify": "Verifiko",
+      "verifyTitle": "Verifiko pronësinë e {domain}",
+      "verifyDns": "Shto këtë rekord TXT në DNS:",
+      "verifyFile": "Ose vendos këtë përmbajtje te https://{domain}/.well-known/mburoja.txt:",
+      "verifyNow": "Kontrollo tani",
+      "verifyOk": "Domeni u verifikua.",
+      "verifyFail": "Nuk e gjetëm tokenin. Kontrollo DNS ose skedarin dhe provo përsëri.",
+      "verifyNote": "Kontrollojmë vetëm domenin tënd, me afat 3 sekonda, pa ridrejtime drejt rrjeteve private.",
+      "step": "Hapi {n}",
+      "done": "Gati"
+    },
+    "alerts": {
+      "severity": "Rëndësia",
+      "status": "Statusi",
+      "statuses": {
+        "new": "E re",
+        "acknowledged": "Pranuar",
+        "escalated": "Dërguar te SOC",
+        "resolved": "Zgjidhur"
+      },
+      "acknowledge": "Prano",
+      "escalate": "Dërgo te SOC",
+      "resolve": "Zgjidh",
+      "evidence": "Provat",
+      "escalated": "U dërgua te SOC me protokollin {protocol}.",
+      "empty": "Asnjë sinjalizim."
+    },
+    "campaigns": {
+      "empty": "Asnjë fushatë që imiton markën tënde.",
+      "takedowns": "Statusi i bllokimeve",
+      "tell": "Çfarë t'u thuash klientëve",
+      "tellText": "Kujdes nga mesazhet që pretendojnë se vijnë nga {brand} dhe ju dërgojnë te {domain}. Ne nuk ju kërkojmë kurrë kode, fjalëkalime ose të dhëna karte me SMS ose email.",
+      "draftNotice": "Harto njoftim"
+    },
+    "domains": {
+      "allowlistHint": "Lejo vetëm variantet që i ke regjistruar vetë.",
+      "requestTakedown": "Kërko bllokim",
+      "requested": "Kërkesa u dërgua te SOC: {protocol}",
+      "empty": "Asnjë domen imitues i gjetur."
+    },
+    "reports": {
+      "empty": "Asnjë raport për markën tënde.",
+      "note": "Raportet janë të anonimizuara: shfaqet vetëm teksti i maskuar dhe statusi."
+    },
+    "notices": {
+      "campaign": "Fushata",
+      "channel": "Kanali",
+      "channels": {
+        "sms": "SMS",
+        "email": "Email",
+        "banner": "Banner në faqe"
+      },
+      "preview": "Parapamja",
+      "copy": "Kopjo tekstin",
+      "out": "Dërgimi nuk është pjesë e platformës: kopjoje dhe përdore në kanalet e tua.",
+      "chars": "{count} karaktere"
+    },
+    "training": {
+      "new": "Simulim i ri",
+      "name": "Emri",
+      "template": "Shablloni",
+      "templates": {
+        "parcel": "Pako e ndalur",
+        "it_password": "Fjalëkalimi skadon (IT)",
+        "invoice": "Faturë e papaguar",
+        "bonus": "Bonus nga burimet njerëzore"
+      },
+      "emails": "Email-et e punonjësve (një për rresht)",
+      "emailsHint": "Email-et përdoren vetëm për dërgim (i simuluar) dhe nuk ruhen.",
+      "launch": "Nis simulimin",
+      "launched": "Simulimi u nis për {count} punonjës (i simuluar).",
+      "funnel": "Rezultatet",
+      "sent": "Dërguar",
+      "opened": "Hapur",
+      "clicked": "Klikuar",
+      "reported": "Raportuar",
+      "statuses": {
+        "draft": "Draft",
+        "running": "Në proces",
+        "finished": "Përfunduar"
+      },
+      "finish": "Përfundo",
+      "empty": "Asnjë simulim ende.",
+      "simulated": "Asnjë email i vërtetë nuk dërgohet nëse SIMULATE_EMAIL nuk është false."
+    },
+    "api": {
+      "new": "Çelës i ri",
+      "name": "Emri i çelësit",
+      "scopes": "Lejet",
+      "scopeScan": "scan: kontrolle përmes /api/v1/scan",
+      "scopeIocs": "iocs: eksport i treguesve",
+      "create": "Krijo çelësin",
+      "once": "Kopjoje tani. Nuk do ta shfaqim më.",
+      "revoke": "Revoko",
+      "revoked": "Revokuar",
+      "lastUsed": "Përdorur së fundi",
+      "never": "Kurrë",
+      "usage": "Përdorimi (30 ditë)",
+      "usageSr": "Thirrjet ditore: {summary}",
+      "snippets": "Shembuj kodi",
+      "empty": "Asnjë çelës."
+    },
+    "team": {
+      "invite": "Fto anëtar",
+      "email": "Email",
+      "role": "Roli",
+      "invited": "Ftesa u dërgua.",
+      "remove": "Hiq",
+      "you": "Ti",
+      "lastOwner": "Organizata duhet të ketë të paktën një pronar.",
+      "empty": "Asnjë anëtar."
+    },
+    "export": {
+      "month": "Muaji",
+      "format": "Formati",
+      "generate": "Gjenero raportin",
+      "ready": "Raporti është gati. Lidhja vlen 10 minuta.",
+      "download": "Shkarko",
+      "contents": "Përmban incidentet, kohët e bllokimit dhe trendin për muajin e zgjedhur."
+    },
+    "settings": {
+      "profile": "Profili i organizatës",
+      "name": "Emri",
+      "notifications": "Email-e për njoftime",
+      "notificationsHint": "Një për rresht.",
+      "retention": "Ruajtja e të dhënave (ditë)",
+      "plan": "Plani"
+    }
+  },
+  "sim": {
+    "title": "Ky ishte një ushtrim sigurie",
+    "body": "Organizata jote po teston sa mirë njihen mesazhet mashtruese. Nuk ndodhi asgjë e keqe dhe nuk u mor asnjë e dhënë.",
+    "signs": "Çfarë duhej të të bënte të dyshoje",
+    "signsItems": [
+      "Nxitimi: „sot”, „menjëherë”.",
+      "Lidhja nuk të çonte në domenin zyrtar.",
+      "Të kërkohej të hyje ose të paguaje përmes një lidhjeje."
+    ],
+    "report": "Do ta kisha raportuar",
+    "reported": "Faleminderit! Kjo është gjëja e duhur për t'u bërë.",
+    "learn": "Mëso më shumë"
   }
 }

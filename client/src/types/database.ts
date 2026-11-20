@@ -61,6 +61,8 @@ export type Database = {
           country: string;
           plan: string;
           created_at: string;
+          notification_emails: string[];
+          retention_days: number;
         };
         Insert: {
           id?: string;
@@ -70,6 +72,8 @@ export type Database = {
           country?: string;
           plan?: string;
           created_at?: string;
+          notification_emails?: string[];
+          retention_days?: number;
         };
         Update: {
           id?: string;
@@ -79,6 +83,8 @@ export type Database = {
           country?: string;
           plan?: string;
           created_at?: string;
+          notification_emails?: string[];
+          retention_days?: number;
         };
         Relationships: [
         ];
@@ -2056,6 +2062,7 @@ export type Database = {
       similar_messages: { Args: { p_message: string; p_limit?: number }; Returns: { id: string; body_masked: string; similarity: number; campaign_id: string | null; created_at: string }[] };
       similar_campaign_by_body: { Args: { p_body: string; p_min?: number; p_days?: number }; Returns: { campaign_id: string; similarity: number }[] };
       search_messages: { Args: { p_q: string; p_limit?: number }; Returns: { id: string; body_masked: string; similarity: number; campaign_id: string | null; label: Database["public"]["Enums"]["msg_label"] }[] };
+      my_institution_ids: { Args: Record<PropertyKey, never>; Returns: string[] };
       rate_limit_hit: { Args: { p_key: string; p_window_sec: number; p_max: number }; Returns: { allowed: boolean; current_hits: number; reset_at: string }[] };
     };
     Enums: {

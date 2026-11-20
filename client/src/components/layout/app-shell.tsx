@@ -59,6 +59,7 @@ export function AppShell({
   items,
   user,
   orgName,
+  orgSlot,
   bellHref,
   bottomNav = false,
   statusBar,
@@ -69,6 +70,8 @@ export function AppShell({
   items: ShellItem[];
   user: { name: string; roleLabel: string };
   orgName?: string;
+  /** Replaces the org name with a control (business org switcher). */
+  orgSlot?: ReactNode;
   bellHref?: string;
   bottomNav?: boolean;
   statusBar?: ReactNode;
@@ -131,7 +134,9 @@ export function AppShell({
         <header className="sticky top-0 z-20 flex h-14 items-center gap-2 border-b border-border bg-background/85 px-4 backdrop-blur md:px-6">
           <SidebarTrigger aria-label={t("toggleSidebar")} />
           <div className="min-w-0 flex-1">
-            {orgName ? (
+            {orgSlot ? (
+              orgSlot
+            ) : orgName ? (
               <p className="truncate text-sm">
                 <span className="sr-only">{t("activeOrg")}: </span>
                 <span className="font-medium">{orgName}</span>

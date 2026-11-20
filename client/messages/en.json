@@ -1236,5 +1236,181 @@
       "press": "Press",
       "security": "Security vulnerability reports"
     }
+  },
+  "biz": {
+    "switchOrg": "Switch organization",
+    "noInstitution": "Your organization is not linked to a monitored institution yet. Add your domains in Brand setup; the SOC links it once you verify them.",
+    "overview": {
+      "openAlerts": "Open brand alerts",
+      "activeCampaigns": "Active campaigns against us",
+      "takedowns": "Takedowns in progress",
+      "customerReports": "Reports from customers",
+      "trend": "Reports about your brand (30 days)",
+      "trendSr": "Daily reports over the last 30 days: {summary}",
+      "urgent": "Most urgent alerts",
+      "noUrgent": "No open alerts. Good!",
+      "setupCta": "Finish brand setup"
+    },
+    "onboarding": {
+      "intro": "Add what belongs to your brand. We use it to find domains and messages that imitate you.",
+      "kinds": {
+        "domain": "Domains",
+        "brand_name": "Brand names",
+        "sms_sender": "SMS senders",
+        "phone": "Phone numbers",
+        "social": "Social accounts",
+        "logo_hash": "Logos"
+      },
+      "placeholders": {
+        "domain": "my-bank.al.example",
+        "brand_name": "My Bank",
+        "sms_sender": "MyBank",
+        "phone": "+355 4 222 2222",
+        "social": "@mybank"
+      },
+      "add": "Add",
+      "verified": "Verified",
+      "unverified": "Not verified",
+      "verify": "Verify",
+      "verifyTitle": "Verify ownership of {domain}",
+      "verifyDns": "Add this TXT record to DNS:",
+      "verifyFile": "Or put this content at https://{domain}/.well-known/mburoja.txt:",
+      "verifyNow": "Check now",
+      "verifyOk": "Domain verified.",
+      "verifyFail": "We could not find the token. Check DNS or the file and try again.",
+      "verifyNote": "We only check your own domain, with a 3 second timeout and no redirects to private networks.",
+      "step": "Step {n}",
+      "done": "Done"
+    },
+    "alerts": {
+      "severity": "Severity",
+      "status": "Status",
+      "statuses": {
+        "new": "New",
+        "acknowledged": "Acknowledged",
+        "escalated": "Escalated to SOC",
+        "resolved": "Resolved"
+      },
+      "acknowledge": "Acknowledge",
+      "escalate": "Escalate to SOC",
+      "resolve": "Resolve",
+      "evidence": "Evidence",
+      "escalated": "Escalated to the SOC as {protocol}.",
+      "empty": "No alerts."
+    },
+    "campaigns": {
+      "empty": "No campaigns imitating your brand.",
+      "takedowns": "Takedown status",
+      "tell": "What to tell customers",
+      "tellText": "Beware of messages claiming to be from {brand} that send you to {domain}. We never ask for codes, passwords or card details by SMS or email.",
+      "draftNotice": "Draft a notice"
+    },
+    "domains": {
+      "allowlistHint": "Only allowlist variants you registered yourself.",
+      "requestTakedown": "Request takedown",
+      "requested": "Request sent to the SOC: {protocol}",
+      "empty": "No lookalike domains found."
+    },
+    "reports": {
+      "empty": "No reports about your brand.",
+      "note": "Reports are anonymised: only masked text and status are shown."
+    },
+    "notices": {
+      "campaign": "Campaign",
+      "channel": "Channel",
+      "channels": {
+        "sms": "SMS",
+        "email": "Email",
+        "banner": "Website banner"
+      },
+      "preview": "Preview",
+      "copy": "Copy text",
+      "out": "Sending is not part of the platform: copy it and use it in your own channels.",
+      "chars": "{count} characters"
+    },
+    "training": {
+      "new": "New simulation",
+      "name": "Name",
+      "template": "Template",
+      "templates": {
+        "parcel": "Parcel on hold",
+        "it_password": "Password expiring (IT)",
+        "invoice": "Unpaid invoice",
+        "bonus": "HR bonus"
+      },
+      "emails": "Employee emails (one per line)",
+      "emailsHint": "Emails are used only to send (simulated) and are not stored.",
+      "launch": "Launch simulation",
+      "launched": "Simulation launched for {count} employees (simulated).",
+      "funnel": "Results",
+      "sent": "Sent",
+      "opened": "Opened",
+      "clicked": "Clicked",
+      "reported": "Reported",
+      "statuses": {
+        "draft": "Draft",
+        "running": "Running",
+        "finished": "Finished"
+      },
+      "finish": "Finish",
+      "empty": "No simulations yet.",
+      "simulated": "No real email is sent unless SIMULATE_EMAIL is false."
+    },
+    "api": {
+      "new": "New key",
+      "name": "Key name",
+      "scopes": "Scopes",
+      "scopeScan": "scan: checks through /api/v1/scan",
+      "scopeIocs": "iocs: indicator export",
+      "create": "Create key",
+      "once": "Copy it now. We will not show it again.",
+      "revoke": "Revoke",
+      "revoked": "Revoked",
+      "lastUsed": "Last used",
+      "never": "Never",
+      "usage": "Usage (30 days)",
+      "usageSr": "Daily calls: {summary}",
+      "snippets": "Code snippets",
+      "empty": "No keys."
+    },
+    "team": {
+      "invite": "Invite member",
+      "email": "Email",
+      "role": "Role",
+      "invited": "Invitation sent.",
+      "remove": "Remove",
+      "you": "You",
+      "lastOwner": "The organization needs at least one owner.",
+      "empty": "No members."
+    },
+    "export": {
+      "month": "Month",
+      "format": "Format",
+      "generate": "Generate report",
+      "ready": "The report is ready. The link is valid for 10 minutes.",
+      "download": "Download",
+      "contents": "Includes incidents, takedown times and the trend for the selected month."
+    },
+    "settings": {
+      "profile": "Organization profile",
+      "name": "Name",
+      "notifications": "Notification emails",
+      "notificationsHint": "One per line.",
+      "retention": "Data retention (days)",
+      "plan": "Plan"
+    }
+  },
+  "sim": {
+    "title": "This was a security exercise",
+    "body": "Your organization is testing how well scam messages are spotted. Nothing bad happened and no data was taken.",
+    "signs": "What should have made you suspicious",
+    "signsItems": [
+      "Urgency: “today”, “immediately”.",
+      "The link did not go to the official domain.",
+      "You were asked to log in or pay through a link."
+    ],
+    "report": "I would have reported it",
+    "reported": "Thank you! That is exactly the right thing to do.",
+    "learn": "Learn more"
   }
 }
