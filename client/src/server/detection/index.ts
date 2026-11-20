@@ -1,20 +1,21 @@
 import { hashInput } from "@/server/hash";
 import { isConfirmed, matchByIoc } from "./campaigns";
-import { channelKey, iocKey, type DetectionContext, type IocKind } from "./context";
+import { channelKey, iocKey, type BlocklistHit, type DetectionContext, type IocKind } from "./context";
 import { scoreAttachments } from "./attachments";
 import { parseHost, scoreDomain, type LookalikeClass } from "./domain-score";
 import { fuse } from "./fusion";
-import { defang, extractUrls, foldText, hostOf, normalizePhone, normalizeText, parseSender } from "./normalize";
+import { defang, extractPhones, extractUrls, foldText, hostOf, normalizePhone, normalizeText, parseSender } from "./normalize";
 import type { GeminiClue, GeminiReview } from "./gemini-review";
 import { classifyScam, extractFeatures, type BrandCategory, type HostSignal } from "./pattern";
-import { reason, type ReasonCode } from "./reasons";
-import { matchSecrets, scoreRules, type RuleSignal } from "./rules";
-import { claimedInstitution, scoreSender } from "./sender";
+import { REASONS, reason, type ReasonCode } from "./reasons";
+import { SCORING } from "./scoring/config";
+import { asksToCall, lateInterest, matchSecrets, scoreRules, type RuleSignal } from "./rules";
+import { claimedInstitution, evaluateDmarc, scoreSender } from "./sender";
 import { classify, type TextModel } from "./text-model";
-import type { AnalysisInput, AnalysisResult, Reason } from "./types";
+import type { AnalysisInput, AnalysisResult, AppliedOverride, Reason, SignalAssessment, SignalState, Verdict } from "./types";
 import { scoreWhois } from "./whois-score";
 
-export type { AnalysisInput, AnalysisResult, Reason } from "./types";
+export type { AnalysisInput, AnalysisResult, Reason, SignalAssessment, SignalState, Verdict } from "./types";
 export { createContext, type ContextData, type DetectionContext } from "./context";
 
 /** Points from SPEC 6.3. */
@@ -49,11 +50,6 @@ export const POINTS = {
   asksSecrets: 8,
   /** The message asks for a PIN, password, card, or for the recipient to send a code. */
   asksCredentials: 18,
-  authFailEach: 10,
-  authFailCap: 20,
-  /** Each failed check when the claimed domain publishes quarantine or reject. */
-  authFailStrict: 15,
-  authFailStrictCap: 25,
   displaySpoof: 10,
   replyTo: 6,
   freemailInstitution: 10,
@@ -105,19 +101,6 @@ const GENERIC_PLACE = new Set(["bashkia", "bashki", "bashkise", "bashkine", "bas
 function domainAgeWeight(ageDays: number, institutionClaim: boolean): number {
   const base = ageDays < 7 ? POINTS.domainVeryNew : POINTS.domainNew;
   return institutionClaim ? Math.round(base * 1.5) : base;
-}
-
-/** Strict when the mail says so, or when the From domain is an official domain and no policy says otherwise. */
-function strictDmarc(input: AnalysisInput, ctx: DetectionContext): boolean {
-  const policy = input.headers?.dmarcPolicy;
-  if (policy === "reject" || policy === "quarantine") return true;
-  if (policy === "none") return false;
-  const domain = input.sender ? parseSender(input.sender).domain : undefined;
-  if (!domain) return false;
-  for (const official of ctx.officialDomains.keys()) {
-    if (domain === official || domain.endsWith(`.${official}`)) return true;
-  }
-  return false;
 }
 
 function brandNeedle(brand: BrandCategory): string | null {
@@ -183,6 +166,112 @@ function placeNamedInLure(input: AnalysisInput, ctx: DetectionContext): string |
   return best?.name ?? null;
 }
 
+const SENDER_SIGNALS = ["unknown_sms_sender", "unofficial_claim"] as const;
+const AGE_SIGNALS = ["domain_new", "cert_fast", "cert_brand", "whois_privacy", "infra_pattern"] as const;
+
+function signalState(code: string, fired: ReadonlySet<string>, unavailable: ReadonlySet<string>): SignalState {
+  if (unavailable.has(code)) return "unavailable";
+  if (fired.has(code)) return "fired";
+  return "not_fired";
+}
+
+/** Unavailable inputs reduce confidence. Missing data never adds to the score. */
+function hasSafetyEvidence(fired: ReadonlySet<string>, headers: AnalysisInput["headers"]): boolean {
+  if (fired.has("official_domain") || fired.has("official_sender")) return true;
+  return evaluateDmarc(headers) === "pass";
+}
+
+function dayAge(iso: string, now: Date): number {
+  return Math.floor((now.getTime() - Date.parse(iso)) / 86_400_000);
+}
+
+function listingIsStale(entry: BlocklistHit, now: Date): boolean {
+  const limit = SCORING.blocklist.staleAfterDays;
+  if (entry.confirmedAt && Number.isFinite(Date.parse(entry.confirmedAt)) && dayAge(entry.confirmedAt, now) <= limit) return false;
+  if (!entry.addedAt || !Number.isFinite(Date.parse(entry.addedAt))) return false;
+  return dayAge(entry.addedAt, now) > limit;
+}
+
+function fillSource(template: string, source: string): string {
+  return template.replace("{source}", source);
+}
+
+function listingOverrides(listings: readonly BlocklistHit[], now: Date): { overrides: AppliedOverride[]; label: "confirmed_scam" | "known_malicious" | null } {
+  const freshVerified = listings.filter((entry) => entry.verified && !listingIsStale(entry, now));
+  const freshUnverified = listings.filter((entry) => !entry.verified && !listingIsStale(entry, now));
+  const stale = listings.filter((entry) => listingIsStale(entry, now));
+  const overrides: AppliedOverride[] = [];
+  const sources = (entries: readonly BlocklistHit[]) => [...new Set(entries.map((entry) => entry.source))].join(", ");
+  if (freshVerified.length > 0) {
+    overrides.push({ id: "blocklist", floor: SCORING.blocklist.floor, reason: SCORING.blocklist.labels.confirmed });
+  }
+  if (freshUnverified.length > 0) {
+    overrides.push({
+      id: "blocklist",
+      floor: SCORING.blocklist.floor,
+      reason: fillSource(SCORING.blocklist.labels.knownMalicious, sources(freshUnverified)),
+    });
+  }
+  if (stale.length > 0) {
+    overrides.push({
+      id: "blocklist_stale",
+      floor: SCORING.blocklist.staleFloor,
+      reason: `${fillSource(SCORING.blocklist.labels.knownMalicious, sources(stale))}. ${SCORING.blocklist.labels.staleNote}`,
+    });
+  }
+  const label = freshVerified.length > 0 ? "confirmed_scam" : freshUnverified.length > 0 ? "known_malicious" : null;
+  return { overrides, label };
+}
+
+function verdictFor(
+  flag: AnalysisResult["flag"],
+  fired: ReadonlySet<string>,
+  confidence: number,
+  headers: AnalysisInput["headers"],
+  listing: "confirmed_scam" | "known_malicious" | null,
+): Verdict {
+  switch (flag) {
+    case "grey":
+      return "not_analysed";
+    case "green":
+      return hasSafetyEvidence(fired, headers) && confidence >= SCORING.verdicts.safeMinConfidence
+        ? "safe"
+        : "no_strong_signals";
+    case "yellow":
+      return "careful";
+    case "orange":
+      return "suspicious";
+    case "red":
+      return "likely_scam";
+    case "darkred":
+      switch (listing) {
+        case "confirmed_scam":
+          return "confirmed_scam";
+        case "known_malicious":
+          return "known_malicious";
+        case null:
+          return "high";
+        default: {
+          const unexpected: never = listing;
+          return unexpected;
+        }
+      }
+    default: {
+      const unexpected: never = flag;
+      return unexpected;
+    }
+  }
+}
+
+function configuredWeight(code: string): number {
+  return SCORING.signals.find((item) => item.code === code)?.weight ?? 0;
+}
+
+function scoreConfidence(applied: number[]): number {
+  const raw = applied.reduce((sum, penalty) => sum - penalty, SCORING.confidence.start);
+  return Math.max(SCORING.confidence.floor, Math.round(raw * 100) / 100);
+}
+
 /**
  * Analyse a link, message, phone number or email (SPEC 6). Pure: all data comes
  * from `ctx`; no network calls and no user URL is ever fetched.
@@ -196,6 +285,7 @@ export async function analyze(
   const text = normalizeText([input.subject, input.text].filter(Boolean).join("\n"));
   let floor = false;
   let cap = false;
+  const listings: BlocklistHit[] = [];
   let institutionId: string | undefined;
 
   // ---- Indicators -----------------------------------------------------------------
@@ -222,10 +312,12 @@ export async function analyze(
   // ---- Links ----------------------------------------------------------------------
   const officialHosts = new Set<string>();
   const hostSignals: HostSignal[] = [];
+  let ageUnavailable = false;
   for (const host of hosts) {
     const d = scoreDomain(host, ctx);
     const w = scoreWhois(host, ctx, opts.now);
     const intel = ctx.domainIntel.get(host) ?? ctx.domainIntel.get(parseHost(host).registrable) ?? null;
+    if (!d.official && !w) ageUnavailable = true;
     hostSignals.push({ domain: d, whois: w, intel });
     const shown = defang(host);
     if (d.official) {
@@ -270,9 +362,17 @@ export async function analyze(
     if (rules.urgency) addReason(reasons, reason("urgency", POINTS.urgency, rules.urgency));
     if (rules.payment_lure) addReason(reasons, reason("payment_lure", POINTS.paymentLure, rules.payment_lure));
     if (rules.threat) addReason(reasons, reason("threat", POINTS.threat, rules.threat));
+    const interest = lateInterest(text, rules);
+    if (interest) addReason(reasons, reason("late_interest", configuredWeight("late_interest"), interest));
     if (rules.asks_secrets) {
-      const tier = matchSecrets(text)?.tier ?? "account";
+      const matched = matchSecrets(text);
+      const tier = matched?.tier ?? "account";
       addReason(reasons, reason("asks_secrets", tier === "credential" ? POINTS.asksCredentials : POINTS.asksSecrets, rules.asks_secrets));
+      if (tier === "credential") addReason(reasons, reason("credential_ask", configuredWeight("credential_ask"), matched?.evidence));
+    }
+    if (asksToCall(text)) {
+      const unofficial = extractPhones(text).find((phone) => !ctx.officialChannels.has(channelKey("phone", phone)));
+      if (unofficial) addReason(reasons, reason("unofficial_callback", configuredWeight("unofficial_callback"), unofficial));
     }
   }
 
@@ -303,14 +403,23 @@ export async function analyze(
   // ---- Sender ---------------------------------------------------------------------
   const s = scoreSender(input, ctx);
   const instName = (id?: string) => (id ? ctx.institutions.get(id)?.name : undefined);
-  if (s.authFails.length) {
-    const strict = strictDmarc(input, ctx);
-    const each = strict ? POINTS.authFailStrict : POINTS.authFailEach;
-    const capPoints = strict ? POINTS.authFailStrictCap : POINTS.authFailCap;
-    addReason(
-      reasons,
-      reason("auth_fail", Math.min(capPoints, s.authFails.length * each), s.authFails.map((x) => x.toUpperCase()).join(", ")),
-    );
+  if (s.dmarcFail) addReason(reasons, reason("auth_fail", SCORING.emailAuth.dmarcFail, "DMARC"));
+  if (s.institutionSpoof) {
+    const policy = s.institutionSpoof;
+    let weight: number;
+    switch (policy) {
+      case "reject":
+        weight = SCORING.emailAuth.spoof.reject;
+        break;
+      case "quarantine":
+        weight = SCORING.emailAuth.spoof.quarantine;
+        break;
+      default: {
+        const unexpected: never = policy;
+        weight = unexpected;
+      }
+    }
+    addReason(reasons, reason("institution_domain_spoof", weight, `${defang(s.spoofDomain ?? "")} (${policy})`.trim()));
   }
   if (s.displaySpoof) addReason(reasons, reason("display_spoof", POINTS.displaySpoof, instName(s.claimedInstitutionId)));
   if (s.replyToMismatch) addReason(reasons, reason("reply_to_mismatch", POINTS.replyTo, defang(s.replyToMismatch)));
@@ -320,7 +429,7 @@ export async function analyze(
     addReason(reasons, reason("official_sender", 0, instName(s.officialInstitutionId)));
     cap = s.capEligible;
   }
-  if (!cap && input.channel === "sms" && reasons.has("impersonated_link") && namedId) {
+  if (!cap && input.channel === "sms" && namedId && input.sender?.trim() && reasons.has("impersonated_link")) {
     addReason(reasons, reason("unofficial_claim", POINTS.unofficialClaim, instName(namedId)));
   }
   institutionId ??= s.claimedInstitutionId ?? s.officialInstitutionId;
@@ -338,19 +447,22 @@ export async function analyze(
     for (const h of officialHosts) addReason(reasons, reason("official_domain", 0, defang(h)));
   }
 
-  // ---- Attachments ----------------------------------------------------------------
-  const a = scoreAttachments(input.attachments);
-  if (a.exec) addReason(reasons, reason("attachment_exec", POINTS.attachmentExec, a.exec));
-  if (a.doubleExt) addReason(reasons, reason("attachment_double_ext", POINTS.attachmentDoubleExt, a.doubleExt));
-  if (a.archive) addReason(reasons, reason("attachment_archive", POINTS.attachmentArchive, a.archive));
+  // ---- Attachments (email only; an SMS does not carry a file) --------------------
+  if (emailLike) {
+    const a = scoreAttachments(input.attachments);
+    if (a.exec) addReason(reasons, reason("attachment_exec", POINTS.attachmentExec, a.exec));
+    if (a.doubleExt) addReason(reasons, reason("attachment_double_ext", POINTS.attachmentDoubleExt, a.doubleExt));
+    if (a.archive) addReason(reasons, reason("attachment_archive", POINTS.attachmentArchive, a.archive));
+  }
 
   // ---- Reputation -----------------------------------------------------------------
   for (const i of iocList) {
     const key = iocKey(i.kind, i.value);
     const shown = i.kind === "domain" || i.kind === "url" ? defang(i.value) : i.value;
-    if (ctx.blocklist.has(key)) {
+    const listed = ctx.blocklist.get(key);
+    if (listed) {
       addReason(reasons, reason("known_bad", POINTS.knownBad, shown));
-      floor = true;
+      listings.push(listed);
     } else if (
       (i.kind === "domain" && ctx.knownHashes.has(hashInput("domain", i.value))) ||
       (i.kind === "url" && ctx.knownHashes.has(hashInput("url", i.value))) ||
@@ -420,13 +532,48 @@ export async function analyze(
 
   // ---- Fusion ---------------------------------------------------------------------
   const analysed = Boolean(text || hosts.length || input.sender || phone);
-  const fused = fuse([...reasons.values()], { thresholds: ctx.thresholds, floor, cap, analysed });
+  const listing = listingOverrides(listings, opts.now ?? new Date());
+  const fused = fuse([...reasons.values()], {
+    thresholds: ctx.thresholds,
+    floor,
+    cap,
+    analysed,
+    extraOverrides: listing.overrides,
+  });
   if (!analysed) fused.reasons = [reason("not_analysed", 0)];
+
+  const unavailable = new Set<string>();
+  const confidencePenalties: number[] = [];
+  if (s.senderMissing) {
+    unavailable.add("sms_sender");
+    for (const code of SENDER_SIGNALS) unavailable.add(code);
+    confidencePenalties.push(SCORING.confidence.penalties.sender_missing);
+  }
+  if (ageUnavailable) {
+    unavailable.add("domain_age");
+    for (const code of AGE_SIGNALS) if (!reasons.has(code)) unavailable.add(code);
+    confidencePenalties.push(SCORING.confidence.penalties.whois_failed);
+  }
+  if (text && hosts.length === 0 && input.kind !== "phone") {
+    unavailable.add("text_only_no_url");
+    confidencePenalties.push(SCORING.confidence.penalties.text_only_no_url);
+  }
+  const fired = new Set<string>([...reasons.keys(), ...(!analysed ? ["not_analysed"] : [])]);
+  const signals: SignalAssessment[] = (Object.keys(REASONS) as ReasonCode[]).map((code) => ({
+    code,
+    state: signalState(code, fired, unavailable),
+  }));
+  const confidence = scoreConfidence(confidencePenalties);
+  const verdict = verdictFor(fused.flag, fired, confidence, input.headers, listing.label);
 
   const campaign = matchByIoc(iocList, ctx);
   const inst = institutionId ? ctx.institutions.get(institutionId) : undefined;
   return {
     ...fused,
+    verdict,
+    confidence,
+    unavailableSignals: [...unavailable],
+    signals,
     classification,
     features: { ...extractedEarly, claimedPlace: placeNamedInLure(input, ctx) },
     ...(campaign ? { campaign: { id: campaign.id, code: campaign.code, matchType: "known" as const, confidence: 1 } } : {}),

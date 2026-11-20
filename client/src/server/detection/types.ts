@@ -13,7 +13,15 @@ export interface AnalysisInput {
   urls?: string[];
   sender?: string;
   subject?: string;
-  headers?: { spf?: AuthResult; dkim?: AuthResult; dmarc?: AuthResult; dmarcPolicy?: "none" | "quarantine" | "reject"; replyTo?: string };
+  headers?: {
+    spf?: AuthResult;
+    dkim?: AuthResult;
+    /** Whether the DKIM signature domain aligns with the From domain. Missing is not a fail. */
+    dkimAligned?: boolean;
+    dmarc?: AuthResult;
+    dmarcPolicy?: "none" | "quarantine" | "reject";
+    replyTo?: string;
+  };
   attachments?: { name: string; mime: string; size: number }[];
   channel: Channel;
   locale: "sq" | "en";
@@ -35,11 +43,46 @@ export interface CheckFeatures extends ScamFeatures {
   claimedPlace: string | null;
 }
 
+export type Verdict =
+  | "not_analysed"
+  | "no_strong_signals"
+  | "safe"
+  | "careful"
+  | "suspicious"
+  | "likely_scam"
+  | "high"
+  | "confirmed_scam"
+  | "known_malicious";
+
+export type SignalState = "fired" | "not_fired" | "unavailable";
+
+export interface SignalAssessment {
+  code: string;
+  state: SignalState;
+}
+
+/** A floor that matched after the group sum. `reason` is the analyst-facing explanation. */
+export interface AppliedOverride {
+  id: string;
+  floor: number;
+  reason: string;
+}
+
 export interface AnalysisResult {
   score: number;
   flag: FlagLevel;
+  /** Band name. The lowest band is "no strong signals"; "safe" needs positive evidence. */
+  verdict: Verdict;
   groups: Record<ReasonGroup, number>;
   reasons: Reason[];
+  /** 1 when every evaluated input was present. Unavailable inputs lower it, down to the config floor. */
+  confidence: number;
+  /** Inputs that were missing, so their signals could not add risk. */
+  unavailableSignals: string[];
+  /** One state for every known signal. */
+  signals: SignalAssessment[];
+  /** Floors that matched after the group sum, highest floor first. */
+  overridesApplied: AppliedOverride[];
   campaign?: {
     id?: string;
     code?: string;

@@ -26,7 +26,7 @@ export async function loadContextData(): Promise<ContextData> {
     db.from("domains").select("domain, registered_at, age_days, registrar, nameserver, hosting_country, privacy, status").neq("status", "allowlisted").limit(5000),
     db.from("certificates").select("domain_id, not_before, san, domains(domain)").limit(5000),
     db.from("iocs").select("type, value, campaigns!inner(id, code, status)").limit(10000),
-    db.from("blocklist_entries").select("type, value, expires_at"),
+    db.from("blocklist_entries").select("type, value, reason, expires_at, created_at"),
     db.from("known_hashes").select("hash").limit(20000),
     db.from("settings").select("key, value").in("key", ["thresholds"]),
     db.from("reports").select("id, reporter_id, messages(urls)").gte("created_at", since).limit(1000),
@@ -66,7 +66,13 @@ export async function loadContextData(): Promise<ContextData> {
     blocklist: (block.data ?? []).flatMap((b) => {
       const kind = iocKind(b.type);
       if (!kind || (b.expires_at && Date.parse(b.expires_at) < now)) return [];
-      return [{ kind, value: b.value.replace(/\[\.\]/g, ".").replace(/^hxxp/i, "http") }];
+      return [{
+        kind,
+        value: b.value.replace(/\[\.\]/g, ".").replace(/^hxxp/i, "http"),
+        source: b.reason?.trim() || "blocklist",
+        addedAt: b.created_at,
+        verified: false,
+      }];
     }),
     knownHashes: (hashes.data ?? []).map((h) => h.hash),
     recentReporters: countDistinctReporters(sightings(reports.data ?? [], audits.data ?? [])),

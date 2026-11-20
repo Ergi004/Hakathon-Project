@@ -19,7 +19,7 @@ const PATTERNS = {
   ],
   threat: [
     /\bgjob/, /\bbllok(?:im|uar|ohet|ohen|ohet)/, /\bpezull/, /\bmbyll(?:je|et|ur)/, /\bprocedur(?:e|a) ligjore\b/,
-    /\bpermbarim/, /\bsekuestr/, /\bpenalitet/, /\bkamat/, /\bfine[ds]?\b/, /\bpenalt/, /\bsuspend/, /\bblocked\b/,
+    /\bpermbarim/, /\bsekuestr/, /\bpenalitet/, /\bfine[ds]?\b/, /\bpenalt/, /\bsuspend/, /\bblocked\b/,
     /\blegal action\b/, /\bclosed\b/, /\barrest/, /\bcourt\b/, /\bdeactivat/,
   ],
   asks_secrets: [
@@ -62,6 +62,20 @@ export function matchSecrets(text: string): { tier: SecretTier; evidence: string
     if (hit) return { tier: "account", evidence: hit[0] };
   }
   return null;
+}
+
+const LATE_INTEREST = /\bkamat/;
+const CALL_REQUEST = /\b(?:na\s+)?telefono(?:ni|je)?\b|\bcall (?:us|this|me|now)\b|\bring (?:us|this|me)\b|\bna merrni\b/;
+
+/** Late interest counts only beside a deadline or a payment demand. */
+export function lateInterest(text: string, rules: { urgency: string | null; payment_lure: string | null }): string | null {
+  if (!rules.urgency && !rules.payment_lure) return null;
+  return foldText(text).match(LATE_INTEREST)?.[0] ?? null;
+}
+
+/** The message tells the person to call, before any number is checked against the official list. */
+export function asksToCall(text: string): boolean {
+  return CALL_REQUEST.test(foldText(text));
 }
 
 export type RuleSignal = keyof typeof PATTERNS;

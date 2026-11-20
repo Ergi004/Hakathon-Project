@@ -36,6 +36,7 @@ describe("scoring config", () => {
     expect(signal("urgency").weight).toBe(5);
     expect(signal("payment_demand").weight).toBe(6);
     expect(signal("threat").weight).toBe(5);
+    expect(signal("late_interest").weight).toBe(2);
     expect(signal("asks_for_secrets").weight).toBe(15);
     expect(signal("text_classifier").weight).toBe(15);
     expect(signal("llm_review").weight).toBe(15);
@@ -68,6 +69,7 @@ describe("scoring config", () => {
       ["credential_form_exfil", 90],
       ["phishing_kit", 80],
       ["brand_credential_form", 80],
+      ["executable_or_macro", 50],
     ]);
     expect(SCORING.allowlistCap).toEqual({ signal: "official_allowlist_domain", cap: 10, yieldsToFloors: true });
     expect(SCORING.negatives.map((item) => [item.code, item.reduction])).toEqual([
@@ -79,7 +81,20 @@ describe("scoring config", () => {
     expect(SCORING.negativeReductionCap).toBe(0.6);
     expect(SCORING.families.sender_auth).toEqual({ cap: 100, combine: "stack", stackRemainder: 0.25 });
     expect(SCORING.families.lookalike_domain).toEqual({ cap: 100, combine: "max" });
+    expect(SCORING.groupOverrides.map((item) => [item.id, item.floor])).toEqual([
+      ["executable_or_macro", 50],
+      ["lookalike_with_exec_or_ask", 70],
+      ["named_institution_pay_link", 65],
+      ["institution_spoof_payment", 85],
+      ["linkless_secret_ask", 55],
+      ["linkless_unofficial_call", 55],
+      ["blocklist", 80],
+    ]);
     expect(SCORING.verdicts.high).toEqual({ min: 60, max: 100 });
+    expect(SCORING.blocklist.floor).toBe(80);
+    expect(SCORING.blocklist.staleFloor).toBe(60);
+    expect(SCORING.blocklist.staleAfterDays).toBe(180);
+    expect(SCORING.emailAuth).toEqual({ dmarcFail: 10, spoof: { quarantine: 15, reject: 25 } });
     expect(SCORING.confidence.floor).toBe(0.2);
     expect(SCORING.confidence.penalties.page_not_loadable).toBe(0.3);
   });

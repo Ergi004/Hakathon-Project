@@ -3,6 +3,7 @@ import "server-only";
 import type { Json } from "@/types/database";
 import type { AnalysisInputDto } from "@/lib/schemas/analysis";
 import { analyze } from "./detection";
+import { fillMissingDomainAges, submittedHosts } from "./detection/domain-age";
 import { explain } from "./detection/explain";
 import { reviewWithGemini } from "./detection/gemini-review";
 import { loadContext } from "./detection/load-context";
@@ -97,6 +98,7 @@ export async function runCheck(
   opts: { linkUserId?: string | null; explainWithLlm?: boolean } = {},
 ): Promise<CheckOutcome> {
   const ctx = await loadContext();
+  await fillMissingDomainAges(ctx, submittedHosts(input));
   const fp = fingerprint(input);
   const result = await analyze(input, ctx, {
     gemini: (body, linkHosts) => reviewWithGemini(body, generateText, `detect:${fp.hash}`, linkHosts),

@@ -1,7 +1,7 @@
 import type { ReasonCode } from "../reasons";
 
 /**
- * Versioned risk-scoring config. The live fuse() path does not read this yet.
+ * Versioned risk-scoring config. Live fuse() reads groupOverrides and the safe-band rule.
  * Every number the scorer will use lives here.
  */
 export const SCORING_VERSION = "risk-1" as const;
@@ -133,6 +133,9 @@ const signals = [
   { code: "urgency", family: "text_pressure", weight: 5, plainReasonKey: "urgency", actionable: true },
   { code: "payment_demand", family: "text_pressure", weight: 6, plainReasonKey: "payment_lure", actionable: true },
   { code: "threat", family: "text_pressure", weight: 5, plainReasonKey: "threat", actionable: true },
+  { code: "late_interest", family: "text_pressure", weight: 2, plainReasonKey: "late_interest", actionable: true },
+  { code: "credential_ask", family: "text_pressure", weight: 0, plainReasonKey: "credential_ask", actionable: true },
+  { code: "unofficial_callback", family: "text_pressure", weight: 6, plainReasonKey: "unofficial_callback", actionable: true },
   {
     code: "asks_for_secrets",
     family: "text_pressure",
@@ -214,12 +217,93 @@ const BRAND_MATCH_CODES = [
   "brand_logo_or_layout_match_non_brand_domain",
 ] as const;
 
+const LOOKALIKE_LINK = ["lookalike_typosquat", "lookalike_homoglyph", "lookalike_combosquat", "subdomain_trick"] as const;
+const ANY_LOOKALIKE = [...LOOKALIKE_LINK, "punycode"] as const;
+const PAYMENT_OR_CREDENTIAL = ["payment_lure", "asks_secrets"] as const;
+
+export type GroupOverride =
+  | {
+      kind: "signals";
+      id: string;
+      floor: number;
+      reason: string;
+      allOf: readonly string[];
+      /** Every group must contain at least one fired signal. */
+      anyOf: readonly (readonly string[])[];
+    }
+  | {
+      kind: "blocklist";
+      id: string;
+      floor: number;
+      reason: string;
+    };
+
+/** Floors applied by fuse() after the group sum. The highest matching floor wins. */
+const groupOverrides = [
+  {
+    kind: "signals",
+    id: "executable_or_macro",
+    floor: 50,
+    reason: "The message includes an executable or macro attachment.",
+    allOf: ["attachment_exec"],
+    anyOf: [],
+  },
+  {
+    kind: "signals",
+    id: "lookalike_with_exec_or_ask",
+    floor: 70,
+    reason: "An institution lookalike domain is combined with an executable or a request for payment, credentials, or details.",
+    allOf: [],
+    anyOf: [LOOKALIKE_LINK, ["attachment_exec", ...PAYMENT_OR_CREDENTIAL]],
+  },
+  {
+    kind: "signals",
+    id: "named_institution_pay_link",
+    floor: 65,
+    reason: "The message names an institution, the link is not theirs, and that link is where you pay, sign in, or send details, alongside a lookalike signal.",
+    allOf: ["impersonated_link", "lure_destination"],
+    anyOf: [ANY_LOOKALIKE],
+  },
+  {
+    kind: "signals",
+    id: "institution_spoof_payment",
+    floor: 85,
+    reason: "An institution domain failed DMARC and the message asks for a payment or credentials.",
+    allOf: ["institution_domain_spoof"],
+    anyOf: [PAYMENT_OR_CREDENTIAL],
+  },
+  {
+    kind: "signals",
+    id: "linkless_secret_ask",
+    floor: 55,
+    reason: "The message asks for a PIN, a password, a card number, or for you to send a code.",
+    allOf: ["credential_ask"],
+    anyOf: [],
+  },
+  {
+    kind: "signals",
+    id: "linkless_unofficial_call",
+    floor: 55,
+    reason: "The message tells you to call a number that is not an official one.",
+    allOf: ["unofficial_callback"],
+    anyOf: [],
+  },
+  {
+    kind: "blocklist",
+    id: "blocklist",
+    floor: 80,
+    reason: "A blocklisted indicator or a confirmed campaign sets a floor of 80.",
+  },
+] as const satisfies readonly GroupOverride[];
+
 const floors = [
   { id: "known_bad", floor: 90, allOf: ["known_bad_indicator"] },
   { id: "confirmed_campaign", floor: 85, allOf: ["confirmed_campaign"] },
   { id: "credential_form_exfil", floor: 90, allOf: ["credential_form_non_official", "exfil_chat_bot_or_webhook"] },
   { id: "phishing_kit", floor: 80, allOf: ["known_phishing_kit"] },
   { id: "brand_credential_form", floor: 80, allOf: ["credential_form_non_official"], anyOf: BRAND_MATCH_CODES },
+  /** Live reason `attachment_exec`. Password archives and double extensions stay weights. */
+  { id: "executable_or_macro", floor: 50, allOf: ["executable_or_macro"] },
 ] as const satisfies readonly FloorOverride[];
 
 function familyRule(family: ScoringFamily): { cap: number; combine: "max" } | { cap: number; combine: "stack"; stackRemainder: number } {
@@ -262,10 +346,33 @@ export const SCORING = {
   signals,
   negatives,
   floors,
+  groupOverrides,
   verdicts: {
     low: { min: 0, max: 29 },
     suspicious: { min: 30, max: 59 },
     high: { min: 60, max: 100 },
+    /** Lowest analysed band. "safe" needs positive evidence and safeMinConfidence. */
+    lowestBand: "no_strong_signals",
+    safeBand: "safe",
+    safeMinConfidence: 0.8,
+  },
+  blocklist: {
+    /** Fresh listing, verified or not. */
+    floor: 80,
+    /** Listing older than staleAfterDays with no confirmation inside that window. */
+    staleFloor: 60,
+    staleAfterDays: 180,
+    labels: {
+      confirmed: "confirmed scam",
+      knownMalicious: "known malicious (listed by {source})",
+      staleNote: "listing may be outdated",
+    },
+  },
+  emailAuth: {
+    /** A DMARC fail. SPF or DKIM alone does not score. */
+    dmarcFail: 10,
+    /** Institution From domain that failed DMARC and publishes this policy. */
+    spoof: { quarantine: 15, reject: 25 },
   },
   confidence: {
     start: 1,
@@ -275,6 +382,8 @@ export const SCORING = {
       whois_failed: 0.15,
       reputation_lookup_failed: 0.1,
       text_only_no_url: 0.1,
+      /** SMS or call with no sender value to compare with the official list. */
+      sender_missing: 0.15,
     },
   },
 } as const;
