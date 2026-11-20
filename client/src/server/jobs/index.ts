@@ -9,6 +9,8 @@ import { scoreDomain } from "@/server/detection/domain-score";
 import { loadContextData } from "@/server/detection/load-context";
 import { scoreWhois } from "@/server/detection/whois-score";
 import { audit } from "@/server/audit";
+import { sweepLanding } from "@/server/phishing-intel/sandbox/landing-service";
+import { sweepScans } from "@/server/phishing-intel/scan-service";
 
 const H = 3_600_000;
 
@@ -168,5 +170,9 @@ export const JOBS = {
   "cluster-campaigns": clusterCampaigns,
   "refresh-kpis": () => refreshKpis(),
   "purge-privacy": purgePrivacy,
+  /** Phishing Intelligence: pick up queued scans and recover scans stuck in processing. */
+  "process-scans": sweepScans,
+  /** Landing-page sandbox (urlscan.io): finish analyses whose poll was cut short. */
+  "poll-landing": sweepLanding,
 } as const;
 export type JobName = keyof typeof JOBS;

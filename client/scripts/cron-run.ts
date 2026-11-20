@@ -2,7 +2,7 @@
 import "./lib/env";
 import { requireEnv } from "./lib/env";
 
-const JOBS = ["compute-geo-hotspots", "rebuild-region-stats", "poll-deep-scans", "escalate-overdue", "evaluate-alerts", "detect-lookalikes", "cluster-campaigns", "refresh-kpis", "purge-privacy"];
+const JOBS = ["compute-geo-hotspots", "rebuild-region-stats", "poll-deep-scans", "escalate-overdue", "evaluate-alerts", "detect-lookalikes", "cluster-campaigns", "refresh-kpis", "purge-privacy", "process-scans", "poll-landing"];
 const job = process.argv[2];
 if (!job || !JOBS.includes(job)) {
   console.error(`Usage: npm run cron:run <${JOBS.join("|")}>`);

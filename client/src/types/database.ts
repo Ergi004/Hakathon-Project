@@ -1445,6 +1445,98 @@ export type Database = {
           },
         ]
       }
+      landing_analyses: {
+        Row: {
+          attempts: number
+          completed_at: string | null
+          created_at: string
+          error: string | null
+          exfil: Json
+          final_domain: string | null
+          final_url: string | null
+          forms: Json
+          id: string
+          page: Json
+          provider: string
+          provider_uuid: string | null
+          reputation: Json
+          requested_by: string | null
+          requests: Json
+          result_url: string | null
+          sanitized: Json
+          scan_id: string
+          screenshot_url: string | null
+          status: string
+          updated_at: string
+          url: string
+          url_key: string
+          verdict: Json
+          visibility: string | null
+        }
+        Insert: {
+          attempts?: number
+          completed_at?: string | null
+          created_at?: string
+          error?: string | null
+          exfil?: Json
+          final_domain?: string | null
+          final_url?: string | null
+          forms?: Json
+          id?: string
+          page?: Json
+          provider?: string
+          provider_uuid?: string | null
+          reputation?: Json
+          requested_by?: string | null
+          requests?: Json
+          result_url?: string | null
+          sanitized?: Json
+          scan_id: string
+          screenshot_url?: string | null
+          status?: string
+          updated_at?: string
+          url: string
+          url_key: string
+          verdict?: Json
+          visibility?: string | null
+        }
+        Update: {
+          attempts?: number
+          completed_at?: string | null
+          created_at?: string
+          error?: string | null
+          exfil?: Json
+          final_domain?: string | null
+          final_url?: string | null
+          forms?: Json
+          id?: string
+          page?: Json
+          provider?: string
+          provider_uuid?: string | null
+          reputation?: Json
+          requested_by?: string | null
+          requests?: Json
+          result_url?: string | null
+          sanitized?: Json
+          scan_id?: string
+          screenshot_url?: string | null
+          status?: string
+          updated_at?: string
+          url?: string
+          url_key?: string
+          verdict?: Json
+          visibility?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "landing_analyses_scan_id_fkey"
+            columns: ["scan_id"]
+            isOneToOne: false
+            referencedRelation: "phishing_scans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           body_hash: string
@@ -1845,6 +1937,8 @@ export type Database = {
       }
       phishing_scans: {
         Row: {
+          albania: boolean
+          albania_signals: string[]
           attempts: number
           attribution_status: string
           campaign_id: string | null
@@ -1874,8 +1968,11 @@ export type Database = {
           threat_actor_id: string | null
           updated_at: string
           verdict: string
+          vt_max_malicious: number | null
         }
         Insert: {
+          albania?: boolean
+          albania_signals?: string[]
           attempts?: number
           attribution_status?: string
           campaign_id?: string | null
@@ -1905,8 +2002,11 @@ export type Database = {
           threat_actor_id?: string | null
           updated_at?: string
           verdict?: string
+          vt_max_malicious?: number | null
         }
         Update: {
+          albania?: boolean
+          albania_signals?: string[]
           attempts?: number
           attribution_status?: string
           campaign_id?: string | null
@@ -1936,6 +2036,7 @@ export type Database = {
           threat_actor_id?: string | null
           updated_at?: string
           verdict?: string
+          vt_max_malicious?: number | null
         }
         Relationships: [
           {
@@ -2471,28 +2572,34 @@ export type Database = {
       scan_iocs: {
         Row: {
           created_at: string
+          detail: Json
           id: string
           location: string
           normalized_value: string
           scan_id: string
+          subtype: string | null
           type: string
           value: string
         }
         Insert: {
           created_at?: string
+          detail?: Json
           id?: string
           location: string
           normalized_value: string
           scan_id: string
+          subtype?: string | null
           type: string
           value: string
         }
         Update: {
           created_at?: string
+          detail?: Json
           id?: string
           location?: string
           normalized_value?: string
           scan_id?: string
+          subtype?: string | null
           type?: string
           value?: string
         }

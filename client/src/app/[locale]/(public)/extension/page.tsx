@@ -78,7 +78,10 @@ export default async function ExtensionPage({ params }: { params: Promise<{ loca
   const { locale } = await params;
   setRequestLocale(locale as Locale);
   const t = await getTranslations("extensionPage");
-  const hasZip = existsSync(path.join(process.cwd(), "public", "downloads", "mburoja-extension.zip"));
+  // Packages are produced by `npm run ext:build` (scripts/build-extension.mjs).
+  const downloads = path.join(process.cwd(), "public", "downloads");
+  const hasZip = existsSync(path.join(downloads, "mburoja-extension.zip"));
+  const hasXpi = existsSync(path.join(downloads, "mburoja-extension-firefox.xpi"));
   const list = (key: string) => t.raw(key) as string[];
 
   const sends: { flags: FlagLevel[]; label: string; tone: string }[] = [
@@ -104,6 +107,11 @@ export default async function ExtensionPage({ params }: { params: Promise<{ loca
                 <a href="/downloads/mburoja-extension.zip" download><Download className="size-4" aria-hidden="true" />{t("download")}</a>
               </Button>
             )}
+            {hasXpi && (
+              <Button asChild size="lg" variant="outline" className="rounded-full">
+                <a href="/downloads/mburoja-extension-firefox.xpi" download><Download className="size-4" aria-hidden="true" />{t("downloadFirefox")}</a>
+              </Button>
+            )}
             <Button asChild size="lg" variant="outline" className="rounded-full">
               <a href="#install"><ArrowDown className="size-4" aria-hidden="true" />{t("howInstall")}</a>
             </Button>
@@ -117,6 +125,7 @@ export default async function ExtensionPage({ params }: { params: Promise<{ loca
         <div className="space-y-2">
           <h2 id="install-title" className="font-display text-3xl font-bold tracking-tight">{t("install")}</h2>
           <p className="text-muted-foreground">{t("downloadNote")}</p>
+          <p className="text-sm text-muted-foreground"><span className="font-medium text-foreground">Firefox: </span>{t("installFirefox")}</p>
         </div>
         <ol className="grid gap-6 md:grid-cols-4 md:gap-4">
           {list("installSteps").map((s, i) => {

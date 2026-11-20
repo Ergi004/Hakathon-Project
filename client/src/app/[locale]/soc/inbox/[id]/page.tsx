@@ -1,4 +1,4 @@
-import { ArrowLeft, Lightbulb, MessagesSquare } from "lucide-react";
+import { Lightbulb, MessagesSquare } from "lucide-react";
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
@@ -12,7 +12,6 @@ import { AssignMeButton, AuditedIocTable, DecisionBar, FeedbackButtons, LinkSugg
 import { StaffIntel } from "@/components/intel/staff-intel";
 import { UrlTabs } from "@/components/shared/url-tabs";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
 import { fmtAgo, fmtDateTime } from "@/lib/format";
@@ -23,6 +22,7 @@ import { hostOf } from "@/server/detection/normalize";
 import type { Reason } from "@/server/detection/types";
 import { latestScanState } from "@/server/intel/staff-view";
 import { getReportDetail } from "@/server/queries/soc";
+import { BackLink } from "@/components/layout/back-link";
 
 type Params = Promise<{ locale: string; id: string }>;
 
@@ -193,15 +193,10 @@ async function Workspace({ params }: { params: Params }) {
 export default function ReportWorkspacePage({ params }: { params: Params }) {
   return (
     <div className="mx-auto w-full max-w-[100rem] space-y-4">
-      <Suspense fallback={null}><Back /></Suspense>
+      <BackLink href="/soc/inbox" namespace="soc.report" label="back" />
       <Suspense fallback={<div className="space-y-3"><Skeleton className="h-16 w-80" /><Skeleton className="h-96 w-full" /></div>}>
         <Workspace params={params} />
       </Suspense>
     </div>
   );
-}
-
-async function Back() {
-  const t = await getTranslations("soc.report");
-  return <Button asChild variant="ghost" size="sm" className="-ml-2"><Link href="/soc/inbox"><ArrowLeft className="size-4" aria-hidden="true" />{t("back")}</Link></Button>;
 }

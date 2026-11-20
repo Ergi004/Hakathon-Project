@@ -1,19 +1,6 @@
 {
   "name": "mburoja-extension",
-  "version": "1.0.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "Mburoja Chrome extension (Manifest V3): scan an open email on click and report fraud to the authorities.",
-  "type": "module",
-  "scripts": {
-    "build": "node build.mjs",
-    "watch": "node build.mjs --watch",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run"
-  },
-  "devDependencies": {
-    "@types/chrome": "0.1.43",
-    "esbuild": "0.28.2",
-    "typescript": "5.9.3",
-    "vitest": "5.1.1"
-  }
+  "description": "Mburoja phishing & smishing scanner for Chrome and Firefox. Built from the client/ root with `npm run ext:build`."
 }

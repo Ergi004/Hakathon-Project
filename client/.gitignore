@@ -45,3 +45,9 @@ next-env.d.ts
 
 # Downloaded boundary source (rebuilt by npm run geo:build)
 data/geo/raw/
+# browser extension build output
+/extension/dist/
+/extension/node_modules/
+
+# extension packages copied by npm run ext:build
+/public/downloads/

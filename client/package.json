@@ -22,7 +22,10 @@
     "geo:hex": "tsx scripts/build-hex-layout.ts",
     "seed:geo": "tsx scripts/seed-geo.ts",
     "staff:create": "tsx scripts/create-staff.ts",
-    "seed:takedowns": "tsx scripts/seed-takedowns.ts"
+    "seed:takedowns": "tsx scripts/seed-takedowns.ts",
+    "ext:build": "node scripts/build-extension.mjs",
+    "ext:typecheck": "tsc --noEmit -p extension/tsconfig.json",
+    "seed:alerts": "tsx scripts/seed-citizen-alerts.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.11.0",
@@ -50,6 +53,7 @@
     "next-themes": "^0.4.6",
     "nodemailer": "^10.6.1",
     "papaparse": "^5.7.1",
+    "postal-mime": "^4.2.1",
     "radix-ui": "^1.8.1",
     "react": "19.3.0",
     "react-day-picker": "^10.0.2",
@@ -76,6 +80,7 @@
     "@types/d3-selection": "^3.0.12",
     "@types/d3-zoom": "^3.0.9",
     "@types/geojson": "^7946.0.16",
+    "@types/chrome": "^0.3.7",
     "@types/node": "^24.19.2",
     "@types/nodemailer": "^8.0.2",
     "@types/papaparse": "^5.5.2",

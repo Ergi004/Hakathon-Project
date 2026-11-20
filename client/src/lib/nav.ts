@@ -3,7 +3,7 @@
 export type NavIcon =
   | "home" | "list" | "file" | "bell" | "eye" | "book" | "users" | "puzzle" | "lock" | "settings"
   | "layout" | "wand" | "alert" | "flag" | "globe" | "megaphone" | "graduation" | "key" | "download"
-  | "gauge" | "inbox" | "gavel" | "chart" | "search" | "ban" | "target" | "siren" | "shield" | "map";
+  | "gauge" | "inbox" | "gavel" | "chart" | "search" | "ban" | "target" | "siren" | "shield" | "map" | "radar";
 
 export type NavGroup =
   | "activity" | "protection" | "account" | "monitor" | "respond" | "people" | "setup"
@@ -90,6 +90,7 @@ export const SOC_NAV = [
   { key: "command", group: "operations", href: "/soc", icon: "gauge" },
   { key: "inbox", group: "operations", href: "/soc/inbox", icon: "inbox" },
   { key: "alerts", group: "operations", href: "/soc/alerts", icon: "siren" },
+  { key: "intel", group: "investigate", href: "/soc/intel", icon: "radar" },
   { key: "campaigns", group: "investigate", href: "/soc/campaigns", icon: "flag" },
   { key: "domains", group: "investigate", href: "/soc/domains", icon: "globe" },
   { key: "geo", group: "investigate", href: "/soc/geo", icon: "map" },

@@ -1,58 +1,67 @@
-export type Flag = "green" | "yellow" | "orange" | "red" | "darkred" | "grey";
+/** Shared contracts between the content adapters, the background worker and the popup. */
 
-/** What the content script reads from the one email the user opened (only on click). */
+export type Provider = "gmail" | "outlook" | "webmail";
+
 export interface ExtractedEmail {
-  client: "gmail" | "outlook" | "page";
+  provider: Provider;
   subject?: string;
   sender?: string;
-  senderName?: string;
-  text: string;
+  replyTo?: string;
+  body: string;
+  html?: string;
   links: { href: string; text: string }[];
-  attachments: { name: string; mime: string }[];
+  attachments: { name: string; mime: string; size: number }[];
+  warnings: string[];
 }
 
-export interface ViewReason { code: string; text: string; weight: number; group?: string; evidence?: string }
-export interface IntelRow { key: string; provider: string; tier: "A" | "B"; status: string; verdict: string; detail?: string }
-export interface IntelDomain { host: string; status: string; domainAgeDays: number | null; finalScore: number | null; rows: IntelRow[]; subdomains: number; error?: string }
+export type ScanPayload =
+  | { kind: "email"; email: ExtractedEmail }
+  | { kind: "eml"; raw: string; fileName: string }
+  | { kind: "sms"; text: string; sender?: string }
+  | { kind: "selection"; text: string; as: "email" | "sms" };
 
-export type StepKey = "read" | "local" | "engine" | "intel" | "report";
-export type StepState = "pending" | "active" | "done" | "skipped" | "error";
-export type ReportState = "none" | "below" | "needs_consent" | "countdown" | "cancelled" | "sending" | "sent" | "undone" | "failed";
+export type Flag = "green" | "yellow" | "orange" | "red" | "darkred" | "grey";
 
-/** Everything the overlay and popup render. Sent from the background worker on every change. */
-export interface ScanView {
-  id: string;
-  phase: "local" | "engine" | "intel" | "report" | "done" | "error";
-  steps: Record<StepKey, StepState>;
+export interface ScanSummary {
+  scanId: string;
+  title: string;
+  channel: "EMAIL" | "SMS";
+  status: "queued" | "processing" | "completed" | "partial" | "failed" | "error";
   progress: number;
-  startedAt: string;
-  finishedAt?: string;
-  preliminary: boolean;
-  score: number;
-  baseScore?: number;
+  stages?: Record<string, string>;
+  verdict?: string;
+  risk?: number | null;
+  severity?: string | null;
   flag: Flag;
-  reasons: ViewReason[];
-  groups?: Record<string, number>;
-  explanation?: string;
-  found: { links: number; domains: string[]; attachments: number; senderDomain?: string };
-  intel: { mock: boolean; deep: boolean; domains: IntelDomain[] };
-  report: { state: ReportState; protocol?: string; reportId?: string; deleteUntil?: string; submitAt?: string; error?: string };
-  threshold: number;
+  vtMax?: number | null;
+  vt?: { type: string; value: string; malicious: number; suspicious: number; found: boolean; label: string | null }[];
+  reasons?: { sq: string; en: string; weight: number }[];
+  types?: string[];
+  family?: string | null;
+  /** Where captured data would be sent (bot, webhook, form handler), redacted. */
+  exfil?: { kind: string; value: string; otherScans: number }[];
+  actions?: { sq: string; en: string }[];
+  albania?: boolean;
   error?: string;
-  subject?: string;
-  at: string;
+  createdAt: string;
+  /** Masked signal report, ready to send (built from the platform's report). Kept locally only. */
+  signal?: import("./signal").SignalReport;
+  /** Set once a signal report was sent to the SOC inbox. */
+  submitted?: { reportId: string; protocol: string; deleteUntil: string; indicatorsOnly: boolean; auto: boolean; deleted?: boolean };
+  submitError?: string;
 }
 
 export interface Settings {
-  /** One-time consent: send emails at or above the threshold to the authorities automatically. */
+  server: string;
+  lang: "sq" | "en";
+  /** Auto-submit after a one-time consent (SPEC 12.2). Off by default. */
   autoSubmit: boolean;
-  threshold: 40 | 60 | 80;
-  /** Consent for tier B: the link is submitted to VirusTotal URL analysis and Hybrid Analysis. */
-  deepScan: boolean;
+  consentAt: string | null;
 }
 
-export interface SentReport { reportId: string; protocol: string; at: string; deleteUntil: string; score: number; flag: Flag; subject?: string; undone?: boolean }
-
-/** Messages over the content-script ⇄ background port. */
-export type ToBackground = { type: "scan"; email: ExtractedEmail } | { type: "report"; always: boolean } | { type: "cancel" } | { type: "undo" };
-export type ToContent = { type: "view"; view: ScanView };
+export type BgMessage =
+  | { type: "scan"; payload: ScanPayload }
+  | { type: "reset-token" }
+  | { type: "report"; scanId: string }
+  | { type: "undo-report"; scanId: string };
+export type BgReply = { ok: true; scanId: string } | { ok: false; error: string };

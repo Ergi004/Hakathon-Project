@@ -8,10 +8,17 @@ import { limit } from "@/server/rate-limit";
 
 export const OPTIONS = preflight;
 
-/** POST /api/v1/extension/register → { installToken } (5 / hour / IP hash). */
+/**
+ * POST /api/v1/extension/register → { installToken } (5 / hour / IP hash, SPEC 12.3).
+ * EXT_REGISTER_PER_HOUR overrides the limit for local development, where every
+ * test browser shares one IP.
+ */
 export async function POST(req: NextRequest) {
   const cors = corsHeaders(req);
-  if (!(await limit(`ext-register:${ipHash(req.headers)}`, 5, 3600)).allowed) return apiError(429, "rate_limited", "5 registrations per hour", cors);
+  const max = Number(process.env.EXT_REGISTER_PER_HOUR) || 5;
+  if (!(await limit(`ext-register:${ipHash(req.headers)}`, max, 3600)).allowed) {
+    return apiError(429, "register_rate_limited", `${max} registrations per hour from this network`, cors);
+  }
   const body = await readJson(req, registerSchema);
   if (!body.ok) return body.res;
   const db = tryAdmin();
