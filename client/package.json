@@ -19,7 +19,8 @@
     "train": "tsx scripts/train-classifier.ts",
     "cron:run": "tsx scripts/cron-run.ts",
     "ext:build": "node scripts/build-extension.mjs",
-    "ext:typecheck": "tsc --noEmit -p extension/tsconfig.json"
+    "ext:typecheck": "tsc --noEmit -p extension/tsconfig.json",
+    "seed:alerts": "tsx scripts/seed-citizen-alerts.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.11.0",

@@ -55,6 +55,38 @@ function applyI18n() {
     if (typeof v === "string") node.textContent = v;
   }
   $<HTMLInputElement>("sms-sender").placeholder = t.smsSenderPh;
+  // SQ | EN switch: reflect the active language (roving tabindex for arrow-key navigation).
+  $("lang-switch").setAttribute("aria-label", t.language);
+  for (const b of Array.from(document.querySelectorAll<HTMLButtonElement>("#lang-switch [data-lang]"))) {
+    const on = b.dataset.lang === settings.lang;
+    b.setAttribute("aria-checked", String(on));
+    b.tabIndex = on ? 0 : -1;
+  }
+}
+
+/** Switch the whole popup (and, via storage, the background menus/notifications) to another language. */
+async function setLang(lang: "sq" | "en") {
+  if (lang === settings.lang) return;
+  await saveSettings({ lang });
+  settings = { ...settings, lang };
+  t = STRINGS[lang];
+  applyI18n();
+  renderConsent();
+  await render();
+}
+
+function setupLangSwitch() {
+  const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>("#lang-switch [data-lang]"));
+  for (const b of buttons) {
+    b.addEventListener("click", () => void setLang(b.dataset.lang as "sq" | "en"));
+    b.addEventListener("keydown", (e) => {
+      if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) return;
+      e.preventDefault();
+      const next = buttons[(buttons.indexOf(b) + 1) % buttons.length];
+      next.focus();
+      void setLang(next.dataset.lang as "sq" | "en");
+    });
+  }
 }
 
 function showError(code: string | null) {
@@ -284,8 +316,8 @@ async function init() {
   t = STRINGS[settings.lang];
   applyI18n();
   setupTabs();
+  setupLangSwitch();
   $<HTMLInputElement>("server").value = settings.server;
-  $<HTMLSelectElement>("lang").value = settings.lang;
 
   $("open-settings").addEventListener("click", () => {
     const panel = $("settings");
@@ -304,7 +336,7 @@ async function init() {
     const permission = chrome.permissions.request({ origins: [originPattern(server)] });
     void permission.then(async (granted) => {
       if (!granted) return showError("permission_denied");
-      await saveSettings({ server, lang: $<HTMLSelectElement>("lang").value as "sq" | "en" });
+      await saveSettings({ server });
       settings = await getSettings();
       t = STRINGS[settings.lang];
       applyI18n();
