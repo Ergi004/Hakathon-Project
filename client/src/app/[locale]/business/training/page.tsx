@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
-import { PageHeader } from "@/components/layout/page-header";
+import { SimulationManager } from "@/components/business/forms";
+import { DashPage } from "@/components/layout/dash";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Locale } from "@/i18n/routing";
 import { guardOrRedirect, requireActiveOrg } from "@/server/auth";
-import { SimulationManager } from "@/components/business/forms";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -20,11 +20,10 @@ async function Content() {
 
 export default async function Page({ params }: { params: Promise<{ locale: string }> }) {
   setRequestLocale((await params).locale as Locale);
-  const t = await getTranslations("business.nav");
+  const [t, tb] = await Promise.all([getTranslations("business.nav"), getTranslations("biz")]);
   return (
-    <div className="space-y-6">
-      <PageHeader title={t("training")} />
-      <Suspense fallback={<Skeleton className="h-96 w-full" />}><Content /></Suspense>
-    </div>
+    <DashPage title={t("training")} subtitle={tb("pages.training")}>
+      <Suspense fallback={<Skeleton className="h-96 w-full rounded-xl" />}><Content /></Suspense>
+    </DashPage>
   );
 }

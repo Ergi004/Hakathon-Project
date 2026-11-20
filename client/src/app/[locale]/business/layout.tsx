@@ -18,7 +18,7 @@ async function BusinessShell({ children, params }: { children: React.ReactNode; 
     ctx.supabase.from("brand_alerts").select("id", { count: "exact", head: true }).eq("org_id", ctx.org.id).eq("status", "new"),
   ]);
   const orgs = (memberships ?? []).map((m) => m.organizations as { id: string; name: string } | null).filter((o): o is { id: string; name: string } => !!o);
-  const items = BUSINESS_NAV.map((i) => ({ href: i.href, icon: i.icon, label: t(`nav.${i.key}`), ...(i.key === "alerts" ? { count: openAlerts ?? 0 } : {}) }));
+  const items = BUSINESS_NAV.map((i) => ({ href: i.href, icon: i.icon, group: i.group, label: t(`nav.${i.key}`), ...(i.key === "alerts" ? { count: openAlerts ?? 0 } : {}) }));
 
   return (
     <AppShell

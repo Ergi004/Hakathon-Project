@@ -15,12 +15,14 @@ export async function HomeStats() {
   return (
     <div>
       <p className="sr-only">{t("srSummary", { reports: s.reportsToday, campaigns: s.activeCampaigns, domains: s.domainsBlocked })}</p>
-      <dl className="grid grid-cols-2 gap-3 md:grid-cols-4" aria-hidden="true">
+      <dl className="grid grid-cols-2 gap-y-6 md:grid-cols-4 md:divide-x md:divide-border" aria-hidden="true">
         {items.map(({ icon: Icon, value, label }) => (
-          <div key={label} className="glass-card rounded-xl p-4">
-            <Icon className="mb-2 size-5 text-primary" />
-            <dd className="font-display text-3xl font-bold"><CountUp value={value} locale={locale} /></dd>
-            <dt className="text-sm text-muted-foreground">{label}</dt>
+          <div key={label} className="flex items-center gap-4 md:px-8 md:first:pl-0">
+            <span className="grid size-10 shrink-0 place-items-center rounded-full bg-primary/10 text-primary"><Icon className="size-[1.15rem]" /></span>
+            <div className="flex flex-col-reverse">
+              <dt className="text-sm text-muted-foreground">{label}</dt>
+              <dd className="font-display text-3xl font-bold tabular-nums"><CountUp value={value} locale={locale} /></dd>
+            </div>
           </div>
         ))}
       </dl>
@@ -30,9 +32,9 @@ export async function HomeStats() {
 
 export function HomeStatsSkeleton() {
   return (
-    <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+    <div className="grid grid-cols-2 gap-y-6 md:grid-cols-4">
       {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} className="glass-card space-y-2 rounded-xl p-4">
+        <div key={i} className="space-y-2 md:px-8 md:first:pl-0">
           <Skeleton className="size-5" />
           <Skeleton className="h-8 w-16" />
           <Skeleton className="h-4 w-24" />

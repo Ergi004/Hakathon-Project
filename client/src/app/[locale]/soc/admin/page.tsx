@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import type { Locale } from "@/i18n/routing";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
-import { PageHeader } from "@/components/layout/page-header";
+import { DashPage } from "@/components/layout/dash";
 import { UrlSearch } from "@/components/shared/url-search";
 import { UrlTabs } from "@/components/shared/url-tabs";
 import { InstitutionCard, InviteForm, NewInstitutionForm, RecipientForm, RoleSelect, SettingsForm, TemplateEditor } from "@/components/soc/admin-forms";
@@ -46,7 +46,7 @@ async function Content({ searchParams }: { searchParams: Search }) {
     <div className="space-y-4">
       <Alert><ShieldCheck className="size-4" /><AlertDescription>{t("mfaRequired")}</AlertDescription></Alert>
       {isAdmin ? <InviteForm /> : <p className="text-sm text-muted-foreground">{t("adminOnly")}</p>}
-      <div className="overflow-x-auto rounded-xl border border-border">
+      <div className="overflow-x-auto rounded-xl bg-card ring-1 ring-foreground/10 [&_th]:h-11 [&_th]:bg-muted/40">
         <Table>
           <TableHeader><TableRow><TableHead>{t("name")}</TableHead><TableHead>{t("role")}</TableHead><TableHead className="hidden md:table-cell">{t("when")}</TableHead></TableRow></TableHeader>
           <TableBody>
@@ -69,7 +69,7 @@ async function Content({ searchParams }: { searchParams: Search }) {
         <UrlSearch name="action" label={t("filterAction")} className="w-72" />
         <Button asChild variant="outline" size="sm"><a href={`/api/soc/export/audit${action ? `?action=${encodeURIComponent(action)}` : ""}`}><Download className="size-3.5" aria-hidden="true" />{tu("exportCsv")}</a></Button>
       </div>
-      <div className="overflow-x-auto rounded-xl border border-border">
+      <div className="overflow-x-auto rounded-xl bg-card ring-1 ring-foreground/10 [&_th]:h-11 [&_th]:bg-muted/40">
         <Table>
           <TableHeader><TableRow><TableHead>{t("when")}</TableHead><TableHead>{t("action")}</TableHead><TableHead>{t("entity")}</TableHead><TableHead className="hidden md:table-cell">{t("actor")}</TableHead></TableRow></TableHeader>
           <TableBody>
@@ -96,10 +96,10 @@ async function Content({ searchParams }: { searchParams: Search }) {
       { value: "settings", label: t("tabs.settings"), content: <SettingsForm canEdit={isAdmin} thresholds={{ ...DEFAULT_THRESHOLDS, ...((setting("thresholds") as Record<string, number>) ?? {}) }} weights={(setting("weights") as Record<string, number>) ?? { links: 30, content: 25, sender: 25, attachments: 10, reputation: 10 }} autoEscalate={Number(setting("auto_escalate_hours") ?? 24)} /> },
       { value: "audit", label: t("tabs.audit"), content: auditTab },
       { value: "models", label: t("tabs.models"), content: (
-        <ul className="space-y-2">
+        <ul className="space-y-3">
           {(models.data ?? []).map((m) => (
-            <li key={m.id} className="flex flex-wrap items-center gap-3 rounded-lg border border-border p-3 text-sm">
-              <span className="font-mono">{m.name}@{m.version}</span>{m.active && <Badge>{t("active")}</Badge>}
+            <li key={m.id} className="flex flex-wrap items-center gap-3 rounded-xl bg-card p-4 text-sm ring-1 ring-foreground/10">
+              <span className="font-mono font-medium">{m.name}@{m.version}</span>{m.active && <Badge>{t("active")}</Badge>}
               <code className="text-xs text-muted-foreground">{JSON.stringify(m.metrics).slice(0, 120)}</code>
               <span className="ml-auto text-xs text-muted-foreground">{fmtDateTime(m.created_at, locale)}</span>
             </li>
@@ -112,11 +112,10 @@ async function Content({ searchParams }: { searchParams: Search }) {
 
 export default async function SocAdminPage({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Search }) {
   setRequestLocale((await params).locale as Locale);
-  const t = await getTranslations("soc.nav");
+  const [t, tx] = await Promise.all([getTranslations("soc.nav"), getTranslations("socx")]);
   return (
-    <div className="space-y-5">
-      <PageHeader title={t("admin")} />
-      <Suspense fallback={<Skeleton className="h-96 w-full" />}><Content searchParams={searchParams} /></Suspense>
-    </div>
+    <DashPage title={t("admin")} subtitle={tx("pages.admin")}>
+      <Suspense fallback={<Skeleton className="h-96 w-full rounded-xl" />}><Content searchParams={searchParams} /></Suspense>
+    </DashPage>
   );
 }

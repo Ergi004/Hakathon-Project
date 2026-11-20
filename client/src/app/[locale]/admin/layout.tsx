@@ -12,7 +12,7 @@ async function AdminShell({ children, params }: { children: React.ReactNode; par
   const t = await getTranslations("admin");
   const tr = await getTranslations("roles");
   const ts = await getTranslations("soc.nav");
-  const items = ADMIN_NAV.map((i) => ({ href: i.href, icon: i.icon, label: i.key === "admin" ? ts("admin") : t(`nav.${i.key}`) }));
+  const items = ADMIN_NAV.map((i) => ({ href: i.href, icon: i.icon, group: i.group, label: i.key === "admin" ? ts("admin") : t(`nav.${i.key}`) }));
 
   return (
     <AppShell

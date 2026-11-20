@@ -166,7 +166,7 @@ export function CreateTakedownForm({ campaignId, domains, confirmed }: { campaig
   const { pending, run } = useRun();
   if (!confirmed) return <p className="text-sm text-muted-foreground">{t("notConfirmed")}</p>;
   return (
-    <form className="glass-card space-y-3 rounded-xl p-4" onSubmit={(e) => { e.preventDefault(); run(async () => { const r = await createTakedown({ campaignId, domainId: domainId === "__none" ? undefined : domainId, kinds: [...kinds] }); if (r.ok) toast.success(t("created", { count: r.data.ids.length })); return r; }); }}>
+    <form className="space-y-4 rounded-xl bg-card p-5 ring-1 ring-foreground/10" onSubmit={(e) => { e.preventDefault(); run(async () => { const r = await createTakedown({ campaignId, domainId: domainId === "__none" ? undefined : domainId, kinds: [...kinds] }); if (r.ok) toast.success(t("created", { count: r.data.ids.length })); return r; }); }}>
       <h3 className="inline-flex items-center gap-2 font-medium"><Gavel className="size-4" aria-hidden="true" />{t("create")}</h3>
       <fieldset className="flex flex-wrap gap-4">
         <legend className="mb-1 text-xs text-muted-foreground">{t("kinds")}</legend>
