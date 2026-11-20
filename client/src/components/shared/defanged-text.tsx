@@ -4,16 +4,9 @@ import { Eye, EyeOff } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { defangValue, refangValue } from "@/lib/defang";
 import { cn } from "@/lib/utils";
 import { CopyButton } from "./copy-button";
-
-/** Defang for display: hxxp:// and [.] (SPEC hard rule 5). Pure, shared with server code. */
-export function defangValue(v: string): string {
-  return v.replace(/^http(s?):\/\//i, "hxxp$1://").replace(/(?<!\[)\.(?!\])/g, "[.]");
-}
-function refangValue(v: string): string {
-  return v.replace(/^hxxp/i, "http").replace(/\[\.\]/g, ".");
-}
 
 /**
  * Mono text shown defanged, with Copy (copies the defanged form) and an

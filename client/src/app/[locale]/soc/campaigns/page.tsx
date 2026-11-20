@@ -1,10 +1,9 @@
-import { Download, Globe, LayoutGrid, List } from "lucide-react";
+import { CheckCheck, Download, Eye, Flag, Gavel, Globe, LayoutGrid, List } from "lucide-react";
 import type { Metadata } from "next";
 import type { Locale } from "@/i18n/routing";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
-import { EmptyState } from "@/components/layout/empty-state";
-import { PageHeader } from "@/components/layout/page-header";
+import { DashPage, EmptyPanel, StatCard } from "@/components/layout/dash";
 import { CampaignCard } from "@/components/shared/campaign-card";
 import { SeverityDot } from "@/components/shared/severity-dot";
 import { UrlSearch } from "@/components/shared/url-search";
@@ -39,13 +38,13 @@ async function Toolbar() {
     getTranslations("campaignStatus"),
   ]);
   return (
-    <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-        <UrlSearch label={tu("search")} className="sm:w-64" />
+    <div className="flex flex-col gap-3 rounded-xl bg-card p-4 ring-1 ring-foreground/10 lg:flex-row lg:items-end lg:justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end [&_button[role=combobox]]:sm:w-52">
+        <UrlSearch label={tu("search")} className="sm:w-72" />
         <UrlSelect name="status" label={t("status")} anyLabel={tu("all")} options={STATUS.map((s) => ({ value: s, label: ts(s) }))} />
       </div>
       <div className="flex flex-wrap gap-2">
-        <Button asChild variant="outline" size="sm"><a href="/api/soc/export/campaigns"><Download className="size-3.5" aria-hidden="true" />{tu("exportCsv")}</a></Button>
+        <Button asChild variant="outline" size="sm" className="rounded-full"><a href="/api/soc/export/campaigns"><Download className="size-3.5" aria-hidden="true" />{tu("exportCsv")}</a></Button>
         <MergeDialog campaigns={camps.map((c) => ({ id: c.id, code: c.code, imitated_name: c.imitated_name }))} />
         <CreateCampaignDialog institutions={inst.data ?? []} />
       </div>
@@ -53,10 +52,23 @@ async function Toolbar() {
   );
 }
 
+const STAT_ICON = { monitoring: Eye, confirmed: Flag, takedown_in_progress: Gavel, resolved: CheckCheck } as const;
+const STAT_TONE = { monitoring: "text-flag-yellow", confirmed: "text-flag-orange", takedown_in_progress: "text-primary", resolved: "text-flag-green" } as const;
+
+async function Stats() {
+  const ctx = await requireRole("soc_analyst");
+  const [rows, ts] = await Promise.all([getCampaigns(ctx.supabase), getTranslations("campaignStatus")]);
+  return (
+    <ul className="grid grid-cols-2 gap-3 xl:grid-cols-4">
+      {STATUS.map((s) => <li key={s}><StatCard icon={STAT_ICON[s]} tone={STAT_TONE[s]} label={ts(s)} value={rows.filter((c) => c.status === s).length} /></li>)}
+    </ul>
+  );
+}
+
 async function List_({ searchParams }: { searchParams: Search }) {
   const sp = await searchParams;
   const ctx = await requireRole("soc_analyst");
-  const t = await getTranslations("soc.campaigns");
+  const [t, tx] = await Promise.all([getTranslations("soc.campaigns"), getTranslations("socx")]);
   const ts = await getTranslations("campaignStatus");
   const tScam = await getTranslations("scamType");
   const tBrand = await getTranslations("brandCategory");
@@ -66,17 +78,20 @@ async function List_({ searchParams }: { searchParams: Search }) {
   const patterns = await getCampaignPatternMap(ctx.supabase, rows.map((c) => c.id));
   const view = sp.view === "grid" ? "grid" : "table";
   const toggle = (
-    <div className="flex gap-1" role="group">
-      <Button asChild size="sm" variant={view === "table" ? "secondary" : "ghost"}><Link href={`/soc/campaigns?${new URLSearchParams({ ...(sp.status ? { status: sp.status } : {}), ...(sp.q ? { q: sp.q } : {}), view: "table" })}`}><List className="size-4" aria-hidden="true" />{t("table")}</Link></Button>
-      <Button asChild size="sm" variant={view === "grid" ? "secondary" : "ghost"}><Link href={`/soc/campaigns?${new URLSearchParams({ ...(sp.status ? { status: sp.status } : {}), ...(sp.q ? { q: sp.q } : {}), view: "grid" })}`}><LayoutGrid className="size-4" aria-hidden="true" />{t("grid")}</Link></Button>
+    <div className="flex items-center justify-between gap-3">
+    <span className="text-sm text-muted-foreground tabular-nums">{tx("results", { count: rows.length })}</span>
+    <div className="flex gap-1 rounded-full bg-muted p-1" role="group">
+      <Button asChild size="sm" variant={view === "table" ? "secondary" : "ghost"} className="rounded-full"><Link href={`/soc/campaigns?${new URLSearchParams({ ...(sp.status ? { status: sp.status } : {}), ...(sp.q ? { q: sp.q } : {}), view: "table" })}`}><List className="size-4" aria-hidden="true" />{t("table")}</Link></Button>
+      <Button asChild size="sm" variant={view === "grid" ? "secondary" : "ghost"} className="rounded-full"><Link href={`/soc/campaigns?${new URLSearchParams({ ...(sp.status ? { status: sp.status } : {}), ...(sp.q ? { q: sp.q } : {}), view: "grid" })}`}><LayoutGrid className="size-4" aria-hidden="true" />{t("grid")}</Link></Button>
+    </div>
     </div>
   );
-  if (!rows.length) return <div className="space-y-3">{toggle}<EmptyState title={t("empty")} /></div>;
+  if (!rows.length) return <div className="space-y-3">{toggle}<div className="rounded-xl bg-card ring-1 ring-foreground/10"><EmptyPanel icon={Flag} title={t("empty")} /></div></div>;
   return (
     <div className="space-y-3">
       {toggle}
       {view === "grid" ? (
-        <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {rows.map((c) => {
             const pattern = patterns.get(c.id);
             const scamKey = asScamType(pattern?.scamType);
@@ -98,7 +113,7 @@ async function List_({ searchParams }: { searchParams: Search }) {
           })}
         </ul>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-border">
+        <div className="overflow-x-auto rounded-xl bg-card ring-1 ring-foreground/10 [&_th]:h-11 [&_th]:bg-muted/40">
           <Table>
             <TableHeader><TableRow>
               <TableHead>{t("code")}</TableHead><TableHead>{t("institution")}</TableHead><TableHead className="hidden md:table-cell">{t("tactic")}</TableHead>
@@ -115,7 +130,7 @@ async function List_({ searchParams }: { searchParams: Search }) {
                 const brandKey = asBrandCategory(pattern?.brand);
                 return (
                 <TableRow key={c.id}>
-                  <TableCell className="font-mono text-xs"><Link className="hover:underline" href={`/soc/campaigns/${c.id}`}>{c.code}</Link>{c.is_public && <Globe className="ml-1 inline size-3 text-primary" aria-label={t("public")} />}</TableCell>
+                  <TableCell className="font-mono text-xs"><Link className="font-medium text-primary hover:underline" href={`/soc/campaigns/${c.id}`}>{c.code}</Link>{c.is_public && <Globe className="ml-1 inline size-3 text-primary" aria-label={t("public")} />}</TableCell>
                   <TableCell className="text-xs">{(c.institutions as { name: string } | null)?.name ?? c.imitated_name ?? "—"}</TableCell>
                   <TableCell className="hidden text-xs md:table-cell">{c.tactic.replace(/_/g, " ")}</TableCell>
                   <TableCell className="hidden text-xs xl:table-cell">{scamKey ? tScam(scamKey) : "—"}</TableCell>
@@ -140,13 +155,13 @@ async function List_({ searchParams }: { searchParams: Search }) {
 
 export default async function CampaignsPage({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Search }) {
   setRequestLocale((await params).locale as Locale);
-  const t = await getTranslations("soc.nav");
+  const [t, tx] = await Promise.all([getTranslations("soc.nav"), getTranslations("socx")]);
   return (
-    <div className="space-y-5">
-      <PageHeader title={t("campaigns")} />
-      <Suspense fallback={<Skeleton className="h-28 w-full" />}><CheckAggregates /></Suspense>
-      <Suspense fallback={<Skeleton className="h-12 w-full" />}><Toolbar /></Suspense>
-      <Suspense fallback={<Skeleton className="h-96 w-full" />}><List_ searchParams={searchParams} /></Suspense>
-    </div>
+    <DashPage title={t("campaigns")} subtitle={tx("pages.campaigns")}>
+      <Suspense fallback={<div className="grid grid-cols-2 gap-3 xl:grid-cols-4">{Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="h-20 rounded-xl" />)}</div>}><Stats /></Suspense>
+      <Suspense fallback={<Skeleton className="h-28 w-full rounded-xl" />}><CheckAggregates /></Suspense>
+      <Suspense fallback={<Skeleton className="h-20 w-full rounded-xl" />}><Toolbar /></Suspense>
+      <Suspense fallback={<Skeleton className="h-96 w-full rounded-xl" />}><List_ searchParams={searchParams} /></Suspense>
+    </DashPage>
   );
 }

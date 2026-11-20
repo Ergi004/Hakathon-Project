@@ -31,7 +31,7 @@ export default async function AuthLayout({
   const { locale } = await params;
   setRequestLocale(locale as Locale);
   return (
-    <div className="bg-grid relative flex flex-1 flex-col">
+    <div className="relative flex flex-1 flex-col">
       <div aria-hidden="true" className="bg-hero-glow pointer-events-none absolute inset-0" />
       <AuthHeader />
       <main id="main" className="relative flex flex-1 items-start justify-center px-4 py-10 md:items-center">

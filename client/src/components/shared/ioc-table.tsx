@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { downloadText, toCsv } from "@/lib/csv";
 import { CopyButton } from "./copy-button";
-import { DefangedText, defangValue } from "./defanged-text";
+import { defangValue } from "@/lib/defang";
+import { DefangedText } from "./defanged-text";
 
 export interface IocRow {
   type: string;

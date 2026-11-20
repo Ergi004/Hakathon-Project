@@ -27,7 +27,7 @@ function Highlighted({ text, locked }: { text: string; locked: string[] }) {
 
 export function NoticePreview({ subject, body, locked, label }: { subject: string; body: string; locked: string[]; label: string }) {
   return (
-    <section className="glass-card space-y-2 rounded-xl p-4" aria-label={label}>
+    <section className="space-y-3 rounded-xl bg-card p-5 ring-1 ring-foreground/10" aria-label={label}>
       <p className="text-xs text-muted-foreground">{label}</p>
       <p className="font-medium"><Highlighted text={subject} locked={locked} /></p>
       <div className="max-h-[32rem] overflow-auto text-sm whitespace-pre-wrap"><Highlighted text={body} locked={locked} /></div>

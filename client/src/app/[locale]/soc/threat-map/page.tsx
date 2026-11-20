@@ -3,8 +3,8 @@ import type { Locale } from "@/i18n/routing";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
 import { HBar } from "@/components/charts/hbar";
-import { EmptyState } from "@/components/layout/empty-state";
-import { PageHeader } from "@/components/layout/page-header";
+import { ChartBar } from "lucide-react";
+import { DashPage, EmptyPanel, Panel } from "@/components/layout/dash";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { requireRole } from "@/server/auth";
@@ -21,33 +21,31 @@ async function Charts() {
   const sum = (rows: { name: string; value: number }[]) => t("srPrefix", { summary: rows.map((r) => `${r.name}: ${r.value}`).join("; ") || tu("noData") });
   const max = Math.max(1, ...p.heat.flat());
   const days = t.raw("weekdays") as string[];
-  const blocks: [string, { name: string; value: number }[], string][] = [
+  const blocks: [string, { name: string; value: number }[], string, string?][] = [
     [t("byInstitution"), p.byInstitution, "var(--chart-1)"],
     [t("tactics"), p.tactics.map((x) => ({ ...x, name: x.name.replace(/_/g, " ") })), "var(--chart-2)"],
     [t("registrars"), p.registrars, "var(--chart-5)"],
     [t("hosting"), p.hosting, "var(--chart-3)"],
-    [t("channels"), p.channels.map((x) => ({ ...x, name: tc(x.name as "sms") })), "var(--chart-4)"],
+    [t("channels"), p.channels.map((x) => ({ ...x, name: tc(x.name as "sms") })), "var(--chart-4)", "lg:col-span-2"],
   ];
-  if (!p.byInstitution.length && !p.tactics.length && !p.registrars.length) return <EmptyState title={tu("noData")} />;
+  if (!p.byInstitution.length && !p.tactics.length && !p.registrars.length) return <div className="rounded-xl bg-card ring-1 ring-foreground/10"><EmptyPanel icon={ChartBar} title={tu("noData")} /></div>;
   return (
-    <div className="grid gap-5 lg:grid-cols-2">
-      {blocks.map(([title, data, color]) => (
-        <section key={title} className="glass-card space-y-2 rounded-xl p-4">
-          <h2 className="font-medium">{title}</h2>
-          {data.length ? <HBar data={data} label={title} summary={sum(data)} color={color} /> : <p className="text-sm text-muted-foreground">{tu("noData")}</p>}
-        </section>
+    <div className="grid gap-6 lg:grid-cols-2 2xl:grid-cols-3">
+      {blocks.map(([title, data, color, span]) => (
+        <Panel key={title} title={title} className={span}>
+          {data.length ? <HBar data={data} label={title} summary={sum(data)} color={color} /> : <p className="py-10 text-center text-sm text-muted-foreground">{tu("noData")}</p>}
+        </Panel>
       ))}
-      <section className="glass-card space-y-2 rounded-xl p-4 lg:col-span-2">
-        <h2 className="font-medium">{t("heatmap")}</h2>
+      <Panel title={t("heatmap")} className="lg:col-span-2 2xl:col-span-3">
         <div className="overflow-x-auto">
-          <table className="border-separate border-spacing-0.5 text-[10px]" aria-label={t("heatmap")}>
-            <thead><tr><th />{Array.from({ length: 24 }, (_, h) => <th key={h} scope="col" className="font-normal text-muted-foreground">{h}</th>)}</tr></thead>
+          <table className="w-full min-w-[40rem] table-fixed border-separate border-spacing-1 text-xs" aria-label={t("heatmap")}>
+            <thead><tr><th className="w-12" />{Array.from({ length: 24 }, (_, h) => <th key={h} scope="col" className="font-normal text-muted-foreground">{h}</th>)}</tr></thead>
             <tbody>
               {p.heat.map((row, d) => (
                 <tr key={d}>
                   <th scope="row" className="pr-1 text-right font-normal text-muted-foreground">{days[d]}</th>
                   {row.map((v, h) => (
-                    <td key={h} title={`${days[d]} ${h}:00 · ${v}`} className={cn("size-5 rounded-sm text-center", v === 0 ? "bg-muted" : "bg-primary text-primary-foreground")} style={v ? { opacity: 0.25 + 0.75 * (v / max) } : undefined}>
+                    <td key={h} title={`${days[d]} ${h}:00 · ${v}`} className={cn("h-7 rounded-md text-center", v === 0 ? "bg-muted" : "bg-primary text-primary-foreground")} style={v ? { opacity: 0.25 + 0.75 * (v / max) } : undefined}>
                       <span className="sr-only">{v}</span>
                     </td>
                   ))}
@@ -56,18 +54,17 @@ async function Charts() {
             </tbody>
           </table>
         </div>
-      </section>
+      </Panel>
     </div>
   );
 }
 
 export default async function ThreatMapPage({ params }: { params: Promise<{ locale: string }> }) {
   setRequestLocale((await params).locale as Locale);
-  const t = await getTranslations("soc.nav");
+  const [t, tx] = await Promise.all([getTranslations("soc.nav"), getTranslations("socx")]);
   return (
-    <div className="space-y-5">
-      <PageHeader title={t("threatMap")} />
-      <Suspense fallback={<div className="grid gap-5 lg:grid-cols-2">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-64" />)}</div>}><Charts /></Suspense>
-    </div>
+    <DashPage title={t("threatMap")} subtitle={tx("pages.threatMap")}>
+      <Suspense fallback={<div className="grid gap-6 lg:grid-cols-2 2xl:grid-cols-3">{Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-64 rounded-xl" />)}</div>}><Charts /></Suspense>
+    </DashPage>
   );
 }

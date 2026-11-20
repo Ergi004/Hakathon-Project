@@ -21,7 +21,7 @@ export function AlertRuleForm({ institutions }: { institutions: string[] }) {
   const [v, setV] = useState({ name: "", metric: "reports_per_hour", op: ">", value: 20, institution: "__any", channel: "in_app" });
   const [pending, start] = useTransition();
   return (
-    <form className="glass-card grid gap-3 rounded-xl p-4 md:grid-cols-3 lg:grid-cols-[1fr_12rem_6rem_6rem_12rem_9rem_auto] lg:items-end" onSubmit={(e) => {
+    <form className="grid gap-3 rounded-xl bg-card p-5 ring-1 ring-foreground/10 md:grid-cols-3 lg:grid-cols-[1fr_12rem_6rem_6rem_12rem_9rem_auto] lg:items-end" onSubmit={(e) => {
       e.preventDefault();
       start(async () => {
         const r = await createAlertRule({ ...v, institution: v.institution === "__any" ? undefined : v.institution });
