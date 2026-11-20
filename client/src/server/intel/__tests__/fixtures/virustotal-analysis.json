@@ -1,0 +1,2 @@
+{ "data": { "id": "u-abc-123", "type": "analysis", "attributes": { "status": "completed", "date": 1763856000,
+  "stats": { "harmless": 60, "malicious": 4, "suspicious": 1, "undetected": 25, "timeout": 2 } } } }

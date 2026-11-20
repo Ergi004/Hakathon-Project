@@ -1,0 +1,4 @@
+{ "query_status": "ok", "urlhaus_reference": "https://urlhaus.abuse.ch/host/bad.example.com/", "host": "bad.example.com",
+  "firstseen": "2026-11-15 10:00:00 UTC", "url_count": "3",
+  "blacklists": { "spamhaus_dbl": "abused_legit_phishing", "surbl": "not listed" },
+  "urls": [ { "id": "1", "url": "http://bad.example.com/x", "url_status": "online", "threat": "malware_download", "tags": ["phish"], "date_added": "2026-11-15 10:00:00 UTC" } ] }

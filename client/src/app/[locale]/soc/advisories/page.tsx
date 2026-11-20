@@ -10,8 +10,9 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fmtDate } from "@/lib/format";
 import { hasMinRole, requireRole } from "@/server/auth";
+import { isMunicipalityCode, regionName } from "@/lib/geo/regions";
 
-type Search = Promise<{ campaign?: string }>;
+type Search = Promise<{ campaign?: string; region?: string }>;
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -19,7 +20,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 }
 
 async function Content({ searchParams }: { searchParams: Search }) {
-  const { campaign } = await searchParams;
+  const { campaign, region } = await searchParams;
   const ctx = await requireRole("soc_analyst");
   const [t, locale] = await Promise.all([getTranslations("soc.advisories"), getLocale()]);
   const [camps, advs] = await Promise.all([
@@ -29,7 +30,7 @@ async function Content({ searchParams }: { searchParams: Search }) {
   const isLead = hasMinRole(ctx.profile.platform_role, "soc_lead");
   return (
     <div className="space-y-6">
-      <AdvisoryForm campaigns={camps.data ?? []} initialCampaign={campaign} />
+      <AdvisoryForm campaigns={camps.data ?? []} initialCampaign={campaign} initialRegion={region && isMunicipalityCode(region) ? { sq: regionName(region, "sq"), en: regionName(region, "en") } : undefined} />
       {!advs.data?.length ? <EmptyState title={t("empty")} /> : (
         <ul className="space-y-3">
           {advs.data.map((a) => (

@@ -9,6 +9,8 @@ import { ScoreRing } from "@/components/flags/score-ring";
 import { MaskedText } from "@/components/shared/masked-text";
 import { ReasonList } from "@/components/shared/reason-list";
 import { AssignMeButton, AuditedIocTable, DecisionBar, FeedbackButtons, LinkSuggestion, NoteForm } from "@/components/soc/report-actions";
+import { StaffIntel } from "@/components/intel/staff-intel";
+import { UrlTabs } from "@/components/shared/url-tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -19,6 +21,7 @@ import { supabaseCampaignRepo } from "@/server/campaign-repo";
 import { assignCampaign } from "@/server/detection/campaigns";
 import { hostOf } from "@/server/detection/normalize";
 import type { Reason } from "@/server/detection/types";
+import { latestScanState } from "@/server/intel/staff-view";
 import { getReportDetail } from "@/server/queries/soc";
 
 type Params = Promise<{ locale: string; id: string }>;
@@ -61,6 +64,8 @@ async function Workspace({ params }: { params: Params }) {
 
   const notes = d.events.filter((e) => e.kind === "note");
   const timeline = d.events.filter((e) => e.kind !== "note");
+  const intel = await latestScanState(ctx.supabase, r.id);
+  const ti = await getTranslations("intel");
   const highlights = reasons.map((x) => x.evidence).filter((x): x is string => !!x && !x.includes("[."));
 
   return (
@@ -86,6 +91,7 @@ async function Workspace({ params }: { params: Params }) {
 
       <DecisionBar id={r.id} status={r.status} campaignId={campaign?.id ?? null} campaignConfirmed={!!campaign && ["confirmed", "takedown_in_progress"].includes(campaign.status)} />
 
+      <UrlTabs defaultTab="workspace" tabs={[{ value: "workspace", label: ti("workspace"), content: (
       <div className="grid gap-5 xl:grid-cols-[1.2fr_1fr]">
         <div className="space-y-5">
           <section className="glass-card space-y-3 rounded-xl p-4">
@@ -177,6 +183,9 @@ async function Workspace({ params }: { params: Params }) {
           </section>
         </div>
       </div>
+      ) }, { value: "intel", label: ti("tab"), content: (
+        <StaffIntel reportId={r.id} state={intel?.state ?? null} domain={intel?.domain ?? null} campaignId={campaign?.id ?? null} hasUrl={(m?.urls ?? []).length > 0} />
+      ) }]} />
     </div>
   );
 }

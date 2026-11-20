@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cacheLife } from "next/cache";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
 import { PageHeader } from "@/components/layout/page-header";
@@ -16,7 +17,13 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return { title: t("title"), description: t("description") };
 }
 
-async function Game({ locale }: { locale: Locale }) {
+/**
+ * Cached (hourly): the detection engine reads the clock (domain age, recency), which is only
+ * allowed inside "use cache" while the page is prerendered with cacheComponents.
+ */
+async function quizItems(locale: Locale): Promise<QuizItem[]> {
+  "use cache";
+  cacheLife("hours");
   const pool = await getQuizPool();
   let items: QuizItem[];
   if (pool.length >= 4) {
@@ -31,7 +38,11 @@ async function Game({ locale }: { locale: Locale }) {
     // No dataset yet: guide examples (all scams) keep the game playable.
     items = GUIDES.map((g) => ({ id: g.slug, text: g.example.text[locale], scam: true, channel: g.example.channel, why: g.signs.slice(0, 2).map((s) => s[locale]) }));
   }
-  return <SpotTheScam pool={items} />;
+  return items;
+}
+
+async function Game({ locale }: { locale: Locale }) {
+  return <SpotTheScam pool={await quizItems(locale)} />;
 }
 
 export default async function QuizPage({ params }: { params: Promise<{ locale: string }> }) {

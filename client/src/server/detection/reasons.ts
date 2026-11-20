@@ -42,6 +42,13 @@ export const REASONS = {
   known_bad: { group: "reputation", sq: "{e} është tashmë në listën tonë të mashtrimeve të njohura.", en: "{e} is already on our list of known scams." },
   confirmed_campaign: { group: "reputation", sq: "{e} është pjesë e një fushate mashtrimi të konfirmuar.", en: "{e} is part of a confirmed scam campaign." },
   many_reports: { group: "reputation", sq: "Disa persona e kanë raportuar {e} në 24 orët e fundit.", en: "Several people reported {e} in the last 24 hours." },
+  // live threat intelligence
+  domain_age: { group: "links", sq: "Domeni u regjistrua vetëm {e} ditë më parë.", en: "The domain was registered only {e} days ago." },
+  age_unknown: { group: "links", sq: "Nuk arritëm të gjejmë kur u regjistrua domeni {e}; e trajtojmë si të ri.", en: "We could not find when {e} was registered, so we treat it as new." },
+  expires_soon: { group: "links", sq: "Domeni {e} skadon brenda 30 ditëve, si shpesh te domenet e përkohshme të mashtrimit.", en: "The domain {e} expires within 30 days, as throwaway scam domains often do." },
+  subdomain_farm: { group: "links", sq: "Domeni {e} ka shumë nëndomene me emra institucionesh.", en: "The domain {e} has many subdomains using institution names." },
+  intel_malicious: { group: "reputation", sq: "Shërbimet e sigurisë e njohin {e} si të rrezikshëm.", en: "Security services flag {e} as malicious." },
+  intel_suspicious: { group: "reputation", sq: "Disa shërbime sigurie e shënojnë {e} si të dyshimtë.", en: "Some security services mark {e} as suspicious." },
   // informational (weight 0)
   official_sender: { group: "sender", sq: "Dërguesi përputhet me një kanal zyrtar të {e}.", en: "The sender matches an official channel of {e}." },
   official_domain: { group: "links", sq: "{e} është domen zyrtar.", en: "{e} is an official domain." },

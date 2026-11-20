@@ -15,13 +15,22 @@ import { useRouter } from "@/i18n/navigation";
 type Camp = { id: string; code: string; imitated_name: string | null; tactic: string };
 
 /** A11: draft bilingual public warnings from a campaign with a template. */
-export function AdvisoryForm({ campaigns, initialCampaign }: { campaigns: Camp[]; initialCampaign?: string }) {
+export function AdvisoryForm({ campaigns, initialCampaign, initialRegion }: { campaigns: Camp[]; initialCampaign?: string; initialRegion?: { sq: string; en: string } }) {
   const t = useTranslations("soc.advisories");
   const ts = useTranslations("severity");
   const tu = useTranslations("ui");
   const tcmp = useTranslations("soc.campaign");
   const router = useRouter();
-  const [v, setV] = useState({ campaignId: initialCampaign ?? "__none", title_sq: "", title_en: "", body_sq: "", body_en: "", severity: "medium" });
+  const tg = useTranslations("geo.advisory");
+  const [v, setV] = useState({
+    campaignId: initialCampaign ?? "__none",
+    // "Create advisory for this area" (geographic map) prefills the region in both languages.
+    title_sq: initialRegion ? tg("titleSq", { name: initialRegion.sq }) : "",
+    title_en: initialRegion ? tg("titleEn", { name: initialRegion.en }) : "",
+    body_sq: initialRegion ? tg("bodySq", { name: initialRegion.sq }) : "",
+    body_en: initialRegion ? tg("bodyEn", { name: initialRegion.en }) : "",
+    severity: "medium",
+  });
   const [pending, start] = useTransition();
 
   function fromTemplate() {

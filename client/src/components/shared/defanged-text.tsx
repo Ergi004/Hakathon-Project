@@ -8,12 +8,9 @@ import { cn } from "@/lib/utils";
 import { CopyButton } from "./copy-button";
 
 /** Defang for display: hxxp:// and [.] (SPEC hard rule 5). Pure, shared with server code. */
-export function defangValue(v: string): string {
-  return v.replace(/^http(s?):\/\//i, "hxxp$1://").replace(/(?<!\[)\.(?!\])/g, "[.]");
-}
-function refangValue(v: string): string {
-  return v.replace(/^hxxp/i, "http").replace(/\[\.\]/g, ".");
-}
+import { defangValue, refangValue } from "@/lib/defang";
+
+export { defangValue };
 
 /**
  * Mono text shown defanged, with Copy (copies the defanged form) and an

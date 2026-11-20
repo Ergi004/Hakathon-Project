@@ -8,6 +8,8 @@ import { guardOrRedirect, requireActiveOrg } from "@/server/auth";
 import { DomainActions } from "@/components/business/forms";
 import { EmptyState } from "@/components/layout/empty-state";
 import { Badge } from "@/components/ui/badge";
+import { IntelCell } from "@/components/intel/intel-cell";
+import { latestVerdicts } from "@/server/intel/staff-view";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -20,12 +22,14 @@ async function Content() {
   const [t, td, tc] = await Promise.all([getTranslations("biz.domains"), getTranslations("soc.domains"), getTranslations("domainClass")]);
   const { data } = await ctx.supabase.from("domains").select("id, domain, class, age_days, registrar, hosting_country, risk_score, status").order("risk_score", { ascending: false, nullsFirst: false }).limit(500);
   if (!data?.length) return <EmptyState title={t("empty")} />;
+  const intel = await latestVerdicts(ctx.supabase, data.map((d) => d.domain));
+  const ti = await getTranslations("intel");
   return (
     <div className="space-y-3">
       <p className="text-sm text-muted-foreground">{t("allowlistHint")}</p>
       <div className="overflow-x-auto rounded-xl border border-border">
         <Table>
-          <TableHeader><TableRow><TableHead>{td("domain")}</TableHead><TableHead>{td("class")}</TableHead><TableHead className="hidden md:table-cell">{td("age")}</TableHead><TableHead className="hidden lg:table-cell">{td("registrar")}</TableHead><TableHead className="hidden lg:table-cell">{td("hosting")}</TableHead><TableHead>{td("risk")}</TableHead><TableHead>{td("status")}</TableHead><TableHead /></TableRow></TableHeader>
+          <TableHeader><TableRow><TableHead>{td("domain")}</TableHead><TableHead>{td("class")}</TableHead><TableHead className="hidden md:table-cell">{td("age")}</TableHead><TableHead className="hidden lg:table-cell">{td("registrar")}</TableHead><TableHead className="hidden lg:table-cell">{td("hosting")}</TableHead><TableHead>{td("risk")}</TableHead><TableHead>{ti("latest")}</TableHead><TableHead>{td("status")}</TableHead><TableHead /></TableRow></TableHeader>
           <TableBody>
             {data.map((d) => (
               <TableRow key={d.id}>
@@ -35,6 +39,7 @@ async function Content() {
                 <TableCell className="hidden text-xs lg:table-cell">{d.registrar ?? "—"}</TableCell>
                 <TableCell className="hidden text-xs lg:table-cell">{d.hosting_country ?? "—"}</TableCell>
                 <TableCell className="font-mono text-xs">{d.risk_score ?? "—"}</TableCell>
+                <TableCell><IntelCell v={intel.get(d.domain)} /></TableCell>
                 <TableCell><Badge variant={d.status === "threat" ? "destructive" : "secondary"}>{td(`statuses.${d.status as "threat"}`)}</Badge></TableCell>
                 <TableCell><DomainActions id={d.id} status={d.status} /></TableCell>
               </TableRow>

@@ -55,7 +55,7 @@ export function ScoreRing({
           strokeLinecap="round"
           strokeDasharray={c}
           strokeDashoffset={offset}
-          className={cn(FLAG_STYLES[flag].stroke, "motion-safe:[animation:ring-sweep_900ms_ease-out_both]")}
+          className={cn(FLAG_STYLES[flag].stroke, "transition-[stroke-dashoffset] duration-700 ease-out motion-reduce:transition-none motion-safe:[animation:ring-sweep_900ms_ease-out_both]")}
           style={{ ["--ring-circumference" as string]: c }}
         />
       </svg>

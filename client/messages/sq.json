@@ -192,7 +192,8 @@
       "blocklist": "Lista e bllokimit",
       "quality": "Cilësia e modelit",
       "alerts": "Rregullat e sinjalizimit",
-      "admin": "Administrimi"
+      "admin": "Administrimi",
+      "geo": "Harta gjeografike"
     },
     "status": {
       "ingestion": "Marrja e të dhënave",
@@ -1056,7 +1057,15 @@
     "copyBoth": "Kopjo protokollin dhe kodin",
     "trackNow": "Ndiq raportin",
     "another": "Raporto diçka tjetër",
-    "signedInNote": "Je i kyçur: raporti do të shfaqet edhe te „Raportet e mia”."
+    "signedInNote": "Je i kyçur: raporti do të shfaqet edhe te „Raportet e mia”.",
+    "region": {
+      "legend": "Ku ndodheni? (opsionale)",
+      "hint": "Vetëm qarku dhe bashkia, nëse doni. Nuk përdorim GPS, adresën apo IP-në tuaj.",
+      "county": "Qarku",
+      "municipality": "Bashkia",
+      "preferNot": "Preferoj të mos e them",
+      "pickMunicipality": "Zgjidhni bashkinë"
+    }
   },
   "track": {
     "title": "Ndiq raportin",
@@ -1584,6 +1593,316 @@
       "notifyInApp": "Njoftime në aplikacion",
       "methods": "Mënyrat e hyrjes",
       "saved": "Cilësimet u ruajtën."
+    }
+  },
+  "intel": {
+    "title": "Skanim i drejtpërdrejtë",
+    "subtitle": "Kontrollojmë domenin në shërbime sigurie, pa e hapur faqen.",
+    "demo": "Të dhëna demo",
+    "running": "Duke skanuar…",
+    "done": "Skanimi përfundoi",
+    "error": "Skanimi nuk u përfundua",
+    "providers": {
+      "dns": "DNS",
+      "rdap": "Regjistri i domenit (RDAP)",
+      "urlhaus": "URLhaus (abuse.ch)",
+      "crtsh": "Certifikatat (crt.sh)",
+      "virustotal": "VirusTotal",
+      "hybrid_analysis": "Hybrid Analysis",
+      "internal": "Analiza jonë"
+    },
+    "verdicts": {
+      "malicious": "I rrezikshëm",
+      "suspicious": "I dyshimtë",
+      "clean": "Pastër",
+      "unknown": "Pa të dhëna",
+      "unavailable": "I padisponueshëm",
+      "pending": "Në pritje"
+    },
+    "deepTier": "analizë e thellë",
+    "engines": "{malicious} nga {total} motorë",
+    "age": {
+      "days": "Regjistruar {count} ditë më parë",
+      "today": "Regjistruar sot",
+      "unknown": "Mosha e domenit e panjohur"
+    },
+    "resolves": "Aktiv në DNS",
+    "notResolves": "Nuk zgjidhet në DNS",
+    "listed": "I listuar si i rrezikshëm",
+    "notListed": "Nuk është i listuar",
+    "certs": "{count} emra në certifikata",
+    "registrar": "Regjistruesi: {name}",
+    "threatScore": "Rreziku: {score}/100",
+    "subdomains": "Nëndomenet ({count})",
+    "subdomain": "Nëndomeni",
+    "source": "Burimi",
+    "resolvesCol": "Aktiv",
+    "firstCert": "Certifikata e parë",
+    "verdict": "Vlerësimi",
+    "scoreChanged": "Rezultati u përditësua nga skanimi: {from} → {to}",
+    "deepConsentLabel": "Dërgo lidhjen për analizë më të thellë",
+    "deepConsentLine": "Lidhja do t'u dërgohet shërbimeve të analizës së sigurisë.",
+    "reconnecting": "Po rilidhemi…",
+    "tab": "Inteligjenca",
+    "workspace": "Hapësira e punës",
+    "runDeep": "Nis skanim të thellë",
+    "deepStarted": "Skanimi i thellë u nis.",
+    "noScans": "Ky raport nuk ka skanime ende.",
+    "rescan": "Skano tani",
+    "addBlocklist": "Shto në listën e bllokimit",
+    "createTakedown": "Krijo bllokim",
+    "openReport": "Raporti te ofruesi",
+    "filter": "Filtro nëndomenet",
+    "brandOnly": "Vetëm me emër marke",
+    "notEligible": "Ky URL nuk skanohet: {reason}",
+    "reasons": {
+      "private": "adresë private",
+      "official": "domen zyrtar",
+      "allowlisted": "domen i lejuar",
+      "synthetic": "domen demo",
+      "invalid": "URL e pavlefshme",
+      "scheme": "vetëm http/https"
+    },
+    "latest": "Skanimi i fundit",
+    "aggregate": "Vlerësimet e domeneve",
+    "ageShort": "{count} d",
+    "subCount": "{count} nëndomene"
+  },
+  "geo": {
+    "title": "Harta gjeografike e kërcënimeve",
+    "description": "Ku raportohen mashtrimet dhe cilat autoritete vendore imitohen. Vetëm të dhëna të përmbledhura.",
+    "demo": "Të dhëna demo",
+    "setup": {
+      "title": "Harta nuk është gati ende",
+      "body": "Ngarkoni bashkitë dhe qarqet në bazën e të dhënave:",
+      "short": "Harta nuk është ngarkuar ende (npm run seed:geo)."
+    },
+    "error": {
+      "title": "Harta nuk u ngarkua",
+      "body": "Provoni sërish pas pak. Nëse problemi vazhdon, kontrolloni lidhjen me bazën e të dhënave."
+    },
+    "map": {
+      "label": "Harta e Shqipërisë: {title}",
+      "aria": "{name}, {count} raportime ({period})",
+      "ariaChange": "ndryshim {change}",
+      "lowData": "pak të dhëna (nën 3 raportime)",
+      "keyboardHint": "Tastiera: shigjetat lëvizin midis bashkive, Enter hap detajet, + dhe − zmadhojnë, 0 rikthen pamjen. Ctrl + rrota zmadhon.",
+      "zoomControls": "Kontrollet e zmadhimit",
+      "zoomIn": "Zmadho",
+      "zoomOut": "Zvogëlo",
+      "zoomReset": "Rikthe pamjen",
+      "count": "Raportime",
+      "rate": "Për 10 000 banorë",
+      "change": "Ndryshimi",
+      "topInstitution": "Më e imituara",
+      "imitatedMarker": "Vendndodhja e autoritetit të imituar"
+    },
+    "legend": {
+      "noData": "Pa të dhëna",
+      "lowData": "Pak të dhëna (< 3)",
+      "count": "Raportime",
+      "difference": "Diferenca me periudhën e mëparshme"
+    },
+    "table": {
+      "municipality": "Bashkia",
+      "county": "Qarku",
+      "count": "Raportime",
+      "previous": "Periudha e mëparshme",
+      "rate": "Për 10 000",
+      "change": "Ndryshimi",
+      "z": "Pikët z",
+      "status": "Gjendja",
+      "lowData": "pak të dhëna"
+    },
+    "severity": {
+      "watch": "Vëzhgim",
+      "elevated": "E ngritur",
+      "critical": "Kritike"
+    },
+    "hot": {
+      "title": "Zonat e nxehta",
+      "computedAt": "llogaritur në {time}",
+      "live": "llogaritur për filtrat aktualë",
+      "empty": "Asnjë zonë me aktivitet të pazakontë.",
+      "zoneName": "Zona {name}",
+      "observedExpected": "Vërejtur / pritur",
+      "spike": "Rritja",
+      "newActivity": "aktivitet i ri",
+      "members": "Bashki në zonë",
+      "topInstitution": "Institucioni kryesor",
+      "topCampaign": "Fushata kryesore: {code}",
+      "suppressed": "Bashkitë me më pak se 3 raportime nuk renditen dhe nuk theksohen.",
+      "unknownTitle": "Vendndodhje e panjohur",
+      "nationalTitle": "Autoritet kombëtar ose i panjohur",
+      "share": "{pct}% e {total} raportimeve",
+      "unknownHint": "Raportime ku qytetari zgjodhi Prefer të mos e them. Vendndodhja nuk merret kurrë me hamendje.",
+      "nationalHint": "Fushata që imitojnë institucione kombëtare (banka, e-Albania, Posta) nuk kanë zonë në hartë.",
+      "zone": "Zona",
+      "severityCol": "Niveli"
+    },
+    "player": {
+      "wholeRange": "E gjithë periudha ({from} – {to})",
+      "play": "Luaj",
+      "pause": "Pauzë",
+      "all": "E gjithë periudha",
+      "reports": "{count, plural, one {# raportim} other {# raportime}}",
+      "slider": "Zgjidh ditën",
+      "dayNote": "(një ditë, numri i raportimeve)"
+    },
+    "filters": {
+      "label": "Filtrat e hartës",
+      "range": "Periudha",
+      "ranges": {
+        "24h": "24 orë",
+        "7d": "7 ditë",
+        "30d": "30 ditë",
+        "custom": "E zgjedhur"
+      },
+      "from": "Nga",
+      "to": "Deri",
+      "mode": "Pamja",
+      "modes": {
+        "victim": "Nga raportojnë viktimat",
+        "imitated": "Cili autoritet vendor imitohet"
+      },
+      "confirmed": "Vetëm të konfirmuara",
+      "compare": "Krahaso periudhat",
+      "reset": "Rivendos",
+      "all": "Të gjitha",
+      "institution": "Institucioni i imituar",
+      "campaign": "Fushata",
+      "tactic": "Taktika",
+      "channel": "Kanali",
+      "minFlag": "Flamuri minimal",
+      "source": "Burimi",
+      "sources": {
+        "citizen": "Qytetarë",
+        "extension": "Shtesa e shfletuesit",
+        "business": "Biznese"
+      }
+    },
+    "layers": {
+      "label": "Shtresat",
+      "municipalities": "Bashkitë",
+      "hex": "Gjashtëkëndësha",
+      "counties": "Qarqet",
+      "zones": "Zonat e nxehta",
+      "bubbles": "Flluska"
+    },
+    "metrics": {
+      "label": "Matja",
+      "count": "Numri",
+      "rate": "Për 10 000 banorë",
+      "change": "Ndryshimi",
+      "z": "Pikët z",
+      "rateDisabled": "E çaktivizuar: shifrat zyrtare të popullsisë (INSTAT) nuk janë ngarkuar ende. Popullsia nuk vlerësohet kurrë me hamendje."
+    },
+    "view": {
+      "label": "Paraqitja",
+      "map": "Harta",
+      "table": "Shiko si tabelë"
+    },
+    "compare": {
+      "current": "Kjo periudhë",
+      "previous": "Periudha e mëparshme",
+      "difference": "Diferenca",
+      "diffAria": "{name}, diferenca {diff}"
+    },
+    "region": {
+      "county": "Qarku {name}",
+      "population": "Popullsia {n} (INSTAT {year})",
+      "populationUnknown": "Popullsia: e pa ngarkuar",
+      "counts": {
+        "h24": "Sot",
+        "d7": "7 ditë",
+        "d30": "30 ditë"
+      },
+      "rate": "{rate} raportime për 10 000 banorë (30 ditë)",
+      "trend": "Trendi 30 ditor",
+      "trendAria": "Trendi ditor, gjithsej {total} raportime në 30 ditë",
+      "reports": "Raportime",
+      "institutions": "5 institucionet më të imituara",
+      "tactics": "Taktikat kryesore",
+      "channels": "Kanalet",
+      "campaigns": "Fushatat e lidhura",
+      "latestVictim": "10 raportimet e fundit nga kjo bashki",
+      "latestImitated": "10 raportimet e fundit për fushata që imitojnë këtë autoritet",
+      "privacy": "Vetëm protokolli, flamuri, kanali dhe ora e rrumbullakosur. Asnjë tekst apo kontakt.",
+      "notes": "Shënimet e analistëve",
+      "notePlaceholder": "Shto një shënim për këtë zonë…",
+      "addNote": "Ruaj shënimin",
+      "createAdvisory": "Krijo njoftim për këtë zonë",
+      "createRule": "Krijo rregull alarmi",
+      "openPage": "Hap faqen",
+      "modeVictim": "Raportime nga kjo bashki (zgjedhur nga qytetari)",
+      "modeImitated": "Fushata që imitojnë autoritetin vendor të kësaj zone",
+      "loadError": "Detajet nuk u ngarkuan. Provoni sërish.",
+      "back": "Kthehu te harta",
+      "location": "Vendndodhja e {name}"
+    },
+    "live": {
+      "critical": "Zonë kritike e re: {name}",
+      "open": "Hap"
+    },
+    "export": {
+      "label": "Eksporto",
+      "png": "Harta si PNG",
+      "csv": "Tabela si CSV",
+      "geojson": "GeoJSON me matjet",
+      "briefing": "Përmbledhje A4 për printim",
+      "print": "Printo"
+    },
+    "briefing": {
+      "title": "Përmbledhje gjeografike e mashtrimeve",
+      "kicker": "Përmbledhje për autoritetet",
+      "generated": "Krijuar më {time}",
+      "filters": "Filtrat e përdorur",
+      "totals": "Totalet",
+      "totalsLine": "{total} raportime (periudha e mëparshme {prev}); {unknown} pa vendndodhje ({pct}%).",
+      "top5": "5 zonat kryesore të nxehta",
+      "footer": "Vetëm të dhëna të përmbledhura; bashkitë me më pak se 3 raportime nuk renditen. Kufijtë: OCHA COD-AB Shqipëri 2019 (CC BY-IGO). Mburoja."
+    },
+    "tile": {
+      "title": "Zonat e nxehta tani",
+      "open": "Hap hartën",
+      "line": "{observed} raportime, pritej {expected}"
+    },
+    "campaign": {
+      "tab": "Gjeografia",
+      "mapLabel": "Ku raportohet fushata {code}",
+      "summary": "{total} raportime në 30 ditë; {unknown} pa vendndodhje.",
+      "imitated": "Autoriteti i imituar ndodhet në {name}",
+      "national": "Institucion kombëtar: pa zonë në hartë.",
+      "openMap": "Hap në hartën gjeografike"
+    },
+    "admin": {
+      "tab": "Harta gjeografike",
+      "thresholds": "Pragjet e zonave të nxehta",
+      "thresholdsHint": "Minimumi është gjithmonë 3 raportime. Ndryshimet regjistrohen në auditim.",
+      "minReports": "Min. raportime",
+      "minZ": "Min. pikë z",
+      "minSpike": "Min. rritje (×)",
+      "windowDays": "Dritarja (ditë)",
+      "baselineDays": "Baza (ditë)",
+      "rules": "Rregullat e alarmit",
+      "noRules": "Asnjë rregull.",
+      "ruleLine": "≥ {n} raportime · z ≥ {z} · rritje ≥ {s}×",
+      "active": "Aktiv",
+      "deleteRule": "Fshi rregullin {name}",
+      "newRule": "Rregull i ri",
+      "ruleName": "Emri",
+      "ruleNameFor": "Alarm për {name}",
+      "region": "Bashkia",
+      "anyRegion": "Çdo bashki",
+      "institution": "Institucioni",
+      "anyInstitution": "Çdo institucion",
+      "addRule": "Shto rregullin"
+    },
+    "advisory": {
+      "titleSq": "Kujdes: mashtrime aktive në zonën e {name}",
+      "titleEn": "Warning: active scams in the {name} area",
+      "bodySq": "Po marrim raportime për mesazhe mashtruese në zonën e {name}. Mos klikoni lidhjet dhe mos paguani. Kontrolloni çdo mesazh në Mburoja.",
+      "bodyEn": "We are receiving reports of fraudulent messages in the {name} area. Do not click links or pay. Check any message on Mburoja."
     }
   }
 }

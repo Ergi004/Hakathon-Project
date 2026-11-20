@@ -1,0 +1,440 @@
+{
+ "extName": {
+  "message": "Mburoja"
+ },
+ "extDescription": {
+  "message": "Skano email-in që hapët për mashtrim dhe raportojeni te autoritetet."
+ },
+ "scanEmail": {
+  "message": "Skano email-in"
+ },
+ "scanEmailAria": {
+  "message": "Skano email-in e hapur me Mburoja"
+ },
+ "scanPage": {
+  "message": "Skano faqen"
+ },
+ "close": {
+  "message": "Mbyll"
+ },
+ "reading": {
+  "message": "Duke lexuar email-in…"
+ },
+ "score": {
+  "message": "Pikët"
+ },
+ "preliminary": {
+  "message": "Paraprake (në pajisje)"
+ },
+ "phaseServer": {
+  "message": "Duke analizuar…"
+ },
+ "phaseIntel": {
+  "message": "Kontroll i drejtpërdrejtë i lidhjes…"
+ },
+ "phaseDone": {
+  "message": "Skanimi përfundoi"
+ },
+ "flag_green": {
+  "message": "I sigurt"
+ },
+ "flag_yellow": {
+  "message": "Kujdes"
+ },
+ "flag_orange": {
+  "message": "I dyshimtë"
+ },
+ "flag_red": {
+  "message": "Mashtrim i mundshëm"
+ },
+ "flag_darkred": {
+  "message": "Mashtrim"
+ },
+ "flag_grey": {
+  "message": "E paqartë"
+ },
+ "whatToDo": {
+  "message": "Çfarë të bëni:"
+ },
+ "todo_green": {
+  "message": "Nuk u gjet asgjë e dyshimtë. Gjithsesi mos jepni fjalëkalime me email."
+ },
+ "todo_yellow": {
+  "message": "Kontrolloni dërguesin përpara se të klikoni lidhjet."
+ },
+ "todo_orange": {
+  "message": "Mos klikoni lidhjet dhe mos shkarkoni bashkëngjitjet."
+ },
+ "todo_red": {
+  "message": "Mos klikoni, mos paguani, mos jepni të dhëna. Fshijeni email-in."
+ },
+ "todo_darkred": {
+  "message": "Mashtrim i njohur. Mos ndërveproni dhe fshijeni email-in."
+ },
+ "todo_grey": {
+  "message": "Nuk ka mjaft të dhëna. Kontaktoni institucionin nga faqja e tij zyrtare."
+ },
+ "liveIntel": {
+  "message": "Inteligjenca e kërcënimeve"
+ },
+ "demoData": {
+  "message": "të dhëna demo"
+ },
+ "domainAge": {
+  "message": "domeni $1 ditë i vjetër"
+ },
+ "prov_internal": {
+  "message": "Mburoja"
+ },
+ "prov_dns": {
+  "message": "DNS"
+ },
+ "prov_rdap": {
+  "message": "Regjistrimi i domenit"
+ },
+ "prov_urlhaus": {
+  "message": "URLhaus"
+ },
+ "prov_crtsh": {
+  "message": "Certifikatat (crt.sh)"
+ },
+ "prov_virustotal": {
+  "message": "VirusTotal"
+ },
+ "prov_hybrid_analysis": {
+  "message": "Hybrid Analysis"
+ },
+ "v_pending": {
+  "message": "duke pritur…"
+ },
+ "v_unavailable": {
+  "message": "i padisponueshëm"
+ },
+ "v_clean": {
+  "message": "i pastër"
+ },
+ "v_suspicious": {
+  "message": "i dyshimtë"
+ },
+ "v_malicious": {
+  "message": "keqdashës"
+ },
+ "v_unknown": {
+  "message": "i panjohur"
+ },
+ "belowThreshold": {
+  "message": "Nën pragun e raportimit ($1). Nuk u dërgua asgjë."
+ },
+ "reachedThreshold": {
+  "message": "Ky email mori $1 pikë (pragu $2). Ta dërgojmë te autoritetet?"
+ },
+ "whatIsSent": {
+  "message": "Dërgohen vetëm: subjekti dhe një fragment i maskuar, lidhjet, domeni i dërguesit dhe pikët. Kurrë adresa juaj apo identiteti juaj."
+ },
+ "alwaysSend": {
+  "message": "Dërgo automatikisht nga tani email-et mbi prag"
+ },
+ "sendToAuthorities": {
+  "message": "Dërgo te autoritetet"
+ },
+ "sending": {
+  "message": "Duke dërguar…"
+ },
+ "sent": {
+  "message": "U dërgua te autoritetet"
+ },
+ "protocol": {
+  "message": "Protokolli:"
+ },
+ "undo": {
+  "message": "Anulo"
+ },
+ "undone": {
+  "message": "Raporti u fshi"
+ },
+ "retry": {
+  "message": "Provo sërish"
+ },
+ "openPlatform": {
+  "message": "Hap në Mburoja"
+ },
+ "errOffline": {
+  "message": "Platforma nuk arrihet. Është duke punuar serveri?"
+ },
+ "errRateLimited": {
+  "message": "Shumë skanime. Provoni pas pak."
+ },
+ "errServer": {
+  "message": "Analiza dështoi"
+ },
+ "errReload": {
+  "message": "Shtesa u përditësua. Rifreskoni faqen."
+ },
+ "noEmailOpen": {
+  "message": "Hapni një email fillimisht."
+ },
+ "localUrgency": {
+  "message": "Gjuhë urgjente ose kërcënuese"
+ },
+ "localCredentials": {
+  "message": "Kërkon fjalëkalim, PIN ose të dhëna karte"
+ },
+ "localMismatch": {
+  "message": "Lidhja të çon diku tjetër: $1"
+ },
+ "localIpLink": {
+  "message": "Lidhje drejt një adrese IP"
+ },
+ "localAttachment": {
+  "message": "Bashkëngjitje e rrezikshme"
+ },
+ "popupLast": {
+  "message": "Skanimi i fundit"
+ },
+ "popupNoScan": {
+  "message": "Ende pa skanime. Hapni një email në Gmail dhe klikoni Skano."
+ },
+ "popupSettings": {
+  "message": "Raportimi"
+ },
+ "autoSubmitLabel": {
+  "message": "Dërgo automatikisht te autoritetet email-et mbi prag"
+ },
+ "thresholdLabel": {
+  "message": "Pragu i raportimit"
+ },
+ "threshold40": {
+  "message": "40+ (i dyshimtë)"
+ },
+ "threshold60": {
+  "message": "60+ (mashtrim i mundshëm)"
+ },
+ "threshold80": {
+  "message": "80+ (mashtrim)"
+ },
+ "popupSent": {
+  "message": "Raportet e dërguara"
+ },
+ "popupNoSent": {
+  "message": "Asnjë raport ende."
+ },
+ "popupConnected": {
+  "message": "Platforma: $1"
+ },
+ "popupNotGmail": {
+  "message": "Hapni Gmail ose Outlook dhe një email, pastaj provoni sërish (rifreskoni faqen nëse sapo e instaluat)."
+ },
+ "popupCannotScanPage": {
+  "message": "Kjo faqe nuk mund të skanohet."
+ },
+ "ageDays": {
+  "message": "Regjistruar $1 ditë më parë"
+ },
+ "ageUnknown": {
+  "message": "Data e regjistrimit e panjohur"
+ },
+ "belowShort": {
+  "message": "Nën pragun $1: nuk dërgohet"
+ },
+ "cancel": {
+  "message": "Anulo dërgimin"
+ },
+ "cancelled": {
+  "message": "Nuk u dërgua: e anuluat."
+ },
+ "countdown": {
+  "message": "Dërgohet te autoritetet pas $1 s"
+ },
+ "countdownShort": {
+  "message": "Dërgim automatik së shpejti"
+ },
+ "d_certs": {
+  "message": "$1 certifikata"
+ },
+ "d_engines": {
+  "message": "$1 nga $2 motorë e shënojnë keqdashës"
+ },
+ "d_imitates": {
+  "message": "imiton $1"
+ },
+ "d_listed": {
+  "message": "në listë: $1 URL keqdashëse"
+ },
+ "d_notListed": {
+  "message": "nuk është në listë"
+ },
+ "d_notResolves": {
+  "message": "nuk zgjidhet (domen jo aktiv)"
+ },
+ "d_privacy": {
+  "message": "WHOIS i fshehur"
+ },
+ "d_registered": {
+  "message": "regjistruar $1"
+ },
+ "d_resolves": {
+  "message": "domen aktiv"
+ },
+ "d_threat": {
+  "message": "pikët e kërcënimit $1/100"
+ },
+ "deepOn": {
+  "message": "analizë e thellë"
+ },
+ "deepTier": {
+  "message": "e thellë"
+ },
+ "elapsed": {
+  "message": "$1 s"
+ },
+ "engineDetail": {
+  "message": "$1 sinjale · pikët $2"
+ },
+ "engineRunning": {
+  "message": "Motori i Mburoja-s po analizon tekstin, lidhjet dhe dërguesin…"
+ },
+ "errIntel": {
+  "message": "kontrolli dështoi"
+ },
+ "final": {
+  "message": "Rezultati përfundimtar"
+ },
+ "foundSummary": {
+  "message": "$1 lidhje · $2 domene · $3 bashkëngjitje"
+ },
+ "fromDomain": {
+  "message": "nga $1"
+ },
+ "intelDetail": {
+  "message": "$1 nga $2 kontrolle gati · $3 domene"
+ },
+ "intelNotEligible": {
+  "message": "Lidhjet nuk mund të kontrollohen drejtpërdrejt (zyrtare, private ose demo)."
+ },
+ "intelSkipped": {
+  "message": "Asnjë lidhje për t'u kontrolluar"
+ },
+ "intelStarting": {
+  "message": "Duke nisur kontrollet…"
+ },
+ "localDetail": {
+  "message": "Rregullat e shpejta në pajisje"
+ },
+ "minimize": {
+  "message": "Minimizo"
+ },
+ "needsConsentShort": {
+  "message": "Pret vendimin tuaj"
+ },
+ "noLinks": {
+  "message": "Ky email nuk ka lidhje."
+ },
+ "noReasons": {
+  "message": "Nuk u gjetën shenja paralajmëruese."
+ },
+ "ph_local": {
+  "message": "Kontroll i shpejtë…"
+ },
+ "ph_engine": {
+  "message": "Duke analizuar me motorin e Mburoja-s…"
+ },
+ "ph_intel": {
+  "message": "Duke kontrolluar lidhjet në shërbimet e sigurisë…"
+ },
+ "ph_intel_p": {
+  "message": "Duke pyetur $1…"
+ },
+ "ph_report": {
+  "message": "Vendimi për raportim…"
+ },
+ "ph_done": {
+  "message": "Skanimi përfundoi"
+ },
+ "ph_error": {
+  "message": "Diçka shkoi keq"
+ },
+ "popupScanning": {
+  "message": "Duke skanuar… $1%"
+ },
+ "preliminaryNote": {
+  "message": "Rezultat paraprak nga pajisja. Motori i platformës po punon."
+ },
+ "progress": {
+  "message": "Ecuria e skanimit"
+ },
+ "rescan": {
+  "message": "Skano sërish"
+ },
+ "scanningFab": {
+  "message": "Duke skanuar… $1%"
+ },
+ "scoreFrom": {
+  "message": "Motori $1 → me kontrollet live $2"
+ },
+ "sentShort": {
+  "message": "U dërgua · $1"
+ },
+ "showResult": {
+  "message": "Shfaq rezultatin"
+ },
+ "subdomainsN": {
+  "message": "$1 nëndomene"
+ },
+ "tab_breakdown": {
+  "message": "Ndarja"
+ },
+ "tab_links": {
+  "message": "Lidhjet"
+ },
+ "tab_reasons": {
+  "message": "Arsyet"
+ },
+ "thresholdIs": {
+  "message": "Pragu i raportimit: $1"
+ },
+ "timeoutIntel": {
+  "message": "ende në punë në platformë"
+ },
+ "updating": {
+  "message": "Duke përditësuar…"
+ },
+ "deepLabel": {
+  "message": "Analizë e thellë e lidhjeve"
+ },
+ "deepHelp": {
+  "message": "Lidhja dërgohet te VirusTotal dhe Hybrid Analysis për analizë. Zgjat deri në 2 minuta."
+ },
+ "step_read": {
+  "message": "Leximi i email-it"
+ },
+ "step_local": {
+  "message": "Kontroll i shpejtë në pajisje"
+ },
+ "step_engine": {
+  "message": "Motori i platformës"
+ },
+ "step_intel": {
+  "message": "Kontrolli live i lidhjeve"
+ },
+ "step_report": {
+  "message": "Raportimi te autoritetet"
+ },
+ "group_links": {
+  "message": "Lidhjet"
+ },
+ "group_content": {
+  "message": "Përmbajtja"
+ },
+ "group_sender": {
+  "message": "Dërguesi"
+ },
+ "group_attachments": {
+  "message": "Bashkëngjitjet"
+ },
+ "group_reputation": {
+  "message": "Reputacioni"
+ },
+ "v_checked": {
+  "message": "✓ kontrolluar"
+ }
+}

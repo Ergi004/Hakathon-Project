@@ -4,7 +4,17 @@ import { Badge } from "@/components/ui/badge";
 import { Link } from "@/i18n/navigation";
 import { fmtDate } from "@/lib/format";
 import type { Enums } from "@/types/database";
-import { defangValue } from "./defanged-text";
+import { cn } from "@/lib/utils";
+import { defangValue } from "@/lib/defang";
+import { SeverityDot } from "./severity-dot";
+
+/** Severity accent (always paired with the SeverityDot word, never colour alone). */
+const SEVERITY_ACCENT = {
+  low: "border-l-flag-green",
+  medium: "border-l-flag-yellow",
+  high: "border-l-flag-orange",
+  critical: "border-l-flag-red",
+} as const;
 
 export interface CampaignCardData {
   code: string;
@@ -15,6 +25,7 @@ export interface CampaignCardData {
   message_count: number | null;
   status: Enums<"campaign_status"> | null;
   domains?: string[] | null;
+  severity?: Enums<"severity"> | null;
 }
 
 /** Campaign ID, institution, tactic, dates, counts, status (SPEC 3). */
@@ -29,7 +40,10 @@ export function CampaignCard({ c, href }: { c: CampaignCardData; href?: string }
           <p className="font-mono text-xs text-muted-foreground">{c.code}</p>
           <h3 className="truncate font-display text-lg font-medium">{c.imitated_name ?? t("ui.unknown")}</h3>
         </div>
-        {c.status && <Badge variant={c.status === "resolved" ? "secondary" : "outline"}>{t(`campaignStatus.${c.status}`)}</Badge>}
+        <div className="flex shrink-0 flex-col items-end gap-1.5">
+          {c.status && <Badge variant={c.status === "resolved" ? "secondary" : "outline"}>{t(`campaignStatus.${c.status}`)}</Badge>}
+          {c.severity && <SeverityDot severity={c.severity} className="font-medium" />}
+        </div>
       </div>
       <dl className="grid grid-cols-1 gap-1.5 text-sm text-muted-foreground">
         <div className="flex items-center gap-2">
@@ -62,7 +76,7 @@ export function CampaignCard({ c, href }: { c: CampaignCardData; href?: string }
       </dl>
     </>
   );
-  const cls = "glass-card flex h-full flex-col gap-3 rounded-xl p-4 transition-transform duration-200 ease-out";
+  const cls = cn("glass-card flex h-full flex-col gap-3 rounded-xl p-4 transition-transform duration-200 ease-out", c.severity && ["border-l-4", SEVERITY_ACCENT[c.severity]]);
   return href ? (
     <Link href={href} className={`${cls} hover:-translate-y-0.5 focus-visible:-translate-y-0.5`} aria-label={`${c.code} ${c.imitated_name ?? ""}`}>
       {body}

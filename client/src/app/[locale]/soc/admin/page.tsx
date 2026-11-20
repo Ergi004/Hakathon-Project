@@ -15,6 +15,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DEFAULT_THRESHOLDS } from "@/lib/flags";
 import { fmtDateTime } from "@/lib/format";
 import { guardOrRedirect, hasMinRole, requireRole } from "@/server/auth";
+import { GeoAdmin } from "@/components/geo/GeoAdmin";
+import { parseThresholds } from "@/server/geo/hotspots";
 
 type Search = Promise<{ action?: string }>;
 
@@ -27,11 +29,11 @@ async function Content({ searchParams }: { searchParams: Search }) {
   const { action } = await searchParams;
   const ctx = await guardOrRedirect(() => requireRole("soc_lead"));
   const isAdmin = hasMinRole(ctx.profile.platform_role, "platform_admin");
-  const [t, tr, tu, locale] = await Promise.all([getTranslations("soc.admin"), getTranslations("roles"), getTranslations("ui"), getLocale()]);
+  const [t, tr, tu, locale, tg] = await Promise.all([getTranslations("soc.admin"), getTranslations("roles"), getTranslations("ui"), getLocale(), getTranslations("geo.admin")]);
   const db = ctx.supabase;
   let auditQ = db.from("audit_log").select("id, created_at, action, entity, entity_id, actor:profiles!audit_log_actor_id_fkey(full_name)").order("created_at", { ascending: false }).limit(200);
   if (action) auditQ = auditQ.ilike("action", `${action.replace(/[%,]/g, "")}%`);
-  const [users, insts, tpls, rcps, settings, audit, models] = await Promise.all([
+  const [users, insts, tpls, rcps, settings, audit, models, geoRules, regions] = await Promise.all([
     db.from("profiles").select("id, full_name, platform_role, created_at").order("platform_role", { ascending: false }).limit(500),
     db.from("institutions").select("id, name, sector, official_domains(id, domain), official_channels(id, kind, value)").order("name"),
     db.from("templates").select("kind, locale, version, subject, body, active").eq("active", true),
@@ -39,8 +41,19 @@ async function Content({ searchParams }: { searchParams: Search }) {
     db.from("settings").select("key, value"),
     auditQ,
     db.from("model_versions").select("id, name, version, metrics, active, created_at").order("created_at", { ascending: false }),
+    db.from("geo_alert_rules").select("id, name, min_reports, min_zscore, min_spike_ratio, active, institution_id, region_id").order("created_at"),
+    db.from("regions").select("id, code"),
   ]);
   const setting = (k: string) => settings.data?.find((s) => s.key === k)?.value;
+  const regionCode = new Map((regions.data ?? []).map((r) => [r.id, r.code]));
+  const instNames = new Map((insts.data ?? []).map((i) => [i.id, i.name]));
+  const geoTab = (
+    <GeoAdmin
+      thresholds={parseThresholds(setting("geo_thresholds"))}
+      institutions={(insts.data ?? []).map((i) => ({ id: i.id, name: i.name }))}
+      rules={(geoRules.data ?? []).map((r) => ({ id: r.id, name: r.name, min_reports: r.min_reports, min_zscore: Number(r.min_zscore), min_spike_ratio: Number(r.min_spike_ratio), active: r.active, institution: r.institution_id ? instNames.get(r.institution_id) ?? null : null, regionCode: r.region_id ? regionCode.get(r.region_id) ?? null : null }))}
+    />
+  );
 
   const usersTab = (
     <div className="space-y-4">
@@ -94,6 +107,7 @@ async function Content({ searchParams }: { searchParams: Search }) {
       { value: "templates", label: t("tabs.templates"), content: <TemplateEditor templates={tpls.data ?? []} /> },
       { value: "recipients", label: t("tabs.recipients"), content: <div className="space-y-2"><RecipientForm />{(rcps.data ?? []).map((r) => <RecipientForm key={r.id} r={r} />)}</div> },
       { value: "settings", label: t("tabs.settings"), content: <SettingsForm canEdit={isAdmin} thresholds={{ ...DEFAULT_THRESHOLDS, ...((setting("thresholds") as Record<string, number>) ?? {}) }} weights={(setting("weights") as Record<string, number>) ?? { links: 30, content: 25, sender: 25, attachments: 10, reputation: 10 }} autoEscalate={Number(setting("auto_escalate_hours") ?? 24)} /> },
+      { value: "geo", label: tg("tab"), content: geoTab },
       { value: "audit", label: t("tabs.audit"), content: auditTab },
       { value: "models", label: t("tabs.models"), content: (
         <ul className="space-y-2">

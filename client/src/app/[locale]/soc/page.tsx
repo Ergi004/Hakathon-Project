@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import type { Locale } from "@/i18n/routing";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
+import { HotZonesTile } from "@/components/geo/HotZonesTile";
 import { FlagStack } from "@/components/charts/flag-stack";
 import { KpiTile, KpiTileSkeleton } from "@/components/charts/kpi-tile";
 import { PageHeader } from "@/components/layout/page-header";
@@ -109,6 +110,7 @@ export default async function CommandCentre({ params }: { params: Promise<{ loca
           <Suspense fallback={<Skeleton className="h-40 w-full" />}><Attention /></Suspense>
         </section>
       </div>
+      <Suspense fallback={<Skeleton className="h-48 w-full rounded-xl" />}><HotZonesTile /></Suspense>
       <section className="glass-card space-y-3 rounded-xl p-4">
         <h2 className="inline-flex items-center gap-2 font-display text-base font-medium">
           <span aria-hidden="true" className="size-2 animate-pulse rounded-full bg-flag-green" />{t("command.activity")}

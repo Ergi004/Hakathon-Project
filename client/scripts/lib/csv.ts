@@ -2,7 +2,8 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import Papa from "papaparse";
 
-export const DATA_DIR = path.join(process.cwd(), "data", "s04");
+/** Dataset folder: data/s04 by default, or SEED_DATA_DIR=/path/to/csvs. */
+export const DATA_DIR = process.env.SEED_DATA_DIR ? path.resolve(process.env.SEED_DATA_DIR) : path.join(process.cwd(), "data", "s04");
 
 export type Row = Record<string, string>;
 
