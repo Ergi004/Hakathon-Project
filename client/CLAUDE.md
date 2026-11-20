@@ -41,8 +41,12 @@ Mburoja detects fake government, bank, postal and utility messages, domains and 
 
 # Definition of done for any task
 
-It type-checks, lints, runs locally against a local Supabase, works in Albanian and English, works on a 375 px wide screen, respects RLS (test with a different role), and the page or feature matches the spec section named in the task.
+It type-checks, lints, runs locally (`npm run dev`) against the hosted Supabase project, works in Albanian and English, works on a 375 px wide screen, respects RLS (test with a different role), and the page or feature matches the spec section named in the task.
 
 # Repo layout note
 
 The Next.js project root is `client/` (this folder). All spec paths (`supabase/`, `messages/`, `src/`, `extension/`, `scripts/`, `data/s04/`, `models/`) are relative to `client/`. The spec lives at `client/docs/SPEC.md`.
+
+# No Docker
+
+Docker is not used in this project. Supabase is a hosted project (no `supabase start`, no local stack). Link it once with `npm run db:link`; every Supabase CLI command targets it with `--remote` (`db:push`, `db:test`, `db:types`). This overrides the Docker / local-Supabase steps in docs/SPEC.md sections 2, 15.3 and 16. `npm run db:reset` wipes the hosted database: run it only on a development project and only when asked.

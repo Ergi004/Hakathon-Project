@@ -1,5 +1,5 @@
 // Hand-generated from supabase/migrations to match `supabase gen types typescript`.
-// Regenerate with `npm run db:types` once local Supabase is running.
+// Regenerate with `npm run db:types` against the linked Supabase project.
 
 export type Json =
   | string

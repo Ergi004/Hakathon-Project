@@ -2,7 +2,7 @@
  * SPEC 14: load the hackathon CSVs from data/s04 into the local database.
  * Idempotent (upserts on external_id, code, domain, cert_id; deterministic ids
  * for sample rows). Uses the secret key, so it must never run in the browser.
- * Run: npm run seed  (needs .env.local with local Supabase keys and DEMO_PASSWORD)
+ * Run: npm run seed  (needs .env.local with the Supabase project keys and DEMO_PASSWORD)
  */
 import "./lib/env";
 import { existsSync, readFileSync } from "node:fs";
