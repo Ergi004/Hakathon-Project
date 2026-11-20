@@ -11,7 +11,8 @@ async function AdminShell({ children, params }: { children: React.ReactNode; par
   const ctx = await guardOrRedirect(() => requireRole("platform_admin"));
   const t = await getTranslations("admin");
   const tr = await getTranslations("roles");
-  const items = ADMIN_NAV.map((i) => ({ href: i.href, icon: i.icon, label: t(`nav.${i.key}`) }));
+  const ts = await getTranslations("soc.nav");
+  const items = ADMIN_NAV.map((i) => ({ href: i.href, icon: i.icon, label: i.key === "admin" ? ts("admin") : t(`nav.${i.key}`) }));
 
   return (
     <AppShell

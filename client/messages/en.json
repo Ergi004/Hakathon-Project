@@ -589,7 +589,29 @@
   "admin": {
     "area": "Platform admin",
     "nav": {
-      "overview": "Overview"
+      "overview": "Overview",
+      "organizations": "Organizations"
+    },
+    "stats": {
+      "users": "Users",
+      "orgs": "Organizations",
+      "institutions": "Institutions",
+      "reports": "Reports",
+      "checks": "Checks",
+      "campaigns": "Campaigns"
+    },
+    "byRole": "Users by role",
+    "recentAudit": "Recent audit",
+    "socAdmin": "Manage users, templates and settings",
+    "orgs": {
+      "name": "Name",
+      "type": "Type",
+      "members": "Members",
+      "institution": "Linked institution",
+      "none": "Not linked",
+      "linked": "Organization linked.",
+      "assets": "Verified domains",
+      "hint": "Link a business organization to the institution it represents once it has verified its domains. Without this link, the business cannot see its own campaigns and domains."
     }
   },
   "errors": {
@@ -1412,5 +1434,157 @@
     "report": "I would have reported it",
     "reported": "Thank you! That is exactly the right thing to do.",
     "learn": "Learn more"
+  },
+  "cit": {
+    "home": {
+      "score": "Your safety score",
+      "scoreHint": "It grows when you check, report, learn and enable the extension.",
+      "next": "Next step",
+      "nextActions": {
+        "check": "Check your first message",
+        "save": "Turn on “Save my history” to see your checks",
+        "learn": "Read a guide and take its quiz",
+        "follow": "Follow the institutions you use for alerts",
+        "extension": "Install the extension for Gmail or Outlook",
+        "profile": "Add your name in settings",
+        "allDone": "Great! Keep checking every suspicious message."
+      },
+      "recent": "Recent checks",
+      "noRecent": "You have no saved checks.",
+      "warnings": "Warnings for institutions you follow",
+      "noWarnings": "No active campaigns for the institutions you follow.",
+      "streak": "Day streak",
+      "streakHint": "Days with at least one check, report or lesson.",
+      "badges": "Badges"
+    },
+    "badges": {
+      "first_check": "First check",
+      "first_report": "First report",
+      "streak_7": "7-day streak",
+      "quiz_master": "Quiz master",
+      "extension_guard": "Email guard"
+    },
+    "checks": {
+      "saveHistory": "Save my check history",
+      "saveHistoryHint": "When on, new checks are linked to your account. The text is never stored, only the result.",
+      "kind": "Kind",
+      "date": "Date",
+      "result": "Result",
+      "open": "Open",
+      "delete": "Delete",
+      "deleteAll": "Delete all",
+      "deleted": "Removed from history.",
+      "empty": "No saved checks.",
+      "kinds": {
+        "url": "Link",
+        "text": "Message",
+        "phone": "Phone",
+        "qr": "QR",
+        "email_signals": "Email"
+      }
+    },
+    "reports": {
+      "empty": "You have not sent any reports.",
+      "addDetail": "Add a detail",
+      "detailPlaceholder": "E.g. they called me after the message…",
+      "detailSaved": "Detail added.",
+      "outcome": "Outcome",
+      "content": "Content (masked)",
+      "campaign": "Public campaign",
+      "takedown": "Takedown",
+      "back": "My reports",
+      "notFound": "Report not found."
+    },
+    "alerts": {
+      "markRead": "Mark as read",
+      "markAll": "Mark all as read",
+      "empty": "You have no notifications.",
+      "follow": "Institutions you follow",
+      "followHint": "Get warnings when campaigns imitate them.",
+      "unread": "{count} unread",
+      "live": "Updates automatically"
+    },
+    "watch": {
+      "intro": "Add phone numbers, emails or names to monitor. We store them only as hashes; we cannot read them.",
+      "kind": "Kind",
+      "value": "Value",
+      "kinds": {
+        "phone": "Phone",
+        "email": "Email",
+        "name": "Name"
+      },
+      "add": "Add",
+      "added": "Added to your watchlist.",
+      "empty": "Your watchlist is empty.",
+      "lastMatch": "Last match",
+      "never": "No matches"
+    },
+    "learn": {
+      "progress": "{done} of {total} guides completed",
+      "score": "Quiz: {score}%",
+      "notStarted": "Not started",
+      "open": "Open",
+      "quiz": "Play the general quiz"
+    },
+    "family": {
+      "intro": "Make a one-page safety card for a relative, or share the guide for their main risk.",
+      "name": "Relative’s name (optional)",
+      "threat": "Main risk",
+      "language": "Card language",
+      "download": "Download the card (PDF)",
+      "preparing": "Preparing…",
+      "share": "Share the guide",
+      "cardTitle": "My safety card",
+      "cardFor": "For: {name}",
+      "rules": [
+        "Institutions never ask for codes, PINs or card details by SMS or email.",
+        "Do not click links in messages that rush or threaten you.",
+        "When in doubt, call the institution on its official number.",
+        "Check any message on Mburoja (the check page)."
+      ],
+      "emergency": "If you paid or shared details: call your bank right away."
+    },
+    "extension": {
+      "intro": "The extension scans only the email you choose. Here you see what was sent and manage consent.",
+      "installs": "Linked installs",
+      "none": "No install is linked to your account.",
+      "howTo": "How the extension works",
+      "version": "Version",
+      "lastSeen": "Last seen",
+      "autoSubmit": "Auto-submit signal reports",
+      "consentAt": "Consent on {date}",
+      "revoke": "Disconnect this install",
+      "revoked": "Install disconnected.",
+      "sent": "What was sent",
+      "noneSent": "Nothing has been sent."
+    },
+    "privacy": {
+      "export": "Download my data (JSON)",
+      "exportHint": "Profile, linked checks, reports, watchlist, progress and consents.",
+      "delete": "Delete my account",
+      "deleteHint": "Deletes your account and all links to you. De-identified reports remain to protect others.",
+      "deleteConfirm": "Type DELETE to confirm",
+      "deleteWord": "DELETE",
+      "deleted": "Account deleted.",
+      "consents": "Consent log",
+      "noConsents": "No consents recorded.",
+      "granted": "Granted",
+      "withdrawn": "Withdrawn",
+      "kinds": {
+        "save_history": "Save history",
+        "extension_auto_submit": "Extension auto-submit",
+        "notify_email": "Email notifications",
+        "terms": "Terms"
+      }
+    },
+    "settings": {
+      "name": "Name",
+      "language": "Language",
+      "notifications": "Notifications",
+      "notifyEmail": "Email notifications",
+      "notifyInApp": "In-app notifications",
+      "methods": "Sign-in methods",
+      "saved": "Settings saved."
+    }
   }
 }

@@ -10,6 +10,7 @@ import type { AnalysisResult } from "./detection/types";
 import { tryAdmin } from "./db";
 import { hashInput, type HashKind } from "./hash";
 import { generateText } from "./llm";
+import { recomputeSafetyScore } from "./badges";
 
 export interface CheckOutcome {
   result: AnalysisResult;
@@ -68,6 +69,7 @@ export async function runCheck(
 
     if (checkId && opts.linkUserId) {
       await db.from("user_check_links").insert({ user_id: opts.linkUserId, check_id: checkId, kind: fp.kind });
+      await recomputeSafetyScore(db, opts.linkUserId);
     }
   }
 

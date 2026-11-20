@@ -589,7 +589,29 @@
   "admin": {
     "area": "Administrimi i platformës",
     "nav": {
-      "overview": "Përmbledhje"
+      "overview": "Përmbledhje",
+      "organizations": "Organizatat"
+    },
+    "stats": {
+      "users": "Përdorues",
+      "orgs": "Organizata",
+      "institutions": "Institucione",
+      "reports": "Raporte",
+      "checks": "Kontrolle",
+      "campaigns": "Fushata"
+    },
+    "byRole": "Përdoruesit sipas rolit",
+    "recentAudit": "Auditimi i fundit",
+    "socAdmin": "Menaxho përdoruesit, shabllonet dhe cilësimet",
+    "orgs": {
+      "name": "Emri",
+      "type": "Lloji",
+      "members": "Anëtarë",
+      "institution": "Institucioni i lidhur",
+      "none": "Pa lidhje",
+      "linked": "Organizata u lidh.",
+      "assets": "Domene të verifikuara",
+      "hint": "Lidh një organizatë biznesi me institucionin që përfaqëson, pasi të ketë verifikuar domenet. Pa këtë lidhje, biznesi nuk sheh fushatat dhe domenet e veta."
     }
   },
   "errors": {
@@ -1412,5 +1434,157 @@
     "report": "Do ta kisha raportuar",
     "reported": "Faleminderit! Kjo është gjëja e duhur për t'u bërë.",
     "learn": "Mëso më shumë"
+  },
+  "cit": {
+    "home": {
+      "score": "Rezultati yt i sigurisë",
+      "scoreHint": "Rritet kur kontrollon, raporton, mëson dhe aktivizon shtesën.",
+      "next": "Hapi i radhës",
+      "nextActions": {
+        "check": "Kontrollo mesazhin e parë",
+        "save": "Aktivizo „Ruaj historikun” që të shohësh kontrollet e tua",
+        "learn": "Lexo një udhëzues dhe bëj kuizin",
+        "follow": "Ndiq institucionet që përdor për njoftime",
+        "extension": "Instalo shtesën për Gmail ose Outlook",
+        "profile": "Plotëso emrin në cilësime",
+        "allDone": "Shkëlqyeshëm! Vazhdo të kontrollosh çdo mesazh të dyshimtë."
+      },
+      "recent": "Kontrollet e fundit",
+      "noRecent": "Nuk ke kontrolle të ruajtura.",
+      "warnings": "Paralajmërime për institucionet që ndjek",
+      "noWarnings": "Asnjë fushatë aktive për institucionet që ndjek.",
+      "streak": "Ditë radhazi",
+      "streakHint": "Ditë me të paktën një kontroll, raport ose mësim.",
+      "badges": "Distinktivët"
+    },
+    "badges": {
+      "first_check": "Kontrolli i parë",
+      "first_report": "Raporti i parë",
+      "streak_7": "7 ditë radhazi",
+      "quiz_master": "Mjeshtër i kuizeve",
+      "extension_guard": "Roje e email-it"
+    },
+    "checks": {
+      "saveHistory": "Ruaj historikun e kontrolleve",
+      "saveHistoryHint": "Kur është aktiv, kontrollet e reja lidhen me llogarinë tënde. Teksti nuk ruhet kurrë, vetëm rezultati.",
+      "kind": "Lloji",
+      "date": "Data",
+      "result": "Rezultati",
+      "open": "Hap",
+      "delete": "Fshi",
+      "deleteAll": "Fshi të gjitha",
+      "deleted": "U fshi nga historiku.",
+      "empty": "Asnjë kontroll i ruajtur.",
+      "kinds": {
+        "url": "Link",
+        "text": "Mesazh",
+        "phone": "Telefon",
+        "qr": "QR",
+        "email_signals": "Email"
+      }
+    },
+    "reports": {
+      "empty": "Nuk ke dërguar raporte.",
+      "addDetail": "Shto një detaj",
+      "detailPlaceholder": "P.sh. më telefonuan pas mesazhit…",
+      "detailSaved": "Detaji u shtua.",
+      "outcome": "Përfundimi",
+      "content": "Përmbajtja (e maskuar)",
+      "campaign": "Fushata publike",
+      "takedown": "Bllokimi",
+      "back": "Raportet e mia",
+      "notFound": "Raporti nuk u gjet."
+    },
+    "alerts": {
+      "markRead": "Shëno si të lexuar",
+      "markAll": "Shëno të gjitha si të lexuara",
+      "empty": "Nuk ke njoftime.",
+      "follow": "Institucionet që ndjek",
+      "followHint": "Merr paralajmërime kur ka fushata që i imitojnë.",
+      "unread": "{count} të palexuara",
+      "live": "Përditësohet automatikisht"
+    },
+    "watch": {
+      "intro": "Shto numra, email ose emra për t'i monitoruar. I ruajmë vetëm si hash; nuk mund t'i lexojmë.",
+      "kind": "Lloji",
+      "value": "Vlera",
+      "kinds": {
+        "phone": "Telefon",
+        "email": "Email",
+        "name": "Emër"
+      },
+      "add": "Shto",
+      "added": "U shtua në listë.",
+      "empty": "Lista jote është bosh.",
+      "lastMatch": "Përputhja e fundit",
+      "never": "Asnjë përputhje"
+    },
+    "learn": {
+      "progress": "{done} nga {total} udhëzues të përfunduar",
+      "score": "Kuizi: {score}%",
+      "notStarted": "Pa filluar",
+      "open": "Hap",
+      "quiz": "Luaj kuizin e përgjithshëm"
+    },
+    "family": {
+      "intro": "Krijo një kartë sigurie një-faqëshe për një të afërm, ose ndaj me të udhëzuesin për rrezikun kryesor.",
+      "name": "Emri i të afërmit (opsional)",
+      "threat": "Rreziku kryesor",
+      "language": "Gjuha e kartës",
+      "download": "Shkarko kartën (PDF)",
+      "preparing": "Duke përgatitur…",
+      "share": "Ndaj udhëzuesin",
+      "cardTitle": "Karta ime e sigurisë",
+      "cardFor": "Për: {name}",
+      "rules": [
+        "Institucionet nuk të kërkojnë kurrë kode, PIN ose të dhëna karte me SMS ose email.",
+        "Mos kliko lidhjet në mesazhe që të ngutin ose të kërcënojnë.",
+        "Kur ke dyshime, telefono institucionin në numrin zyrtar.",
+        "Kontrollo çdo mesazh në mburoja (faqja e kontrollit)."
+      ],
+      "emergency": "Nëse ke paguar ose ke dhënë të dhëna: telefono bankën menjëherë."
+    },
+    "extension": {
+      "intro": "Shtesa skanon vetëm email-in që zgjedh ti. Këtu sheh çfarë është dërguar dhe e menaxhon pëlqimin.",
+      "installs": "Instalimet e lidhura",
+      "none": "Asnjë instalim i lidhur me llogarinë tënde.",
+      "howTo": "Si funksionon shtesa",
+      "version": "Versioni",
+      "lastSeen": "Parë së fundi",
+      "autoSubmit": "Dërgim automatik i raporteve të sinjaleve",
+      "consentAt": "Pëlqimi më {date}",
+      "revoke": "Shkëput këtë instalim",
+      "revoked": "Instalimi u shkëput.",
+      "sent": "Çfarë është dërguar",
+      "noneSent": "Asgjë nuk është dërguar."
+    },
+    "privacy": {
+      "export": "Shkarko të dhënat e mia (JSON)",
+      "exportHint": "Profili, kontrollet e lidhura, raportet, lista e vëzhgimit, përparimi dhe pëlqimet.",
+      "delete": "Fshi llogarinë",
+      "deleteHint": "Fshin llogarinë dhe të gjitha lidhjet me ty. Raportet e paidentifikueshme mbeten për të mbrojtur të tjerët.",
+      "deleteConfirm": "Shkruaj FSHI për të konfirmuar",
+      "deleteWord": "FSHI",
+      "deleted": "Llogaria u fshi.",
+      "consents": "Regjistri i pëlqimeve",
+      "noConsents": "Asnjë pëlqim i regjistruar.",
+      "granted": "Dhënë",
+      "withdrawn": "Tërhequr",
+      "kinds": {
+        "save_history": "Ruaj historikun",
+        "extension_auto_submit": "Dërgim automatik nga shtesa",
+        "notify_email": "Njoftime me email",
+        "terms": "Kushtet"
+      }
+    },
+    "settings": {
+      "name": "Emri",
+      "language": "Gjuha",
+      "notifications": "Njoftimet",
+      "notifyEmail": "Njoftime me email",
+      "notifyInApp": "Njoftime në aplikacion",
+      "methods": "Mënyrat e hyrjes",
+      "saved": "Cilësimet u ruajtën."
+    }
   }
 }

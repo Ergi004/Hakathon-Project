@@ -9,6 +9,8 @@ import { defang, extractUrls, foldText, hostOf } from "./detection/normalize";
 import { audit } from "./audit";
 import { tryAdmin } from "./db";
 import { randomToken, sha256 } from "./hash";
+import { recomputeSafetyScore } from "./badges";
+import { notifyWatchMatches } from "./watchlist";
 
 export type CreateReportError = "unavailable" | "generic";
 
@@ -99,6 +101,9 @@ export async function createReport(
     if (iocRows.length) {
       await db.from("iocs").upsert(iocRows, { onConflict: "type,value", ignoreDuplicates: true });
     }
+
+    await notifyWatchMatches(db, input.text ?? "", input.sender, report.protocol);
+    if (input.reporterId) await recomputeSafetyScore(db, input.reporterId);
 
     await audit({
       actorId: input.reporterId ?? null,

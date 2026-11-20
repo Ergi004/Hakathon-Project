@@ -1,7 +1,7 @@
 -- RLS for migration citizen tables (SPEC 8): owner-only.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(8);
+select plan(10);
 
 insert into auth.users (id, email, aud, role) values
   ('00000000-0000-0000-0000-0000000001c1', 'c1@demo.example', 'authenticated', 'authenticated'),
@@ -15,6 +15,12 @@ insert into public.user_check_links (user_id, check_id, kind) values
 insert into public.user_watch_items (user_id, kind, value_hash, label) values
   ('00000000-0000-0000-0000-0000000001c2', 'phone', 'x', '+355 69 *** **67');
 insert into public.user_badges (user_id, badge) values ('00000000-0000-0000-0000-0000000001c2', 'first_check');
+insert into public.messages (id, channel, language, body_masked, body_hash) values
+  ('00000000-0000-0000-0000-00000000aa01', 'sms', 'sq', 'mine', 'h1'),
+  ('00000000-0000-0000-0000-00000000aa02', 'sms', 'sq', 'theirs', 'h2');
+insert into public.reports (source, reporter_id, message_id) values
+  ('citizen_report', '00000000-0000-0000-0000-0000000001c1', '00000000-0000-0000-0000-00000000aa01'),
+  ('citizen_report', '00000000-0000-0000-0000-0000000001c2', '00000000-0000-0000-0000-00000000aa02');
 
 select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-0000000001c1","role":"authenticated"}', true);
 set local role authenticated;
@@ -34,6 +40,8 @@ select throws_ok(
 select is((select count(*)::int from public.user_badges), 0, 'cannot read another user badges');
 select throws_ok($$ update public.profiles set platform_role = 'soc_lead' where id = '00000000-0000-0000-0000-0000000001c1' $$, '42501', null, 'still cannot escalate role');
 
+select results_eq($$ select body_masked from public.messages $$, $$ values ('mine') $$, 'citizen reads only messages of own reports');
+select is((select count(*)::int from public.reports), 1, 'citizen reads only own reports');
 reset role;
 select * from finish();
 rollback;

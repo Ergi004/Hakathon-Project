@@ -74,4 +74,8 @@ export const SOC_NAV = [
   { key: "admin", href: "/soc/admin", icon: "shield" },
 ] as const satisfies readonly NavEntry[];
 
-export const ADMIN_NAV = [{ key: "overview", href: "/admin", icon: "layout" }] as const satisfies readonly NavEntry[];
+export const ADMIN_NAV = [
+  { key: "overview", href: "/admin", icon: "layout" },
+  { key: "organizations", href: "/admin/organizations", icon: "users" },
+  { key: "admin", href: "/soc/admin", icon: "shield" },
+] as const satisfies readonly NavEntry[];
