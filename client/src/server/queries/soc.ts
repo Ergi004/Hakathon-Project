@@ -460,27 +460,6 @@ export async function getNoticeDetail(db: DB, id: string) {
   return { notice: n, events: events.data ?? [], recipients: recipients.data ?? [] };
 }
 
-/* ---------------------------------------------------------------- A9 patterns */
-
-type Ranked = { name: string; value: number }[];
-interface PatternStatsJson { byInstitution: Ranked; channels: Ranked; tactics: Ranked; registrars: Ranked; hosting: Ranked; heat: { d: number; h: number; n: number }[] }
-
-/** Threat-map aggregates, computed in Postgres (soc_pattern_stats) rather than over ~20k rows in the Worker. */
-export async function getPatterns(db: DB) {
-  const { data } = await db.rpc("soc_pattern_stats", { p_days: 90 });
-  const p = (data ?? {}) as Partial<PatternStatsJson>;
-  const heat = Array.from({ length: 7 }, () => Array.from({ length: 24 }, () => 0));
-  for (const c of p.heat ?? []) if (heat[c.d]?.[c.h] !== undefined) heat[c.d][c.h] = c.n;
-  return {
-    byInstitution: p.byInstitution ?? [],
-    channels: p.channels ?? [],
-    tactics: p.tactics ?? [],
-    registrars: p.registrars ?? [],
-    hosting: p.hosting ?? [],
-    heat,
-  };
-}
-
 /* ---------------------------------------------------------------- A10 search */
 
 export async function globalSearch(db: DB, raw: string) {
