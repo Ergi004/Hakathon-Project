@@ -13,19 +13,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return { title: t("title"), robots: { index: false } };
 }
 
-type LoginSearch = Promise<{ next?: string | string[] }>;
-
-async function LoginFormWithNext({ searchParams }: { searchParams: LoginSearch }) {
-  const { next } = await searchParams;
-  return <LoginForm next={typeof next === "string" ? next : undefined} />;
-}
-
 export default async function LoginPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: LoginSearch;
 }) {
   const { locale } = await params;
   setRequestLocale(locale as Locale);
@@ -39,7 +30,7 @@ export default async function LoginPage({
       </CardHeader>
       <CardContent>
         <Suspense fallback={<Skeleton className="h-52 w-full" />}>
-          <LoginFormWithNext searchParams={searchParams} />
+          <LoginForm />
         </Suspense>
         <p className="mt-6 text-center text-sm text-muted-foreground">
           {t("noAccount")}{" "}

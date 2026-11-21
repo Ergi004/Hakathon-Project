@@ -51,6 +51,9 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
 
+      - name: Export prerendered pages
+        run: node scripts/export-static-pages.mjs && node scripts/patch-worker-assets.mjs
+
       - name: Deploy
         run: npx opennextjs-cloudflare deploy --keep-vars
         env:

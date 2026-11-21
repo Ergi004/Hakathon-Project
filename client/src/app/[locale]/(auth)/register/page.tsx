@@ -12,17 +12,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return { title: t("title"), robots: { index: false } };
 }
 
-async function RegisterFormWithType({ searchParams }: { searchParams: Promise<{ type?: string | string[] }> }) {
-  const { type } = await searchParams;
-  return <RegisterForm initialType={type === "business" ? "business" : "citizen"} />;
-}
-
 export default async function RegisterPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ type?: string | string[] }>;
 }) {
   const { locale } = await params;
   setRequestLocale(locale as Locale);
@@ -36,7 +29,7 @@ export default async function RegisterPage({
       </CardHeader>
       <CardContent>
         <Suspense fallback={<Skeleton className="h-[34rem] w-full" />}>
-          <RegisterFormWithType searchParams={searchParams} />
+          <RegisterForm />
         </Suspense>
       </CardContent>
     </Card>

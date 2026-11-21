@@ -7,8 +7,22 @@ import { createContext, type ContextData, type DetectionContext } from "./contex
 import { hostOf } from "./normalize";
 import { countDistinctReporters, type ReportSighting } from "./reporters";
 
-/** Detection data from the database. */
+const CONTEXT_TTL_MS = 60_000;
+let contextCache: { at: number; data: ContextData } | null = null;
+
+/** Detection data from the database, reused in this isolate for one minute. */
 export async function loadContextData(): Promise<ContextData> {
+  const cached = contextCache;
+  if (cached && Date.now() - cached.at < CONTEXT_TTL_MS) return cached.data;
+
+  const data = await loadContextDataFresh();
+  if (data.institutions.length > 0 || data.blocklist?.length || data.knownHashes?.length) {
+    contextCache = { at: Date.now(), data };
+  }
+  return data;
+}
+
+async function loadContextDataFresh(): Promise<ContextData> {
   const db = tryAdmin();
   const empty: ContextData = { institutions: [], officialDomains: [], officialChannels: [], thresholds: DEFAULT_THRESHOLDS };
   if (!db) return empty;

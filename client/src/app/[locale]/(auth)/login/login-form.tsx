@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -13,11 +14,12 @@ import { signIn, type SignInError } from "./actions";
 
 export function LoginForm({ next }: { next?: string }) {
   const t = useTranslations("auth");
+  const nextPath = next ?? useSearchParams().get("next") ?? undefined;
   const [serverError, setServerError] = useState<SignInError | null>(null);
   const [pending, startTransition] = useTransition();
   const form = useForm<SignInInput>({
     resolver: zodResolver(signInSchema),
-    defaultValues: { email: "", password: "", next },
+    defaultValues: { email: "", password: "", next: nextPath },
   });
 
   const onSubmit = form.handleSubmit((values) => {

@@ -16,7 +16,8 @@ export async function updateSession(
 ): Promise<{ signedIn: boolean; cookiesToSet: CookieToSet[] }> {
   const env = getPublicSupabaseEnv();
   const cookiesToSet: CookieToSet[] = [];
-  if (!env) return { signedIn: false, cookiesToSet };
+  const hasSession = request.cookies.getAll().some((cookie) => cookie.name.includes("auth-token"));
+  if (!env || !hasSession) return { signedIn: false, cookiesToSet };
 
   const supabase = createServerClient<Database>(env.url, env.publishableKey, {
     cookies: {

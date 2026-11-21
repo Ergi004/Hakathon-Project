@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Building2, UserRound } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
 import { Controller, useForm, useWatch, type FieldPath } from "react-hook-form";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -26,17 +27,19 @@ const FIELD_ERROR: Record<FieldPath<SignUpInput>, "required" | "email" | "passwo
   acceptTerms: "terms",
 };
 
-export function RegisterForm({ initialType }: { initialType: AccountType }) {
+export function RegisterForm({ initialType }: { initialType?: AccountType }) {
   const t = useTranslations("auth.register");
   const tf = useTranslations("auth.fieldErrors");
   const te = useTranslations("auth.signUpErrors");
+  const queryType = useSearchParams().get("type");
+  const startingType: AccountType = initialType ?? (queryType === "business" ? "business" : "citizen");
   const [serverError, setServerError] = useState<SignUpError | null>(null);
   const [pending, startTransition] = useTransition();
 
   const form = useForm<SignUpInput>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
-      accountType: initialType,
+      accountType: startingType,
       fullName: "",
       email: "",
       password: "",
