@@ -1,7 +1,7 @@
 "use client";
 
-import { AtSign, Check, Download, History, ShieldCheck, TriangleAlert, Phone, UserRound, FileDown, Plus, Share2, Trash2, Unplug } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { AtSign, Download, History, Phone, UserRound, Plus, Trash2, Unplug } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import {
@@ -14,8 +14,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { GuideIcon } from "@/components/home/guide-icon";
-import { GUIDES } from "@/content/learn";
 import { useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
@@ -150,159 +148,6 @@ export function RemoveWatchButton({ id, label }: { id: string; label: string }) 
 }
 
 /** C7: one-page safety card generated in the browser with @react-pdf/renderer. */
-export interface CardCopy { cardTitle: string; cardFor: string; rules: string[]; emergency: string }
-
-export function FamilyCard({ copy }: { copy: Record<"sq" | "en", CardCopy> }) {
-  const t = useTranslations("cit.family");
-  const tu = useTranslations("ui");
-  const locale = useLocale() as "sq" | "en";
-  const [name, setName] = useState("");
-  const [slug, setSlug] = useState<string>(GUIDES[0].slug);
-  const [lang, setLang] = useState<"sq" | "en">(locale);
-  const [busy, setBusy] = useState(false);
-  const guide = GUIDES.find((g) => g.slug === slug)!;
-  const card = copy[lang];
-
-  async function download() {
-    setBusy(true);
-    try {
-      const { pdf, Document, Page, Text, View, StyleSheet } = await import("@react-pdf/renderer");
-      const { createElement: h } = await import("react");
-      const msgs = copy[lang];
-      const s = StyleSheet.create({ page: { padding: 36, fontFamily: "Helvetica", fontSize: 12, lineHeight: 1.5 }, h1: { fontSize: 24, marginBottom: 4 }, h2: { fontSize: 14, marginTop: 14, marginBottom: 4 }, box: { border: "1 solid #999", padding: 10, marginTop: 6 }, warn: { marginTop: 16, padding: 10, backgroundColor: "#fdecea" } });
-      const doc = h(Document, null, h(Page, { size: "A4", style: s.page },
-        h(Text, { style: s.h1 }, msgs.cardTitle),
-        name ? h(Text, null, msgs.cardFor.replace("{name}", name)) : null,
-        h(View, { style: s.box }, ...msgs.rules.map((r, i) => h(Text, { key: i }, `${i + 1}. ${r}`))),
-        h(Text, { style: s.h2 }, guide.title[lang]),
-        h(Text, null, guide.summary[lang]),
-        ...guide.signs.map((x, i) => h(Text, { key: `s${i}` }, `• ${x[lang]}`)),
-        h(Text, { style: s.warn }, msgs.emergency),
-      ));
-      const blob = await pdf(doc).toBlob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `mburoja-${guide.slug}.pdf`;
-      a.click();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function share() {
-    const url = `${window.location.origin}/${lang}/learn/${slug}`;
-    try {
-      if (navigator.share) await navigator.share({ title: guide.title[lang], url });
-      else { await navigator.clipboard.writeText(url); toast.success(tu("copied")); }
-    } catch { /* cancelled */ }
-  }
-
-  const step = (n: number, label: string, htmlFor?: string) => (
-    <Label htmlFor={htmlFor} className="flex items-center gap-2.5 text-sm font-medium">
-      <span className="grid size-6 place-items-center rounded-full bg-primary/15 text-xs font-semibold text-primary">{n}</span>
-      {label}
-    </Label>
-  );
-
-  return (
-    <div className="grid items-start gap-6 lg:grid-cols-12">
-      <div className="space-y-6 rounded-xl border border-border bg-card p-5 md:p-6 lg:col-span-7">
-        <h2 className="font-display text-xl font-medium">{t("buildTitle")}</h2>
-
-        <div className="space-y-2">
-          {step(1, t("name"), "fc-name")}
-          <Input id="fc-name" value={name} onChange={(e) => setName(e.target.value)} maxLength={60} placeholder={t("namePlaceholder")} className="h-11 rounded-xl" />
-        </div>
-
-        <fieldset className="space-y-2">
-          <legend>{step(2, t("threat"))}</legend>
-          <div role="radiogroup" aria-label={t("threat")} className="grid grid-cols-2 gap-2 pt-1 sm:grid-cols-3">
-            {GUIDES.map((g) => {
-              const on = g.slug === slug;
-              return (
-                <button
-                  key={g.slug}
-                  type="button"
-                  role="radio"
-                  aria-checked={on}
-                  onClick={() => setSlug(g.slug)}
-                  className={cn(
-                    "relative flex min-h-20 flex-col items-start justify-between gap-2 rounded-xl border-2 p-3 text-left text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
-                    on ? "border-primary bg-primary/10" : "border-border hover:border-primary/40 hover:bg-accent/50",
-                  )}
-                >
-                  <span className={cn("grid size-8 place-items-center rounded-lg", on ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground")}>
-                    <GuideIcon icon={g.icon} className="size-4" />
-                  </span>
-                  <span className="leading-snug">{g.title[locale]}</span>
-                  {on && <Check className="absolute top-2.5 right-2.5 size-4 text-primary" aria-hidden="true" />}
-                </button>
-              );
-            })}
-          </div>
-        </fieldset>
-
-        <fieldset className="space-y-2">
-          <legend>{step(3, t("language"))}</legend>
-          <div role="radiogroup" aria-label={t("language")} className="inline-flex rounded-xl border border-border p-1">
-            {(["sq", "en"] as const).map((l) => (
-              <button
-                key={l}
-                type="button"
-                role="radio"
-                aria-checked={lang === l}
-                onClick={() => setLang(l)}
-                className={cn("rounded-lg px-4 py-1.5 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none", lang === l ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}
-              >
-                {l === "sq" ? "Shqip" : "English"}
-              </button>
-            ))}
-          </div>
-        </fieldset>
-
-        <div className="flex flex-col gap-2 border-t border-border pt-5 sm:flex-row">
-          <Button size="lg" className="rounded-full" onClick={download} disabled={busy}><FileDown className="size-4" aria-hidden="true" />{busy ? t("preparing") : t("download")}</Button>
-          <Button size="lg" variant="outline" className="rounded-full" onClick={share}><Share2 className="size-4" aria-hidden="true" />{t("share")}</Button>
-        </div>
-      </div>
-
-      <section aria-labelledby="fc-preview" className="space-y-2 lg:sticky lg:top-20 lg:col-span-5">
-        <div className="flex items-baseline justify-between gap-2 px-1">
-          <h2 id="fc-preview" className="text-sm font-medium">{t("preview")}</h2>
-          <p className="text-xs text-muted-foreground">{t("previewHint")}</p>
-        </div>
-        {/* Paper look on purpose: it previews a printed A4 card, so it stays light in dark mode. */}
-        <div className="rotate-[0.4deg] rounded-sm bg-white p-7 text-[13px] leading-relaxed text-neutral-800 shadow-[0_20px_60px_-25px_rgb(0_0_0/0.6)] ring-1 ring-black/5">
-          <div className="flex items-start justify-between gap-3 border-b-2 border-neutral-900 pb-3">
-            <div>
-              <p className="font-display text-2xl font-bold text-neutral-900">{card.cardTitle}</p>
-              {name && <p className="text-neutral-600">{card.cardFor.replace("{name}", name)}</p>}
-            </div>
-            <ShieldCheck className="size-8 shrink-0 text-teal-600" aria-hidden="true" />
-          </div>
-          <ol className="mt-4 space-y-2">
-            {card.rules.map((r, i) => (
-              <li key={r} className="flex gap-2.5">
-                <span className="grid size-5 shrink-0 place-items-center rounded-full bg-neutral-900 text-[10px] font-bold text-white">{i + 1}</span>
-                {r}
-              </li>
-            ))}
-          </ol>
-          <div className="mt-5 rounded-md border border-neutral-300 p-3">
-            <p className="flex items-center gap-2 font-semibold text-neutral-900"><GuideIcon icon={guide.icon} className="size-4" />{guide.title[lang]}</p>
-            <ul className="mt-1.5 list-disc space-y-0.5 pl-5 text-neutral-700">{guide.signs.map((x) => <li key={x.en}>{x[lang]}</li>)}</ul>
-          </div>
-          <p className="mt-4 flex items-center gap-2 rounded-md bg-red-50 p-2.5 font-semibold text-red-800">
-            <TriangleAlert className="size-4 shrink-0" aria-hidden="true" />{card.emergency}
-          </p>
-        </div>
-      </section>
-    </div>
-  );
-}
-
 export function ExtensionControls({ id, autoSubmit }: { id: string; autoSubmit: boolean }) {
   const t = useTranslations("cit.extension");
   const { pending, run } = useRun();

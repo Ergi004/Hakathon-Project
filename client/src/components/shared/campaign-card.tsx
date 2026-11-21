@@ -8,6 +8,15 @@ import { fmtDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { Enums } from "@/types/database";
 import { CampaignStatusBadge } from "./campaign-status";
+import { SeverityDot } from "./severity-dot";
+
+/** Severity stripe colour (always paired with the SeverityDot word, never colour alone). */
+const SEVERITY_STRIPE = {
+  low: "bg-flag-green",
+  medium: "bg-flag-yellow",
+  high: "bg-flag-orange",
+  critical: "bg-flag-red",
+} as const;
 
 export interface CampaignCardData {
   code: string;
@@ -18,6 +27,7 @@ export interface CampaignCardData {
   message_count: number | null;
   status: Enums<"campaign_status"> | null;
   domains?: string[] | null;
+  severity?: Enums<"severity"> | null;
 }
 
 /** Campaign ID, institution, tactic, dates, counts, status (SPEC 3). */
@@ -29,8 +39,12 @@ export function CampaignCard({ c, href }: { c: CampaignCardData; href?: string }
 
   return (
     <Card className={cn("group/campaign relative h-full gap-0 py-0 transition-shadow", href && "hover:ring-primary/40 focus-within:ring-2 focus-within:ring-ring")}>
-      {/* Left edge marks campaigns that are still live. */}
-      {active && <span aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-flag-red/70" />}
+      {/* Left edge: severity colour when known (SOC views), otherwise marks campaigns that are still live. */}
+      {c.severity ? (
+        <span aria-hidden="true" className={cn("absolute inset-y-0 left-0 w-1.5", SEVERITY_STRIPE[c.severity])} />
+      ) : (
+        active && <span aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-flag-red/70" />
+      )}
       <CardHeader className="pt-5 pb-4">
         <CardDescription className="font-mono text-xs">{c.code}</CardDescription>
         <CardTitle className="font-display text-lg leading-snug">
@@ -42,9 +56,10 @@ export function CampaignCard({ c, href }: { c: CampaignCardData; href?: string }
             (c.imitated_name ?? t("ui.unknown"))
           )}
         </CardTitle>
-        {c.status && (
-          <CardAction>
-            <CampaignStatusBadge status={c.status} />
+        {(c.status || c.severity) && (
+          <CardAction className="flex flex-col items-end gap-1.5">
+            {c.status && <CampaignStatusBadge status={c.status} />}
+            {c.severity && <SeverityDot severity={c.severity} className="font-medium" />}
           </CardAction>
         )}
       </CardHeader>

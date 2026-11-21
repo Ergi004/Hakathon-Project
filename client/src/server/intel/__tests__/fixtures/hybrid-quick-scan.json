@@ -1,0 +1,2 @@
+{ "id": "64a1f0c2e5b0c1d2", "sha256": "abc", "finished": true, "verdict": "malicious", "threat_score": 85,
+  "scanners": [ { "name": "VirusTotal", "status": "malicious" }, { "name": "CrowdStrike Falcon", "status": "malicious" }, { "name": "Metadefender", "status": "no-classification" } ] }

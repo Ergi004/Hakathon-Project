@@ -3,6 +3,10 @@
  * Idempotent (upserts on external_id, code, domain, cert_id; deterministic ids
  * for sample rows). Uses the secret key, so it must never run in the browser.
  * Run: npm run seed  (needs .env.local with the Supabase project keys and DEMO_PASSWORD)
+ *
+ * Simulated activity (SYNTHETIC): a random sample of messages becomes reports filed by seeded
+ * citizens over the last year, each with a synthetic municipality (needs npm run seed:geo first):
+ *   SEED_DATA_DIR=/path/to/csvs npm run seed -- --sample 6000 --citizens 200 --days 365
  */
 import "./lib/env";
 import { existsSync, readFileSync } from "node:fs";
@@ -27,6 +31,7 @@ import {
 import { requireEnv } from "./lib/env";
 import { chunks, must, scriptClient, type ScriptClient } from "./lib/supabase";
 import { labelOf, runTraining } from "./train-classifier";
+import { parseActivityArgs, planCampaignWindows, planDates, rng, sampleMessages, seedActivity } from "./lib/activity";
 
 type Enums = Database["public"]["Enums"];
 
@@ -65,7 +70,8 @@ function domainClass(value: string | undefined): Enums["domain_class"] {
   if (v.includes("typo")) return "typosquat";
   if (v.includes("homo")) return "homoglyph";
   if (v.includes("combo")) return "combosquat";
-  if (/legit|ligj|zyrtar|official/.test(v)) return "legitimate";
+  // The dataset labels legitimate domains "legjitim" (Albanian).
+  if (/legit|legj|ligj|zyrtar|official/.test(v)) return "legitimate";
   return "unknown";
 }
 
@@ -96,10 +102,12 @@ async function main() {
   requireDataset(Object.values(FILES));
   const db = scriptClient();
   const demoPassword = requireEnv("DEMO_PASSWORD");
+  const activity = parseActivityArgs(process.argv.slice(2));
+  const rand = rng(20261120);
 
   // ---- Read CSVs -----------------------------------------------------------------
   const campRows = readCsv(FILES.campaigns);
-  const msgRows = readCsv(FILES.messages);
+  let msgRows = readCsv(FILES.messages);
   const labelRows = readCsv(FILES.labels);
   const whoisRows = readCsv(FILES.whois);
   const ctRows = readCsv(FILES.ct);
@@ -150,10 +158,22 @@ async function main() {
     label: column(labelRows, FILES.labels, ["etiketa", "label"])!,
   };
 
+  // ---- 0. Sample mode: a random subset of messages with dates spread over the last year ----
+  const allMsgRows = msgRows;
+  let activityDates: Map<string, Date> | null = null;
+  if (activity.sample > 0) {
+    const labels = new Map(labelRows.map((r) => [r[L.id], labelOf(r[L.label])]));
+    msgRows = sampleMessages(allMsgRows, M.id, labels, activity.sample, rand);
+    const windows = planCampaignWindows(campRows, C.code, C.start, C.end, activity.days, rand);
+    activityDates = planDates(msgRows, M.id, M.campaign, windows, activity.days, rand);
+    console.log(`Sample mode (SYNTHETIC activity): ${msgRows.length} of ${allMsgRows.length} messages, ${activity.citizens} citizens, last ${activity.days} days.`);
+  }
+
   // ---- 1. Institutions, official domains and channels ----------------------------
   const instNames = [...new Set(campRows.map((r) => r[C.inst]?.trim()).filter(Boolean))];
   const institutions = instNames.map((name) => ({ id: stableId(`inst:${name}`), slug: slugify(name), name, sector: sectorOf(name) }));
-  await upsert(db, "institutions", institutions, "slug");
+  // No explicit id: institutions created earlier (e.g. by seed:geo) keep theirs, so references stay valid.
+  await upsert(db, "institutions", institutions.map(({ id: _id, ...rest }) => (void _id, rest)), "slug");
   const instBySlug = new Map(
     must(await db.from("institutions").select("id, slug, name"), "institutions").map((i) => [i.slug, i]),
   );
@@ -320,7 +340,9 @@ async function main() {
       institution_id: camp?.institution_id ?? result.matchedInstitution?.id ?? null,
       tactic: code ? campRows.find((c) => c[C.code] === code)?.[C.tactic] ?? null : null,
       template_id: M.template ? r[M.template] || null : null,
-      received_at: M.date ? (parseDate(r[M.date]) ? new Date(r[M.date]).toISOString() : null) : null,
+      received_at: activityDates?.get(r[M.id])
+        ? new Date(activityDates.get(r[M.id])!.getTime() - Math.floor(rand() * 6 * 3_600_000)).toISOString()
+        : M.date ? (parseDate(r[M.date]) ? new Date(r[M.date]).toISOString() : null) : null,
       source: "dataset",
     });
   }
@@ -437,7 +459,7 @@ async function main() {
       created_at: new Date(Date.now() - ((i * 11) % 14) * 86_400_000 - i * 3_600_000).toISOString(),
     };
   });
-  await upsert(db, "reports", reports, "id");
+  if (activity.sample === 0) await upsert(db, "reports", reports, "id");
 
   const confirmed = [...campByCode.values()].filter((c) => c.status === "confirmed").slice(0, 3);
   const analyst = userIds["analyst@demo.example"];
@@ -485,9 +507,29 @@ async function main() {
   // ---- 12. Classifier --------------------------------------------------------------
   await runTraining({ record: true });
 
+  // ---- 13. Simulated activity (sample mode) ------------------------------------------
+  if (activity.sample > 0 && activityDates) {
+    const summary = await seedActivity({
+      db, opts: activity, demoPassword, campRows, allMsgRows, sampled: msgRows, dates: activityDates, rand,
+      cols: { msgId: M.id, msgCamp: M.campaign, msgText: M.text, msgSender: M.sender, msgSubject: M.subject, campCode: C.code, campInst: C.inst },
+      analystId: userIds["analyst@demo.example"],
+      bankOrgId,
+    });
+    console.log("\n⚠ SYNTHETIC activity seeded:");
+    console.table(summary);
+    const appUrl = process.env.APP_URL ?? "http://localhost:3000";
+    try {
+      const res = await fetch(`${appUrl}/api/cron/compute-geo-hotspots`, { headers: { Authorization: `Bearer ${requireEnv("CRON_SECRET")}` }, signal: AbortSignal.timeout(90_000) });
+      console.log(`compute-geo-hotspots: HTTP ${res.status}`);
+    } catch {
+      console.log("Hot zones not computed yet: start the app (npm run dev) and run  npm run cron:run compute-geo-hotspots");
+    }
+  }
+
   // ---- Validation ------------------------------------------------------------------
+  // Narrowed for the type checker (a union of every table name exceeds its instantiation depth).
   const count = async (table: keyof Database["public"]["Tables"]) =>
-    (await db.from(table).select("*", { count: "exact", head: true })).count ?? 0;
+    (await db.from(table as "reports").select("*", { count: "exact", head: true })).count ?? 0;
 
   const allBodies: string[] = [];
   for (let from = 0; ; from += 1000) {
@@ -497,13 +539,16 @@ async function main() {
   }
   const piiLeaks = allBodies.filter(containsPii).length;
   const orphanPhishing = messages.filter((m) => m.label === "phishing" && !m.campaign_id).length;
+  // The v2 dataset contains one-off phishing messages without a campaign (fushata_id empty), so the
+  // expectation is "as many as the source has", not 0. A higher number would mean a lost campaign link.
+  const sourceOrphans = msgRows.filter((r) => labelById.get(r[M.id]) === 1 && !(M.campaign && r[M.campaign]?.trim())).length;
 
   const checks = [
     { check: "campaigns = A_fushatat rows", expected: campRows.length, actual: await count("campaigns"), ok: (await count("campaigns")) >= campRows.length },
-    { check: "messages = A_mesazhet rows", expected: msgRows.length, actual: await count("messages"), ok: (await count("messages")) === msgRows.length },
+    { check: activity.sample ? "messages >= sample" : "messages = A_mesazhet rows", expected: msgRows.length, actual: await count("messages"), ok: activity.sample ? (await count("messages")) >= msgRows.length : (await count("messages")) === msgRows.length },
     { check: "certificates = B_ct_log rows", expected: ctRows.length, actual: await count("certificates"), ok: (await count("certificates")) === ctRows.length },
     { check: "domains >= B_whois rows", expected: whoisRows.length, actual: await count("domains"), ok: (await count("domains")) >= whoisRows.length },
-    { check: "phishing messages without campaign", expected: 0, actual: orphanPhishing, ok: orphanPhishing === 0 },
+    { check: "phishing messages without campaign (as in source)", expected: sourceOrphans, actual: orphanPhishing, ok: orphanPhishing <= sourceOrphans },
     { check: "message bodies with PII patterns", expected: 0, actual: piiLeaks, ok: piiLeaks === 0 },
   ];
   console.table(checks);

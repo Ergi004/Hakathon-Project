@@ -9,7 +9,7 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
-
+/extension/dist
 # testing
 /coverage
 
@@ -32,6 +32,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+.env.example
 
 # vercel
 .vercel
@@ -42,6 +43,8 @@ next-env.d.ts
 
 !.env.example
 
+# Downloaded boundary source (rebuilt by npm run geo:build)
+data/geo/raw/
 # browser extension build output
 /extension/dist/
 /extension/node_modules/

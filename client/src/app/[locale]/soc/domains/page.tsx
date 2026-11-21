@@ -11,6 +11,7 @@ import { DomainsTable } from "@/components/soc/domains-table";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireRole } from "@/server/auth";
+import { latestVerdicts } from "@/server/intel/staff-view";
 import { getDomains } from "@/server/queries/soc";
 
 type Search = Promise<{ status?: string; cls?: string; q?: string; page?: string }>;
@@ -46,11 +47,12 @@ async function Results({ searchParams }: { searchParams: Search }) {
     const c = l.campaigns as { id: string; code: string } | null;
     if (c) (byDomain[l.domain_id] ??= []).push(c);
   }
+  const intel = Object.fromEntries(await latestVerdicts(ctx.supabase, data.rows.map((r) => r.domain)));
   const qs = new URLSearchParams(Object.entries(sp).filter(([k, v]) => v && k !== "page") as [string, string][]);
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between gap-3"><span className="text-sm text-muted-foreground tabular-nums">{tx("results", { count: data.total })}</span><Button asChild variant="outline" size="sm" className="rounded-full"><a href={`/api/soc/export/domains?${qs}`}><Download className="size-3.5" aria-hidden="true" />{tu("exportCsv")}</a></Button></div>
-      <DomainsTable rows={data.rows} campaignsByDomain={byDomain} />
+      <DomainsTable rows={data.rows} campaignsByDomain={byDomain} intel={intel} />
       <Pager page={data.page} pages={data.pages} />
     </div>
   );

@@ -19,7 +19,11 @@ import { Link } from "@/i18n/navigation";
 import { fmtAgo, fmtDate } from "@/lib/format";
 import { asBrandCategory, asScamType } from "@/lib/pattern-labels";
 import { hasMinRole, requireRole } from "@/server/auth";
+import { IntelCell } from "@/components/intel/intel-cell";
+import { VerdictChip } from "@/components/intel/intel-panel";
+import { latestVerdicts } from "@/server/intel/staff-view";
 import { getCampaignDetail, getCampaignPattern, getStaff } from "@/server/queries/soc";
+import { CampaignGeography } from "@/components/geo/CampaignGeography";
 
 type Params = Promise<{ locale: string; id: string }>;
 
@@ -49,6 +53,10 @@ async function Workspace({ params }: { params: Params }) {
   if (!d) return <EmptyState title="404" />;
   const c = d.campaign;
   const isLead = hasMinRole(ctx.profile.platform_role, "soc_lead");
+  const intel = await latestVerdicts(ctx.supabase, d.domains.map((x) => x.domain));
+  const ti = await getTranslations("intel");
+  const tg = await getTranslations("geo.campaign");
+  const agg = (["malicious", "suspicious", "clean", "unknown"] as const).map((v) => [v, [...intel.values()].filter((x) => x.verdict === v).length] as const).filter(([, n]) => n > 0);
   const order = ["monitoring", "confirmed", "takedown_in_progress", "resolved"] as const;
   const idx = order.indexOf(c.status);
 
@@ -116,9 +124,12 @@ async function Workspace({ params }: { params: Params }) {
 
   const domainsTab = (
     <div className="space-y-5">
+      {agg.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2 text-sm"><span className="text-muted-foreground">{ti("aggregate")}:</span>{agg.map(([v, n]) => <span key={v} className="inline-flex items-center gap-1"><VerdictChip status="done" verdict={v} /><span className="font-mono text-xs">{n}</span></span>)}</div>
+      )}
       <div className="overflow-x-auto rounded-xl bg-card ring-1 ring-foreground/10 [&_th]:h-11 [&_th]:bg-muted/40">
         <Table>
-          <TableHeader><TableRow><TableHead>{tds("domain")}</TableHead><TableHead>{tds("class")}</TableHead><TableHead className="hidden md:table-cell">{tds("registrar")}</TableHead><TableHead className="hidden md:table-cell">{tds("age")}</TableHead><TableHead>{tds("status")}</TableHead></TableRow></TableHeader>
+          <TableHeader><TableRow><TableHead>{tds("domain")}</TableHead><TableHead>{tds("class")}</TableHead><TableHead className="hidden md:table-cell">{tds("registrar")}</TableHead><TableHead className="hidden md:table-cell">{tds("age")}</TableHead><TableHead className="hidden lg:table-cell">{ti("latest")}</TableHead><TableHead>{tds("status")}</TableHead></TableRow></TableHeader>
           <TableBody>
             {d.domains.map((x) => (
               <TableRow key={x.id}>
@@ -126,6 +137,7 @@ async function Workspace({ params }: { params: Params }) {
                 <TableCell className="text-xs">{tdc(x.class)}</TableCell>
                 <TableCell className="hidden text-xs md:table-cell">{x.registrar ?? "—"}</TableCell>
                 <TableCell className="hidden text-xs md:table-cell">{x.age_days !== null ? tds("ageDays", { count: x.age_days }) : "—"}</TableCell>
+                <TableCell className="hidden lg:table-cell"><IntelCell v={intel.get(x.domain)} /></TableCell>
                 <TableCell><Badge variant="outline">{tds(`statuses.${x.status as "threat"}`)}</Badge></TableCell>
               </TableRow>
             ))}
@@ -204,6 +216,7 @@ async function Workspace({ params }: { params: Params }) {
         { value: "overview", label: t("tabs.overview"), content: overview },
         { value: "messages", label: `${t("tabs.messages")} (${d.messages.length})`, content: <MessagesSplit campaignId={c.id} messages={d.messages} /> },
         { value: "domains", label: t("tabs.domains"), content: domainsTab },
+        { value: "geography", label: tg("tab"), content: <Suspense fallback={<Skeleton className="h-64 w-full" />}><CampaignGeography campaign={{ id: c.id, code: c.code, target_region_id: c.target_region_id, institution_id: c.institution_id }} /></Suspense> },
         { value: "takedowns", label: t("tabs.takedowns"), content: takedownsTab },
         { value: "notes", label: t("tabs.notes"), content: notesTab },
         { value: "advisory", label: t("tabs.advisory"), content: advisoryTab },

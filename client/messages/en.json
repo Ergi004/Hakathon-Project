@@ -177,7 +177,6 @@
       "alerts": "Alerts",
       "watchlist": "My watchlist",
       "learn": "Learning path",
-      "family": "Family protection",
       "extension": "Extension",
       "privacy": "Privacy centre",
       "settings": "Settings"
@@ -193,10 +192,8 @@
       "domains": "Lookalike domains",
       "reports": "Customer reports",
       "notices": "Customer notices",
-      "training": "Phishing simulations",
       "api": "API and keys",
       "team": "Team",
-      "export": "Compliance export",
       "settings": "Settings"
     }
   },
@@ -215,7 +212,8 @@
       "quality": "Model quality",
       "alerts": "Alert rules",
       "admin": "Admin",
-      "intel": "Phishing intel"
+      "intel": "Phishing intel",
+      "geo": "Geographic map"
     },
     "status": {
       "ingestion": "Ingestion",
@@ -1548,7 +1546,15 @@
     "summaryContent": "Content",
     "summaryContact": "Contact",
     "noContact": "No email, you will track it with your code",
-    "tokenWarning": "This code is shown only once. Copy it now."
+    "tokenWarning": "This code is shown only once. Copy it now.",
+    "region": {
+      "legend": "Where are you? (optional)",
+      "hint": "Only county and municipality, if you want. We never use GPS, your address or your IP.",
+      "county": "County",
+      "municipality": "Municipality",
+      "preferNot": "Prefer not to say",
+      "pickMunicipality": "Choose a municipality"
+    }
   },
   "track": {
     "title": "Track a report",
@@ -1932,34 +1938,6 @@
       "out": "Sending is not part of the platform: copy it and use it in your own channels.",
       "chars": "{count} characters"
     },
-    "training": {
-      "new": "New simulation",
-      "name": "Name",
-      "template": "Template",
-      "templates": {
-        "parcel": "Parcel on hold",
-        "it_password": "Password expiring (IT)",
-        "invoice": "Unpaid invoice",
-        "bonus": "HR bonus"
-      },
-      "emails": "Employee emails (one per line)",
-      "emailsHint": "Emails are used only to send (simulated) and are not stored.",
-      "launch": "Launch simulation",
-      "launched": "Simulation launched for {count} employees (simulated).",
-      "funnel": "Results",
-      "sent": "Sent",
-      "opened": "Opened",
-      "clicked": "Clicked",
-      "reported": "Reported",
-      "statuses": {
-        "draft": "Draft",
-        "running": "Running",
-        "finished": "Finished"
-      },
-      "finish": "Finish",
-      "empty": "No simulations yet.",
-      "simulated": "No real email is sent unless SIMULATE_EMAIL is false."
-    },
     "api": {
       "new": "New key",
       "name": "Key name",
@@ -1987,14 +1965,6 @@
       "lastOwner": "The organization needs at least one owner.",
       "empty": "No members."
     },
-    "export": {
-      "month": "Month",
-      "format": "Format",
-      "generate": "Generate report",
-      "ready": "The report is ready. The link is valid for 10 minutes.",
-      "download": "Download",
-      "contents": "Includes incidents, takedown times and the trend for the selected month."
-    },
     "settings": {
       "profile": "Organization profile",
       "name": "Name",
@@ -2011,10 +1981,8 @@
       "domains": "Domains that look like yours, ranked by risk. Request a takedown or allowlist your own variants.",
       "reports": "What citizens reported about your brand. Anonymised: only masked text and status are shown.",
       "notices": "Ready-to-use warnings for your customers, in Albanian and English. Edit and copy them.",
-      "training": "Test your staff with simulated phishing emails and see who clicks and who reports.",
       "api": "Keys for the scan API, usage over the last 30 days and code to get started.",
       "team": "Who has access to your brand dashboard and what they can do.",
-      "export": "A monthly report of incidents and takedown times for audits and regulators.",
       "settings": "Your organization profile, who gets notified and how long we keep data."
     },
     "ov": {
@@ -2023,7 +1991,6 @@
       "quick": "Quick actions",
       "quickSetup": "Brand setup",
       "quickNotice": "Warn customers",
-      "quickExport": "Monthly report",
       "quickDomains": "Lookalike domains",
       "last30": "Last 30 days"
     },
@@ -2073,16 +2040,6 @@
       "channelHint": "Pick where you will publish it.",
       "sms": "160 characters fit in one SMS."
     },
-    "tr": {
-      "create": "Create a simulation",
-      "stats": {
-        "sims": "Simulations",
-        "sent": "Emails sent",
-        "clickRate": "Click rate",
-        "reportRate": "Report rate"
-      },
-      "emptyBody": "Create a simulation, add employee emails and launch it to see who clicks."
-    },
     "ap": {
       "keys": "Keys",
       "calls": "Calls (30 days)",
@@ -2103,16 +2060,6 @@
         "contact": "Receives escalations from the SOC."
       }
     },
-    "ex": {
-      "formTitle": "Generate a report",
-      "includes": [
-        "Incidents and alerts in the month",
-        "Time from detection to takedown",
-        "Campaigns and lookalike domains",
-        "Trend compared to the previous month"
-      ],
-      "includesTitle": "What the report contains"
-    },
     "st": {
       "profileHint": "The name customers and the SOC see.",
       "planTitle": "Plan",
@@ -2128,19 +2075,6 @@
       "whyBody": "The more we know about your official domains, senders and accounts, the faster we spot imitations. Verified domains also let the SOC link your brand to campaigns.",
       "count": "{count, plural, =0 {Nothing added} one {# added} other {# added}}"
     }
-  },
-  "sim": {
-    "title": "This was a security exercise",
-    "body": "Your organization is testing how well scam messages are spotted. Nothing bad happened and no data was taken.",
-    "signs": "What should have made you suspicious",
-    "signsItems": [
-      "Urgency: “today”, “immediately”.",
-      "The link did not go to the official domain.",
-      "You were asked to log in or pay through a link."
-    ],
-    "report": "I would have reported it",
-    "reported": "Thank you! That is exactly the right thing to do.",
-    "learn": "Learn more"
   },
   "cit": {
     "home": {
@@ -2349,30 +2283,6 @@
       "quizBody": "Ten real-looking messages. Decide which are scams.",
       "badgesHint": "Earn badges as you check, report and learn."
     },
-    "family": {
-      "intro": "Make a one-page safety card for a relative, or share the guide for their main risk.",
-      "name": "Relative’s name (optional)",
-      "threat": "Main risk",
-      "language": "Card language",
-      "download": "Download the card (PDF)",
-      "preparing": "Preparing…",
-      "share": "Share the guide",
-      "cardTitle": "My safety card",
-      "cardFor": "For: {name}",
-      "rules": [
-        "Institutions never ask for codes, PINs or card details by SMS or email.",
-        "Do not click links in messages that rush or threaten you.",
-        "When in doubt, call the institution on its official number.",
-        "Check any message on Mburoja (the check page)."
-      ],
-      "emergency": "If you paid or shared details: call your bank right away.",
-      "title": "Family protection",
-      "preview": "Preview",
-      "previewHint": "This is what the printed card looks like.",
-      "buildTitle": "Make a safety card",
-      "signsTitle": "Warning signs",
-      "namePlaceholder": "e.g. Grandma Drita"
-    },
     "extension": {
       "intro": "The extension scans only the email you choose. Here you see what was sent and manage consent.",
       "installs": "Linked installs",
@@ -2506,6 +2416,316 @@
       "workspace": "Report workspace",
       "overview": "Overview",
       "exports": "Export indicators"
+    }
+  },
+  "intel": {
+    "title": "Live scan",
+    "subtitle": "We check the domain with security services, without opening the page.",
+    "demo": "Demo data",
+    "running": "Scanning…",
+    "done": "Scan complete",
+    "error": "Scan did not finish",
+    "providers": {
+      "dns": "DNS",
+      "rdap": "Domain registry (RDAP)",
+      "urlhaus": "URLhaus (abuse.ch)",
+      "crtsh": "Certificates (crt.sh)",
+      "virustotal": "VirusTotal",
+      "hybrid_analysis": "Hybrid Analysis",
+      "internal": "Our analysis"
+    },
+    "verdicts": {
+      "malicious": "Malicious",
+      "suspicious": "Suspicious",
+      "clean": "Clean",
+      "unknown": "No data",
+      "unavailable": "Unavailable",
+      "pending": "Pending"
+    },
+    "deepTier": "deep analysis",
+    "engines": "{malicious} of {total} engines",
+    "age": {
+      "days": "Registered {count} days ago",
+      "today": "Registered today",
+      "unknown": "Domain age unknown"
+    },
+    "resolves": "Live in DNS",
+    "notResolves": "Does not resolve",
+    "listed": "Listed as malicious",
+    "notListed": "Not listed",
+    "certs": "{count} names in certificates",
+    "registrar": "Registrar: {name}",
+    "threatScore": "Threat: {score}/100",
+    "subdomains": "Subdomains ({count})",
+    "subdomain": "Subdomain",
+    "source": "Source",
+    "resolvesCol": "Live",
+    "firstCert": "First certificate",
+    "verdict": "Verdict",
+    "scoreChanged": "Score updated by the scan: {from} → {to}",
+    "deepConsentLabel": "Send the link for deeper analysis",
+    "deepConsentLine": "The link will be sent to security analysis services.",
+    "reconnecting": "Reconnecting…",
+    "tab": "Intel",
+    "workspace": "Workspace",
+    "runDeep": "Run deep scan",
+    "deepStarted": "Deep scan started.",
+    "noScans": "This report has no scans yet.",
+    "rescan": "Scan now",
+    "addBlocklist": "Add to blocklist",
+    "createTakedown": "Create takedown",
+    "openReport": "Provider report",
+    "filter": "Filter subdomains",
+    "brandOnly": "Brand names only",
+    "notEligible": "This URL is not scanned: {reason}",
+    "reasons": {
+      "private": "private address",
+      "official": "official domain",
+      "allowlisted": "allowlisted domain",
+      "synthetic": "demo domain",
+      "invalid": "invalid URL",
+      "scheme": "http/https only"
+    },
+    "latest": "Latest scan",
+    "aggregate": "Domain verdicts",
+    "ageShort": "{count} d",
+    "subCount": "{count} subdomains"
+  },
+  "geo": {
+    "title": "Geographic threat map",
+    "description": "Where fraud is reported from and which local authorities are imitated. Aggregates only.",
+    "demo": "Demo data",
+    "setup": {
+      "title": "The map is not set up yet",
+      "body": "Load the municipalities and counties into the database:",
+      "short": "The map is not loaded yet (npm run seed:geo)."
+    },
+    "error": {
+      "title": "The map could not be loaded",
+      "body": "Try again shortly. If it persists, check the database connection."
+    },
+    "map": {
+      "label": "Map of Albania: {title}",
+      "aria": "{name}, {count} reports ({period})",
+      "ariaChange": "change {change}",
+      "lowData": "low data (under 3 reports)",
+      "keyboardHint": "Keyboard: arrows move between municipalities, Enter opens details, + and − zoom, 0 resets. Ctrl + wheel zooms.",
+      "zoomControls": "Zoom controls",
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "zoomReset": "Reset view",
+      "count": "Reports",
+      "rate": "Per 10,000 residents",
+      "change": "Change",
+      "topInstitution": "Most imitated",
+      "imitatedMarker": "Location of the imitated authority"
+    },
+    "legend": {
+      "noData": "No data",
+      "lowData": "Low data (< 3)",
+      "count": "Reports",
+      "difference": "Difference vs previous period"
+    },
+    "table": {
+      "municipality": "Municipality",
+      "county": "County",
+      "count": "Reports",
+      "previous": "Previous period",
+      "rate": "Per 10,000",
+      "change": "Change",
+      "z": "z-score",
+      "status": "Status",
+      "lowData": "low data"
+    },
+    "severity": {
+      "watch": "Watch",
+      "elevated": "Elevated",
+      "critical": "Critical"
+    },
+    "hot": {
+      "title": "Hot zones",
+      "computedAt": "computed at {time}",
+      "live": "computed for the current filters",
+      "empty": "No area with unusual activity.",
+      "zoneName": "{name} zone",
+      "observedExpected": "Observed / expected",
+      "spike": "Spike",
+      "newActivity": "new activity",
+      "members": "Municipalities in zone",
+      "topInstitution": "Top institution",
+      "topCampaign": "Top campaign: {code}",
+      "suppressed": "Municipalities with fewer than 3 reports are never ranked or highlighted.",
+      "unknownTitle": "Unknown location",
+      "nationalTitle": "National or unknown authority",
+      "share": "{pct}% of {total} reports",
+      "unknownHint": "Reports where the citizen preferred not to say. A location is never guessed.",
+      "nationalHint": "Campaigns imitating national institutions (banks, e-Albania, the post) have no area on the map.",
+      "zone": "Zone",
+      "severityCol": "Level"
+    },
+    "player": {
+      "wholeRange": "Whole range ({from} – {to})",
+      "play": "Play",
+      "pause": "Pause",
+      "all": "Whole range",
+      "reports": "{count, plural, one {# report} other {# reports}}",
+      "slider": "Choose the day",
+      "dayNote": "(one day, report count)"
+    },
+    "filters": {
+      "label": "Map filters",
+      "range": "Period",
+      "ranges": {
+        "24h": "24 h",
+        "7d": "7 days",
+        "30d": "30 days",
+        "custom": "Custom"
+      },
+      "from": "From",
+      "to": "To",
+      "mode": "View",
+      "modes": {
+        "victim": "Where victims report from",
+        "imitated": "Which local authority is imitated"
+      },
+      "confirmed": "Confirmed only",
+      "compare": "Compare periods",
+      "reset": "Reset",
+      "all": "All",
+      "institution": "Imitated institution",
+      "campaign": "Campaign",
+      "tactic": "Tactic",
+      "channel": "Channel",
+      "minFlag": "Minimum flag",
+      "source": "Source",
+      "sources": {
+        "citizen": "Citizens",
+        "extension": "Browser extension",
+        "business": "Businesses"
+      }
+    },
+    "layers": {
+      "label": "Layers",
+      "municipalities": "Municipalities",
+      "hex": "Hex tiles",
+      "counties": "Counties",
+      "zones": "Hot zones",
+      "bubbles": "Bubbles"
+    },
+    "metrics": {
+      "label": "Metric",
+      "count": "Count",
+      "rate": "Rate per 10,000",
+      "change": "Change",
+      "z": "z-score",
+      "rateDisabled": "Disabled: official INSTAT population figures are not loaded yet. Populations are never estimated."
+    },
+    "view": {
+      "label": "Display",
+      "map": "Map",
+      "table": "View as table"
+    },
+    "compare": {
+      "current": "This period",
+      "previous": "Previous period",
+      "difference": "Difference",
+      "diffAria": "{name}, difference {diff}"
+    },
+    "region": {
+      "county": "{name} county",
+      "population": "Population {n} (INSTAT {year})",
+      "populationUnknown": "Population: not loaded",
+      "counts": {
+        "h24": "Today",
+        "d7": "7 days",
+        "d30": "30 days"
+      },
+      "rate": "{rate} reports per 10,000 residents (30 days)",
+      "trend": "30-day trend",
+      "trendAria": "Daily trend, {total} reports in 30 days",
+      "reports": "Reports",
+      "institutions": "Top 5 imitated institutions",
+      "tactics": "Top tactics",
+      "channels": "Channel mix",
+      "campaigns": "Linked campaigns",
+      "latestVictim": "Latest 10 reports from this municipality",
+      "latestImitated": "Latest 10 reports for campaigns imitating this authority",
+      "privacy": "Only protocol, flag, channel and the time rounded to the hour. No text or contact data.",
+      "notes": "Analyst notes",
+      "notePlaceholder": "Add a note about this area…",
+      "addNote": "Save note",
+      "createAdvisory": "Create advisory for this area",
+      "createRule": "Create alert rule for this region",
+      "openPage": "Open page",
+      "modeVictim": "Reports from this municipality (chosen by the citizen)",
+      "modeImitated": "Campaigns imitating this area's local authority",
+      "loadError": "Details could not be loaded. Try again.",
+      "back": "Back to the map",
+      "location": "Location of {name}"
+    },
+    "live": {
+      "critical": "New critical zone: {name}",
+      "open": "Open"
+    },
+    "export": {
+      "label": "Export",
+      "png": "Map as PNG",
+      "csv": "Table as CSV",
+      "geojson": "GeoJSON with metrics",
+      "briefing": "Printable A4 briefing",
+      "print": "Print"
+    },
+    "briefing": {
+      "title": "Geographic fraud briefing",
+      "kicker": "Briefing for the authorities",
+      "generated": "Generated {time}",
+      "filters": "Filters used",
+      "totals": "Totals",
+      "totalsLine": "{total} reports (previous period {prev}); {unknown} without a location ({pct}%).",
+      "top5": "Top 5 hot zones",
+      "footer": "Aggregates only; municipalities with fewer than 3 reports are not ranked. Boundaries: OCHA COD-AB Albania 2019 (CC BY-IGO). Mburoja."
+    },
+    "tile": {
+      "title": "Hot zones now",
+      "open": "Open the map",
+      "line": "{observed} reports, {expected} expected"
+    },
+    "campaign": {
+      "tab": "Geography",
+      "mapLabel": "Where campaign {code} is reported from",
+      "summary": "{total} reports in 30 days; {unknown} without a location.",
+      "imitated": "The imitated authority is in {name}",
+      "national": "National institution: no area on the map.",
+      "openMap": "Open on the geographic map"
+    },
+    "admin": {
+      "tab": "Geographic map",
+      "thresholds": "Hot-zone thresholds",
+      "thresholdsHint": "The minimum is always 3 reports. Changes are written to the audit log.",
+      "minReports": "Min. reports",
+      "minZ": "Min. z-score",
+      "minSpike": "Min. spike (×)",
+      "windowDays": "Window (days)",
+      "baselineDays": "Baseline (days)",
+      "rules": "Alert rules",
+      "noRules": "No rules.",
+      "ruleLine": "≥ {n} reports · z ≥ {z} · spike ≥ {s}×",
+      "active": "Active",
+      "deleteRule": "Delete rule {name}",
+      "newRule": "New rule",
+      "ruleName": "Name",
+      "ruleNameFor": "Alert for {name}",
+      "region": "Municipality",
+      "anyRegion": "Any municipality",
+      "institution": "Institution",
+      "anyInstitution": "Any institution",
+      "addRule": "Add rule"
+    },
+    "advisory": {
+      "titleSq": "Kujdes: mashtrime aktive në zonën e {name}",
+      "titleEn": "Warning: active scams in the {name} area",
+      "bodySq": "Po marrim raportime për mesazhe mashtruese në zonën e {name}. Mos klikoni lidhjet dhe mos paguani. Kontrolloni çdo mesazh në Mburoja.",
+      "bodyEn": "We are receiving reports of fraudulent messages in the {name} area. Do not click links or pay. Check any message on Mburoja."
     }
   }
 }

@@ -21,9 +21,13 @@ export async function POST(req: NextRequest) {
   if (!body.ok) return body.res;
 
   try {
-    const { result, checkId } = await runCheck(body.data, { linkUserId: null });
+    // ?liveScans=1..3 checks up to 3 distinct link domains; ?deep=1 adds tier B (VirusTotal URL analysis
+    // + Hybrid Analysis), which the caller must only request with the user's consent.
+    const liveScans = Math.min(3, Math.max(1, Number(req.nextUrl.searchParams.get("liveScans") ?? 1) || 1));
+    const deep = req.nextUrl.searchParams.get("deep") === "1";
+    const { result, checkId, scan, scans, explanation } = await runCheck(body.data, { linkUserId: null, liveScans, deep });
     await audit({ actorId: null, action: "api.scan", entity: "check", entityId: checkId, data: { via: who.kind, flag: result.flag } });
-    return NextResponse.json({ ...result, checkId }, { headers: { ...cors, "X-RateLimit-Remaining": String(rl.remaining) } });
+    return NextResponse.json({ ...result, checkId, scan, scans, explanation: explanation.text }, { headers: { ...cors, "X-RateLimit-Remaining": String(rl.remaining) } });
   } catch {
     return apiError(500, "internal", "Analysis failed", cors);
   }

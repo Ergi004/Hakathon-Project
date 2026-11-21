@@ -1,0 +1,1 @@
+{ "data": [ { "id": "login.bad-login.example.com", "type": "domain" }, { "id": "pay.bad-login.example.com", "type": "domain" } ], "meta": { "count": 2 } }

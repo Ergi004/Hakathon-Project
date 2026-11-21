@@ -16,6 +16,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Link } from "@/i18n/navigation";
 import { CHANNELS, REPORT_CATEGORIES } from "@/lib/schemas/analysis";
 import { cn } from "@/lib/utils";
+import { LiveScan } from "@/components/intel/live-scan";
+import { RegionSelect } from "./region-select";
 
 type Category = (typeof REPORT_CATEGORIES)[number];
 type Channel = (typeof CHANNELS)[number];
@@ -62,6 +64,7 @@ export function ReportWizard({ signedIn }: { signedIn: boolean }) {
   const tc = useTranslations("channel");
   const tu = useTranslations("ui");
   const tk = useTranslations("check");
+  const ti = useTranslations("intel");
   const locale = useLocale() as "sq" | "en";
   const [step, setStep] = useState(0);
   const [category, setCategory] = useState<Category>("other");
@@ -72,10 +75,12 @@ export function ReportWizard({ signedIn }: { signedIn: boolean }) {
   const [sender, setSender] = useState("");
   const [preview, setPreview] = useState<string | null>(null);
   const [contact, setContact] = useState("");
+  const [region, setRegion] = useState({ county: "", municipality: "" });
   const [consent, setConsent] = useState(false);
   const [website, setWebsite] = useState(""); // honeypot
   const [error, setError] = useState<string | null>(null);
-  const [done, setDone] = useState<{ protocol: string; trackingToken: string } | null>(null);
+  const [done, setDone] = useState<{ protocol: string; trackingToken: string; scan: { scanId: string; token: string } | null } | null>(null);
+  const [deepConsent, setDeepConsent] = useState(false);
   const [pending, start] = useTransition();
 
   function next() {
@@ -92,6 +97,8 @@ export function ReportWizard({ signedIn }: { signedIn: boolean }) {
         category, channel, lostMoney, locale,
         text: text.trim() || undefined, url: url.trim() || undefined, sender: sender.trim() || undefined,
         contact: contact.trim() || undefined, contactConsent: consent || undefined,
+        regionCode: region.municipality || undefined,
+        deepConsent: deepConsent || undefined,
         website: website || undefined,
       });
       if (res.ok) setDone(res.data);
@@ -127,8 +134,9 @@ export function ReportWizard({ signedIn }: { signedIn: boolean }) {
           <div className="flex flex-col justify-center gap-2 sm:flex-row">
             <CopyButton size="sm" value={`${done.protocol}\n${done.trackingToken}`} label={t("copyBoth")} />
             <Button asChild className="rounded-full"><Link href={`/track?protocol=${encodeURIComponent(done.protocol)}`}>{t("trackNow")}</Link></Button>
-            <Button variant="ghost" onClick={() => { setDone(null); setStep(0); setText(""); setUrl(""); setSender(""); setContact(""); setConsent(false); setPreview(null); }}>{t("another")}</Button>
+            <Button variant="ghost" onClick={() => { setDone(null); setStep(0); setText(""); setUrl(""); setSender(""); setContact(""); setConsent(false); setDeepConsent(false); setRegion({ county: "", municipality: "" }); setPreview(null); }}>{t("another")}</Button>
           </div>
+          {done.scan && <div className="text-left"><LiveScan scanId={done.scan.scanId} token={done.scan.token} /></div>}
         </CardContent>
       </Card>
     );
@@ -192,7 +200,10 @@ export function ReportWizard({ signedIn }: { signedIn: boolean }) {
       )}
 
       {STEPS[step] === "channel" && (
-        <OptionGrid name="ch" label={t("channelLabel")} value={channel} onChange={setChannel} options={CHANNELS.map((c) => ({ value: c, label: tc(c), icon: CHANNEL_ICON[c] }))} />
+        <div className="space-y-5">
+          <OptionGrid name="ch" label={t("channelLabel")} value={channel} onChange={setChannel} options={CHANNELS.map((c) => ({ value: c, label: tc(c), icon: CHANNEL_ICON[c] }))} />
+          <RegionSelect county={region.county} municipality={region.municipality} onChange={setRegion} />
+        </div>
       )}
 
       {STEPS[step] === "content" && (
@@ -212,6 +223,15 @@ export function ReportWizard({ signedIn }: { signedIn: boolean }) {
               <Input id="r-sender" value={sender} onChange={(e) => setSender(e.target.value)} className="h-11 rounded-xl" autoComplete="off" />
             </div>
           </div>
+          {(url.trim() || /(https?:\/\/|hxxps?:\/\/|\[\.\])/i.test(text)) && (
+            <div className="flex items-start gap-3 rounded-lg border border-border p-3">
+              <Checkbox id="r-deep" checked={deepConsent} onCheckedChange={(v) => setDeepConsent(v === true)} />
+              <div className="space-y-0.5">
+                <Label htmlFor="r-deep">{ti("deepConsentLabel")}</Label>
+                <p className="text-xs text-muted-foreground">{ti("deepConsentLine")}</p>
+              </div>
+            </div>
+          )}
           <div className="space-y-2">
             <Label htmlFor="r-shot" className="flex cursor-pointer flex-col items-center gap-2 rounded-xl border-2 border-dashed border-border p-6 text-center text-sm hover:border-primary/50 hover:bg-accent/50 focus-within:ring-2 focus-within:ring-ring">
               <ImageUp className="size-6 text-primary" aria-hidden="true" /> {t("screenshotLabel")}

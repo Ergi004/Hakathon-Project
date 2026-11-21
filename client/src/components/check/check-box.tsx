@@ -16,8 +16,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Link } from "@/i18n/navigation";
 import { CHANNELS } from "@/lib/schemas/analysis";
+import { flagForScore } from "@/lib/flags";
 import { cn } from "@/lib/utils";
 import type { CheckOutcome } from "@/server/checks";
+import { LiveScan } from "@/components/intel/live-scan";
 import { CheckResult } from "./check-result";
 
 type Tab = "link" | "message" | "phone" | "qr";
@@ -34,6 +36,7 @@ const TAB_ICON = { link: Link2, message: MessageSquareText, phone: Phone, qr: Qr
 export function CheckBox({ examples = [], hero = false }: { examples?: CheckExample[]; hero?: boolean }) {
   const t = useTranslations("check");
   const tc = useTranslations("channel");
+  const ti = useTranslations("intel");
   const locale = useLocale() as "sq" | "en";
   const [tab, setTab] = useState<Tab>("link");
   const [values, setValues] = useState<Record<Tab, string>>({ link: "", message: "", phone: "", qr: "" });
@@ -43,6 +46,7 @@ export function CheckBox({ examples = [], hero = false }: { examples?: CheckExam
   const [error, setError] = useState<CheckError | "empty" | null>(null);
   const [outcome, setOutcome] = useState<CheckOutcome | null>(null);
   const [report, setReport] = useState<{ protocol: string; trackingToken: string } | null>(null);
+  const [baseScore, setBaseScore] = useState<number | null>(null);
   const [pending, startTransition] = useTransition();
   const [reporting, startReporting] = useTransition();
   const resultRef = useRef<HTMLDivElement>(null);
@@ -70,6 +74,7 @@ export function CheckBox({ examples = [], hero = false }: { examples?: CheckExam
       });
       if (res.ok) {
         setOutcome(res.data);
+        setBaseScore(res.data.result.score);
         requestAnimationFrame(() => resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
       } else setError(res.error);
     });
@@ -281,6 +286,20 @@ export function CheckBox({ examples = [], hero = false }: { examples?: CheckExam
               reporting={reporting}
               onReset={reset}
             />
+            {outcome.scan && (
+              <>
+                {baseScore !== null && outcome.result.score > baseScore && (
+                  <p className="text-sm text-muted-foreground" role="status">{ti("scoreChanged", { from: baseScore, to: outcome.result.score })}</p>
+                )}
+                <LiveScan
+                  scanId={outcome.scan.scanId}
+                  token={outcome.scan.token}
+                  onScore={(score) =>
+                    setOutcome((o) => (o && score > o.result.score && o.result.flag !== "grey" ? { ...o, result: { ...o.result, score, flag: flagForScore(score) } } : o))
+                  }
+                />
+              </>
+            )}
           </div>
         )}
       </div>

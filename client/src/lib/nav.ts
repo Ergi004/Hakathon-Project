@@ -3,7 +3,7 @@
 export type NavIcon =
   | "home" | "list" | "file" | "bell" | "eye" | "book" | "users" | "puzzle" | "lock" | "settings"
   | "layout" | "wand" | "alert" | "flag" | "globe" | "megaphone" | "graduation" | "key" | "download"
-  | "gauge" | "inbox" | "gavel" | "chart" | "search" | "ban" | "target" | "siren" | "shield" | "radar";
+  | "gauge" | "inbox" | "gavel" | "chart" | "search" | "ban" | "target" | "siren" | "shield" | "map" | "radar";
 
 export type NavGroup =
   | "activity" | "protection" | "account" | "monitor" | "respond" | "people" | "setup"
@@ -66,7 +66,6 @@ export const CITIZEN_NAV = [
   { key: "alerts", group: "activity", href: "/citizen/alerts", icon: "bell", mobile: true },
   { key: "watchlist", group: "protection", href: "/citizen/watchlist", icon: "eye" },
   { key: "learn", group: "protection", href: "/citizen/learn", icon: "book" },
-  { key: "family", group: "protection", href: "/citizen/family", icon: "users" },
   { key: "extension", group: "protection", href: "/citizen/extension", icon: "puzzle" },
   { key: "privacy", group: "account", href: "/citizen/privacy", icon: "lock" },
   { key: "settings", group: "account", href: "/citizen/settings", icon: "settings" },
@@ -79,8 +78,6 @@ export const BUSINESS_NAV = [
   { key: "domains", group: "monitor", href: "/business/domains", icon: "globe" },
   { key: "reports", group: "respond", href: "/business/reports", icon: "file" },
   { key: "notices", group: "respond", href: "/business/notices", icon: "megaphone" },
-  { key: "export", group: "respond", href: "/business/reports/export", icon: "download" },
-  { key: "training", group: "people", href: "/business/training", icon: "graduation" },
   { key: "team", group: "people", href: "/business/team", icon: "users" },
   { key: "onboarding", group: "setup", href: "/business/onboarding", icon: "wand" },
   { key: "api", group: "setup", href: "/business/api", icon: "key" },
@@ -94,6 +91,7 @@ export const SOC_NAV = [
   { key: "intel", group: "investigate", href: "/soc/intel", icon: "radar" },
   { key: "campaigns", group: "investigate", href: "/soc/campaigns", icon: "flag" },
   { key: "domains", group: "investigate", href: "/soc/domains", icon: "globe" },
+  { key: "geo", group: "investigate", href: "/soc/geo", icon: "map" },
   { key: "threatMap", group: "investigate", href: "/soc/threat-map", icon: "chart" },
   { key: "search", group: "investigate", href: "/soc/search", icon: "search" },
   { key: "takedowns", group: "respond", href: "/soc/takedowns", icon: "gavel" },

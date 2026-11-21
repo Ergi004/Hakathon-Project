@@ -13,30 +13,40 @@ import { fmtDateTime } from "@/lib/format";
 import { nowMs } from "@/lib/time";
 import { guardOrRedirect, requireActiveOrg } from "@/server/auth";
 import { orgInstitutionIds } from "@/server/queries/business";
+import { pageCount, pageParam, pageRange } from "@/lib/pagination";
+import { Pager } from "@/components/shared/pager";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   return { title: (await getTranslations({ locale: locale as Locale, namespace: "business.nav" }))("reports") };
 }
 
-async function Content() {
+const PAGE_SIZE = 20;
+type SP = { page?: string };
+
+async function Content({ searchParams }: { searchParams: Promise<SP> }) {
+  const page = pageParam((await searchParams).page);
   const ctx = await guardOrRedirect(() => requireActiveOrg(["owner", "admin", "security"]));
   const [t, tb, ts, tc, locale] = await Promise.all([getTranslations("biz.reports"), getTranslations("biz"), getTranslations("reportStatus"), getTranslations("channel"), getLocale()]);
   const inst = await orgInstitutionIds(ctx);
+  if (!inst.length) return <Card><CardContent><EmptyPanel icon={FileText} title={t("empty")} body={tb("rp.emptyBody")} /></CardContent></Card>;
   // Anonymised: never select reporter_id, reporter_contact or tracking data.
-  const { data } = inst.length
-    ? await ctx.supabase.from("reports").select("id, protocol, status, flag, score, channel, created_at, campaigns!inner(code, institution_id), messages(body_masked)").in("campaigns.institution_id", inst).order("created_at", { ascending: false }).limit(300)
-    : { data: [] };
+  const base = () => ctx.supabase.from("reports").select("id, campaigns!inner(institution_id)", { count: "exact", head: true }).in("campaigns.institution_id", inst);
+  const weekAgo = new Date(nowMs() - 7 * 86_400_000).toISOString();
+  const [{ data, count: total }, weekQ, confirmedQ] = await Promise.all([
+    ctx.supabase.from("reports").select("id, protocol, status, flag, score, channel, created_at, campaigns!inner(code, institution_id), messages(body_masked)", { count: "exact" }).in("campaigns.institution_id", inst).order("created_at", { ascending: false }).order("id").range(...pageRange(page, PAGE_SIZE)),
+    base().gte("created_at", weekAgo),
+    base().in("status", ["confirmed", "takedown_requested", "taken_down"]),
+  ]);
   const all = data ?? [];
-  if (!all.length) return <Card><CardContent><EmptyPanel icon={FileText} title={t("empty")} body={tb("rp.emptyBody")} /></CardContent></Card>;
-  const weekAgo = nowMs() - 7 * 86_400_000;
-  const week = all.filter((r) => Date.parse(r.created_at) >= weekAgo).length;
-  const confirmed = all.filter((r) => ["confirmed", "takedown_requested", "taken_down"].includes(r.status)).length;
+  if (!total) return <Card><CardContent><EmptyPanel icon={FileText} title={t("empty")} body={tb("rp.emptyBody")} /></CardContent></Card>;
+  const week = weekQ.count ?? 0;
+  const confirmed = confirmedQ.count ?? 0;
 
   return (
     <div className="space-y-6">
       <ul className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-        <li><StatCard icon={FileText} label={tb("rp.stats.total")} value={all.length} /></li>
+        <li><StatCard icon={FileText} label={tb("rp.stats.total")} value={total} /></li>
         <li><StatCard icon={CalendarDays} tone="text-flag-yellow" label={tb("rp.stats.week")} value={week} /></li>
         <li><StatCard icon={ShieldAlert} tone="text-flag-red" label={tb("rp.stats.confirmed")} value={confirmed} /></li>
       </ul>
@@ -64,11 +74,12 @@ async function Content() {
           );
         })}
       </ul>
+      <Pager page={page} pages={pageCount(total, PAGE_SIZE)} />
     </div>
   );
 }
 
-export default async function Page({ params }: { params: Promise<{ locale: string }> }) {
+export default async function Page({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<SP> }) {
   setRequestLocale((await params).locale as Locale);
   const [t, tb] = await Promise.all([getTranslations("business.nav"), getTranslations("biz")]);
   return (
@@ -77,7 +88,7 @@ export default async function Page({ params }: { params: Promise<{ locale: strin
       subtitle={tb("pages.reports")}
       actions={<Button asChild variant="outline" className="rounded-full"><a href="/api/business/export/reports"><Download className="size-4" aria-hidden="true" />CSV</a></Button>}
     >
-      <Suspense fallback={<Skeleton className="h-96 w-full rounded-xl" />}><Content /></Suspense>
+      <Suspense fallback={<Skeleton className="h-96 w-full rounded-xl" />}><Content searchParams={searchParams} /></Suspense>
     </DashPage>
   );
 }

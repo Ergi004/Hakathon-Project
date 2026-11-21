@@ -14,6 +14,7 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { fmtDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { DomainRow } from "@/server/queries/soc";
+import { IntelCell } from "@/components/intel/intel-cell";
 
 function RiskBar({ value }: { value: number | null }) {
   if (value === null) return <span className="text-xs text-muted-foreground">—</span>;
@@ -27,11 +28,12 @@ function RiskBar({ value }: { value: number | null }) {
 }
 
 /** A6 domain intelligence with a right-hand detail sheet (SPEC 3 DataTable pattern). */
-export function DomainsTable({ rows, campaignsByDomain }: { rows: DomainRow[]; campaignsByDomain: Record<string, { id: string; code: string }[]> }) {
+export function DomainsTable({ rows, campaignsByDomain, intel = {} }: { rows: DomainRow[]; campaignsByDomain: Record<string, { id: string; code: string }[]>; intel?: Record<string, { verdict: string; ageDays: number | null; subdomains: number }> }) {
   const t = useTranslations("soc.domains");
   const tc = useTranslations("domainClass");
   const tu = useTranslations("ui");
   const tr = useTranslations("soc.report");
+  const ti = useTranslations("intel");
   const locale = useLocale();
   const router = useRouter();
   const [open, setOpen] = useState<DomainRow | null>(null);
@@ -57,7 +59,7 @@ export function DomainsTable({ rows, campaignsByDomain }: { rows: DomainRow[]; c
               <TableHead>{t("domain")}</TableHead><TableHead>{t("class")}</TableHead><TableHead className="hidden lg:table-cell">{t("imitates")}</TableHead>
               <TableHead className="hidden md:table-cell">{t("age")}</TableHead><TableHead className="hidden xl:table-cell">{t("registrar")}</TableHead>
               <TableHead className="hidden xl:table-cell">{t("hosting")}</TableHead><TableHead className="hidden md:table-cell">{t("ct")}</TableHead>
-              <TableHead>{t("risk")}</TableHead><TableHead>{t("status")}</TableHead>
+              <TableHead>{t("risk")}</TableHead><TableHead className="hidden lg:table-cell">{ti("latest")}</TableHead><TableHead>{t("status")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -71,6 +73,7 @@ export function DomainsTable({ rows, campaignsByDomain }: { rows: DomainRow[]; c
                 <TableCell className="hidden text-xs xl:table-cell">{d.hosting_country ?? "—"}</TableCell>
                 <TableCell className="hidden text-xs md:table-cell">{d.certificates?.[0]?.not_before ? fmtDate(d.certificates[0].not_before, locale) : "—"}</TableCell>
                 <TableCell><RiskBar value={d.risk_score} /></TableCell>
+                <TableCell className="hidden lg:table-cell"><IntelCell v={intel[d.domain]} /></TableCell>
                 <TableCell><Badge variant={d.status === "threat" ? "destructive" : "secondary"}>{t(`statuses.${d.status as "threat"}`)}</Badge></TableCell>
               </TableRow>
             ))}

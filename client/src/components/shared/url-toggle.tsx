@@ -37,6 +37,7 @@ export function UrlToggle({
         const next = new URLSearchParams(params.toString());
         if (v === fallback) next.delete(name);
         else next.set(name, v);
+        next.delete("page"); // a new filter starts on page 1
         start(() => router.replace(`${pathname}${next.size ? `?${next}` : ""}`, { scroll: false }));
       }}
       className={cn("flex-wrap", className)}

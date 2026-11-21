@@ -1,0 +1,5 @@
+{ "objectClassName": "domain", "ldhName": "BAD-LOGIN.COM",
+  "events": [ { "eventAction": "registration", "eventDate": "2026-11-16T08:00:00Z" }, { "eventAction": "expiration", "eventDate": "2027-11-16T08:00:00Z" }, { "eventAction": "last changed", "eventDate": "2026-11-16T09:00:00Z" } ],
+  "entities": [
+    { "objectClassName": "entity", "roles": ["registrar"], "vcardArray": ["vcard", [["version", {}, "text", "4.0"], ["fn", {}, "text", "Example Registrar, Inc."]]] },
+    { "objectClassName": "entity", "roles": ["registrant"], "remarks": [{ "title": "REDACTED FOR PRIVACY", "description": ["Data redacted"] }] } ] }

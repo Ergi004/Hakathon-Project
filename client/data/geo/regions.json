@@ -1,0 +1,1366 @@
+{
+ "source": "OCHA COD-AB Albania 2019 (CC BY-IGO)",
+ "regions": [
+  {
+   "code": "AL01",
+   "name_sq": "Berat",
+   "name_en": "Berat",
+   "level": "county",
+   "parent_code": null,
+   "centroid_lat": 40.62841,
+   "centroid_lng": 20.09118,
+   "neighbors": [],
+   "population": null,
+   "population_year": null
+  },
+  {
+   "code": "AL0101",
+   "name_sq": "Berat",
+   "name_en": "Berat",
+   "level": "municipality",
+   "parent_code": "AL01",
+   "centroid_lat": 40.68265,
+   "centroid_lng": 19.95159,
+   "neighbors": [
+    "AL0102",
+    "AL0103",
+    "AL0104",
+    "AL0105",
+    "AL0404",
+    "AL0504",
+    "AL0506",
+    "AL0605"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": -1,
+   "hex_r": 2
+  },
+  {
+   "code": "AL0102",
+   "name_sq": "Kuçovë",
+   "name_en": "Kucove",
+   "level": "municipality",
+   "parent_code": "AL01",
+   "centroid_lat": 40.81965,
+   "centroid_lng": 19.95511,
+   "neighbors": [
+    "AL0101",
+    "AL0105",
+    "AL0401",
+    "AL0402",
+    "AL0404",
+    "AL0503"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 0,
+   "hex_r": 1
+  },
+  {
+   "code": "AL0103",
+   "name_sq": "Poliçan",
+   "name_en": "Polican",
+   "level": "municipality",
+   "parent_code": "AL01",
+   "centroid_lat": 40.59404,
+   "centroid_lng": 20.03253,
+   "neighbors": [
+    "AL0101",
+    "AL0104",
+    "AL0605"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": -1,
+   "hex_r": 3
+  },
+  {
+   "code": "AL0104",
+   "name_sq": "Skrapar",
+   "name_en": "Skrapar",
+   "level": "municipality",
+   "parent_code": "AL01",
+   "centroid_lat": 40.54756,
+   "centroid_lng": 20.25599,
+   "neighbors": [
+    "AL0101",
+    "AL0103",
+    "AL0404",
+    "AL0603",
+    "AL0605",
+    "AL0606",
+    "AL0703",
+    "AL0704"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 0,
+   "hex_r": 2
+  },
+  {
+   "code": "AL0105",
+   "name_sq": "Ura Vajgurorë",
+   "name_en": "Ura Vajgurore",
+   "level": "municipality",
+   "parent_code": "AL01",
+   "centroid_lat": 40.77077,
+   "centroid_lng": 19.80738,
+   "neighbors": [
+    "AL0101",
+    "AL0102",
+    "AL0503",
+    "AL0506"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": -1,
+   "hex_r": 1
+  },
+  {
+   "code": "AL02",
+   "name_sq": "Dibër",
+   "name_en": "Diber",
+   "level": "county",
+   "parent_code": null,
+   "centroid_lat": 41.60152,
+   "centroid_lng": 20.24153,
+   "neighbors": [],
+   "population": null,
+   "population_year": null
+  },
+  {
+   "code": "AL0201",
+   "name_sq": "Bulqizë",
+   "name_en": "Bulqize",
+   "level": "municipality",
+   "parent_code": "AL02",
+   "centroid_lat": 41.45851,
+   "centroid_lng": 20.34189,
+   "neighbors": [
+    "AL0202",
+    "AL0203",
+    "AL0405",
+    "AL1105"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 2,
+   "hex_r": -2
+  },
+  {
+   "code": "AL0202",
+   "name_sq": "Dibër",
+   "name_en": "Diber",
+   "level": "municipality",
+   "parent_code": "AL02",
+   "centroid_lat": 41.71933,
+   "centroid_lng": 20.34988,
+   "neighbors": [
+    "AL0201",
+    "AL0203",
+    "AL0204",
+    "AL0802",
+    "AL0903"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 3,
+   "hex_r": -4
+  },
+  {
+   "code": "AL0203",
+   "name_sq": "Klos",
+   "name_en": "Klos",
+   "level": "municipality",
+   "parent_code": "AL02",
+   "centroid_lat": 41.5058,
+   "centroid_lng": 20.0812,
+   "neighbors": [
+    "AL0201",
+    "AL0202",
+    "AL0204",
+    "AL1105"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 2,
+   "hex_r": -3
+  },
+  {
+   "code": "AL0204",
+   "name_sq": "Mat",
+   "name_en": "Mat",
+   "level": "municipality",
+   "parent_code": "AL02",
+   "centroid_lat": 41.63769,
+   "centroid_lng": 19.9949,
+   "neighbors": [
+    "AL0202",
+    "AL0203",
+    "AL0302",
+    "AL0901",
+    "AL0903",
+    "AL1105"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 2,
+   "hex_r": -4
+  },
+  {
+   "code": "AL03",
+   "name_sq": "Durrës",
+   "name_en": "Durres",
+   "level": "county",
+   "parent_code": null,
+   "centroid_lat": 41.44726,
+   "centroid_lng": 19.63035,
+   "neighbors": [],
+   "population": null,
+   "population_year": null
+  },
+  {
+   "code": "AL0301",
+   "name_sq": "Durrës",
+   "name_en": "Durres",
+   "level": "municipality",
+   "parent_code": "AL03",
+   "centroid_lat": 41.42379,
+   "centroid_lng": 19.5294,
+   "neighbors": [
+    "AL0302",
+    "AL0303",
+    "AL0901",
+    "AL1102",
+    "AL1104",
+    "AL1105"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": -1,
+   "hex_r": -3
+  },
+  {
+   "code": "AL0302",
+   "name_sq": "Krujë",
+   "name_en": "Kruje",
+   "level": "municipality",
+   "parent_code": "AL03",
+   "centroid_lat": 41.50216,
+   "centroid_lng": 19.74922,
+   "neighbors": [
+    "AL0204",
+    "AL0301",
+    "AL0901",
+    "AL1104",
+    "AL1105"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 1,
+   "hex_r": -3
+  },
+  {
+   "code": "AL0303",
+   "name_sq": "Shijak",
+   "name_en": "Shijak",
+   "level": "municipality",
+   "parent_code": "AL03",
+   "centroid_lat": 41.3423,
+   "centroid_lng": 19.58641,
+   "neighbors": [
+    "AL0301",
+    "AL1104",
+    "AL1105"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": -1,
+   "hex_r": -2
+  },
+  {
+   "code": "AL04",
+   "name_sq": "Elbasan",
+   "name_en": "Elbasan",
+   "level": "county",
+   "parent_code": null,
+   "centroid_lat": 41.05018,
+   "centroid_lng": 20.19468,
+   "neighbors": [],
+   "population": null,
+   "population_year": null
+  },
+  {
+   "code": "AL0401",
+   "name_sq": "Belsh",
+   "name_en": "Belsh",
+   "level": "municipality",
+   "parent_code": "AL04",
+   "centroid_lat": 40.9393,
+   "centroid_lng": 19.88546,
+   "neighbors": [
+    "AL0102",
+    "AL0402",
+    "AL0406",
+    "AL0503"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 0,
+   "hex_r": 0
+  },
+  {
+   "code": "AL0402",
+   "name_sq": "Cërrik",
+   "name_en": "Cerrik",
+   "level": "municipality",
+   "parent_code": "AL04",
+   "centroid_lat": 40.96773,
+   "centroid_lng": 19.99513,
+   "neighbors": [
+    "AL0102",
+    "AL0401",
+    "AL0403",
+    "AL0404",
+    "AL0406"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 1,
+   "hex_r": 0
+  },
+  {
+   "code": "AL0403",
+   "name_sq": "Elbasan",
+   "name_en": "Elbasan",
+   "level": "municipality",
+   "parent_code": "AL04",
+   "centroid_lat": 41.1025,
+   "centroid_lng": 20.10996,
+   "neighbors": [
+    "AL0402",
+    "AL0404",
+    "AL0405",
+    "AL0406",
+    "AL0407",
+    "AL1105"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 1,
+   "hex_r": -1
+  },
+  {
+   "code": "AL0404",
+   "name_sq": "Gramsh",
+   "name_en": "Gramsh",
+   "level": "municipality",
+   "parent_code": "AL04",
+   "centroid_lat": 40.84341,
+   "centroid_lng": 20.24435,
+   "neighbors": [
+    "AL0101",
+    "AL0102",
+    "AL0104",
+    "AL0402",
+    "AL0403",
+    "AL0407",
+    "AL0704",
+    "AL0705"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 1,
+   "hex_r": 1
+  },
+  {
+   "code": "AL0405",
+   "name_sq": "Librazhd",
+   "name_en": "Librazhd",
+   "level": "municipality",
+   "parent_code": "AL04",
+   "centroid_lat": 41.22793,
+   "centroid_lng": 20.35502,
+   "neighbors": [
+    "AL0201",
+    "AL0403",
+    "AL0407",
+    "AL1105"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 2,
+   "hex_r": -1
+  },
+  {
+   "code": "AL0406",
+   "name_sq": "Peqin",
+   "name_en": "Peqin",
+   "level": "municipality",
+   "parent_code": "AL04",
+   "centroid_lat": 41.06791,
+   "centroid_lng": 19.79614,
+   "neighbors": [
+    "AL0401",
+    "AL0402",
+    "AL0403",
+    "AL0503",
+    "AL1103",
+    "AL1105"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 0,
+   "hex_r": -1
+  },
+  {
+   "code": "AL0407",
+   "name_sq": "Prrenjas",
+   "name_en": "Prrenjas",
+   "level": "municipality",
+   "parent_code": "AL04",
+   "centroid_lat": 41.06062,
+   "centroid_lng": 20.4632,
+   "neighbors": [
+    "AL0403",
+    "AL0404",
+    "AL0405",
+    "AL0705"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 2,
+   "hex_r": 0
+  },
+  {
+   "code": "AL05",
+   "name_sq": "Fier",
+   "name_en": "Fier",
+   "level": "county",
+   "parent_code": null,
+   "centroid_lat": 40.77439,
+   "centroid_lng": 19.62069,
+   "neighbors": [],
+   "population": null,
+   "population_year": null
+  },
+  {
+   "code": "AL0501",
+   "name_sq": "Divjakë",
+   "name_en": "Divjake",
+   "level": "municipality",
+   "parent_code": "AL05",
+   "centroid_lat": 40.95706,
+   "centroid_lng": 19.54033,
+   "neighbors": [
+    "AL0502",
+    "AL0503",
+    "AL1103"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": -2,
+   "hex_r": 0
+  },
+  {
+   "code": "AL0502",
+   "name_sq": "Fier",
+   "name_en": "Fier",
+   "level": "municipality",
+   "parent_code": "AL05",
+   "centroid_lat": 40.72862,
+   "centroid_lng": 19.50909,
+   "neighbors": [
+    "AL0501",
+    "AL0503",
+    "AL0504",
+    "AL0505",
+    "AL0506",
+    "AL1206",
+    "AL1207"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": -3,
+   "hex_r": 2
+  },
+  {
+   "code": "AL0503",
+   "name_sq": "Lushnjë",
+   "name_en": "Lushnje",
+   "level": "municipality",
+   "parent_code": "AL05",
+   "centroid_lat": 40.91146,
+   "centroid_lng": 19.70881,
+   "neighbors": [
+    "AL0102",
+    "AL0105",
+    "AL0401",
+    "AL0406",
+    "AL0501",
+    "AL0502",
+    "AL0506",
+    "AL1103"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": -1,
+   "hex_r": 0
+  },
+  {
+   "code": "AL0504",
+   "name_sq": "Mallakastër",
+   "name_en": "Mallakaster",
+   "level": "municipality",
+   "parent_code": "AL05",
+   "centroid_lat": 40.5618,
+   "centroid_lng": 19.76364,
+   "neighbors": [
+    "AL0101",
+    "AL0502",
+    "AL0505",
+    "AL0506",
+    "AL0605",
+    "AL1206"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": -2,
+   "hex_r": 3
+  },
+  {
+   "code": "AL0505",
+   "name_sq": "Patos",
+   "name_en": "Patos",
+   "level": "municipality",
+   "parent_code": "AL05",
+   "centroid_lat": 40.67688,
+   "centroid_lng": 19.66448,
+   "neighbors": [
+    "AL0502",
+    "AL0504",
+    "AL0506"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": -2,
+   "hex_r": 1
+  },
+  {
+   "code": "AL0506",
+   "name_sq": "Roskovec",
+   "name_en": "Roskovec",
+   "level": "municipality",
+   "parent_code": "AL05",
+   "centroid_lat": 40.73467,
+   "centroid_lng": 19.71711,
+   "neighbors": [
+    "AL0101",
+    "AL0105",
+    "AL0502",
+    "AL0503",
+    "AL0504",
+    "AL0505"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": -2,
+   "hex_r": 2
+  },
+  {
+   "code": "AL06",
+   "name_sq": "Gjirokastër",
+   "name_en": "Gjirokaster",
+   "level": "county",
+   "parent_code": null,
+   "centroid_lat": 40.21362,
+   "centroid_lng": 20.16961,
+   "neighbors": [],
+   "population": null,
+   "population_year": null
+  },
+  {
+   "code": "AL0601",
+   "name_sq": "Dropull",
+   "name_en": "Dropull",
+   "level": "municipality",
+   "parent_code": "AL06",
+   "centroid_lat": 39.98065,
+   "centroid_lng": 20.30199,
+   "neighbors": [
+    "AL0602",
+    "AL0604",
+    "AL0606",
+    "AL1201",
+    "AL1202"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": -1,
+   "hex_r": 5
+  },
+  {
+   "code": "AL0602",
+   "name_sq": "Gjirokastër",
+   "name_en": "Gjirokaster",
+   "level": "municipality",
+   "parent_code": "AL06",
+   "centroid_lat": 40.12519,
+   "centroid_lng": 20.0663,
+   "neighbors": [
+    "AL0601",
+    "AL0604",
+    "AL0607",
+    "AL1201",
+    "AL1203"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": -2,
+   "hex_r": 5
+  },
+  {
+   "code": "AL0603",
+   "name_sq": "Këlcyrë",
+   "name_en": "Kelcyre",
+   "level": "municipality",
+   "parent_code": "AL06",
+   "centroid_lat": 40.36569,
+   "centroid_lng": 20.15663,
+   "neighbors": [
+    "AL0104",
+    "AL0604",
+    "AL0605",
+    "AL0606",
+    "AL0607"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": -1,
+   "hex_r": 4
+  },
+  {
+   "code": "AL0604",
+   "name_sq": "Libohovë",
+   "name_en": "Libohove",
+   "level": "municipality",
+   "parent_code": "AL06",
+   "centroid_lat": 40.13077,
+   "centroid_lng": 20.24054,
+   "neighbors": [
+    "AL0601",
+    "AL0602",
+    "AL0603",
+    "AL0606",
+    "AL0607"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 0,
+   "hex_r": 4
+  },
+  {
+   "code": "AL0605",
+   "name_sq": "Memaliaj",
+   "name_en": "Memaliaj",
+   "level": "municipality",
+   "parent_code": "AL06",
+   "centroid_lat": 40.42344,
+   "centroid_lng": 19.95492,
+   "neighbors": [
+    "AL0101",
+    "AL0103",
+    "AL0104",
+    "AL0504",
+    "AL0603",
+    "AL0607",
+    "AL1206"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": -2,
+   "hex_r": 4
+  },
+  {
+   "code": "AL0606",
+   "name_sq": "Përmet",
+   "name_en": "Permet",
+   "level": "municipality",
+   "parent_code": "AL06",
+   "centroid_lat": 40.24351,
+   "centroid_lng": 20.39894,
+   "neighbors": [
+    "AL0104",
+    "AL0601",
+    "AL0603",
+    "AL0604",
+    "AL0702",
+    "AL0703"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 0,
+   "hex_r": 3
+  },
+  {
+   "code": "AL0607",
+   "name_sq": "Tepelenë",
+   "name_en": "Tepelene",
+   "level": "municipality",
+   "parent_code": "AL06",
+   "centroid_lat": 40.28462,
+   "centroid_lng": 19.94678,
+   "neighbors": [
+    "AL0602",
+    "AL0603",
+    "AL0604",
+    "AL0605",
+    "AL1203",
+    "AL1206"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": -3,
+   "hex_r": 4
+  },
+  {
+   "code": "AL07",
+   "name_sq": "Korçë",
+   "name_en": "Korce",
+   "level": "county",
+   "parent_code": null,
+   "centroid_lat": 40.61455,
+   "centroid_lng": 20.66239,
+   "neighbors": [],
+   "population": null,
+   "population_year": null
+  },
+  {
+   "code": "AL0701",
+   "name_sq": "Devoll",
+   "name_en": "Devoll",
+   "level": "municipality",
+   "parent_code": "AL07",
+   "centroid_lat": 40.59083,
+   "centroid_lng": 20.92164,
+   "neighbors": [
+    "AL0702",
+    "AL0703",
+    "AL0704",
+    "AL0706"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 2,
+   "hex_r": 3
+  },
+  {
+   "code": "AL0702",
+   "name_sq": "Kolonjë",
+   "name_en": "Kolonje",
+   "level": "municipality",
+   "parent_code": "AL07",
+   "centroid_lat": 40.31264,
+   "centroid_lng": 20.61778,
+   "neighbors": [
+    "AL0606",
+    "AL0701",
+    "AL0703"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 1,
+   "hex_r": 3
+  },
+  {
+   "code": "AL0703",
+   "name_sq": "Korçë",
+   "name_en": "Korce",
+   "level": "municipality",
+   "parent_code": "AL07",
+   "centroid_lat": 40.57386,
+   "centroid_lng": 20.61733,
+   "neighbors": [
+    "AL0104",
+    "AL0606",
+    "AL0701",
+    "AL0702",
+    "AL0704"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 1,
+   "hex_r": 2
+  },
+  {
+   "code": "AL0704",
+   "name_sq": "Maliq",
+   "name_en": "Maliq",
+   "level": "municipality",
+   "parent_code": "AL07",
+   "centroid_lat": 40.73388,
+   "centroid_lng": 20.6047,
+   "neighbors": [
+    "AL0104",
+    "AL0404",
+    "AL0701",
+    "AL0703",
+    "AL0705",
+    "AL0706"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 2,
+   "hex_r": 2
+  },
+  {
+   "code": "AL0705",
+   "name_sq": "Pogradec",
+   "name_en": "Pogradec",
+   "level": "municipality",
+   "parent_code": "AL07",
+   "centroid_lat": 40.90716,
+   "centroid_lng": 20.57928,
+   "neighbors": [
+    "AL0404",
+    "AL0407",
+    "AL0704",
+    "AL0706"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 2,
+   "hex_r": 1
+  },
+  {
+   "code": "AL0706",
+   "name_sq": "Pustec",
+   "name_en": "Pustec",
+   "level": "municipality",
+   "parent_code": "AL07",
+   "centroid_lat": 40.83549,
+   "centroid_lng": 20.89564,
+   "neighbors": [
+    "AL0701",
+    "AL0704",
+    "AL0705"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 3,
+   "hex_r": 1
+  },
+  {
+   "code": "AL08",
+   "name_sq": "Kukës",
+   "name_en": "Kukes",
+   "level": "county",
+   "parent_code": null,
+   "centroid_lat": 42.19423,
+   "centroid_lng": 20.24097,
+   "neighbors": [],
+   "population": null,
+   "population_year": null
+  },
+  {
+   "code": "AL0801",
+   "name_sq": "Krumë",
+   "name_en": "Krume",
+   "level": "municipality",
+   "parent_code": "AL08",
+   "centroid_lat": 42.19022,
+   "centroid_lng": 20.38476,
+   "neighbors": [
+    "AL0802",
+    "AL0803",
+    "AL1001"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 4,
+   "hex_r": -6
+  },
+  {
+   "code": "AL0802",
+   "name_sq": "Kukës",
+   "name_en": "Kukes",
+   "level": "municipality",
+   "parent_code": "AL08",
+   "centroid_lat": 41.99269,
+   "centroid_lng": 20.40208,
+   "neighbors": [
+    "AL0202",
+    "AL0801",
+    "AL0903",
+    "AL1001"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 4,
+   "hex_r": -5
+  },
+  {
+   "code": "AL0803",
+   "name_sq": "Tropojë",
+   "name_en": "Tropoje",
+   "level": "municipality",
+   "parent_code": "AL08",
+   "centroid_lat": 42.36883,
+   "centroid_lng": 20.04817,
+   "neighbors": [
+    "AL0801",
+    "AL1001",
+    "AL1004",
+    "AL1005"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 4,
+   "hex_r": -7
+  },
+  {
+   "code": "AL09",
+   "name_sq": "Lezhë",
+   "name_en": "Lezhe",
+   "level": "county",
+   "parent_code": null,
+   "centroid_lat": 41.79886,
+   "centroid_lng": 19.84946,
+   "neighbors": [],
+   "population": null,
+   "population_year": null
+  },
+  {
+   "code": "AL0901",
+   "name_sq": "Kurbin",
+   "name_en": "Kurbin",
+   "level": "municipality",
+   "parent_code": "AL09",
+   "centroid_lat": 41.62688,
+   "centroid_lng": 19.71365,
+   "neighbors": [
+    "AL0204",
+    "AL0301",
+    "AL0302",
+    "AL0902",
+    "AL0903"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 1,
+   "hex_r": -4
+  },
+  {
+   "code": "AL0902",
+   "name_sq": "Lezhë",
+   "name_en": "Lezhe",
+   "level": "municipality",
+   "parent_code": "AL09",
+   "centroid_lat": 41.82545,
+   "centroid_lng": 19.66886,
+   "neighbors": [
+    "AL0901",
+    "AL0903",
+    "AL1003",
+    "AL1004",
+    "AL1005"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 1,
+   "hex_r": -5
+  },
+  {
+   "code": "AL0903",
+   "name_sq": "Mirditë",
+   "name_en": "Mirdite",
+   "level": "municipality",
+   "parent_code": "AL09",
+   "centroid_lat": 41.83298,
+   "centroid_lng": 19.99475,
+   "neighbors": [
+    "AL0202",
+    "AL0204",
+    "AL0802",
+    "AL0901",
+    "AL0902",
+    "AL1001",
+    "AL1003"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 3,
+   "hex_r": -5
+  },
+  {
+   "code": "AL10",
+   "name_sq": "Shkodër",
+   "name_en": "Shkoder",
+   "level": "county",
+   "parent_code": null,
+   "centroid_lat": 42.1754,
+   "centroid_lng": 19.73462,
+   "neighbors": [],
+   "population": null,
+   "population_year": null
+  },
+  {
+   "code": "AL1001",
+   "name_sq": "Fushë Arrëz",
+   "name_en": "Fushe Arrez",
+   "level": "municipality",
+   "parent_code": "AL10",
+   "centroid_lat": 42.13307,
+   "centroid_lng": 20.0567,
+   "neighbors": [
+    "AL0801",
+    "AL0802",
+    "AL0803",
+    "AL0903",
+    "AL1003",
+    "AL1005"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 3,
+   "hex_r": -6
+  },
+  {
+   "code": "AL1002",
+   "name_sq": "Malësi e Madhe",
+   "name_en": "Malesi e Madhe",
+   "level": "municipality",
+   "parent_code": "AL10",
+   "centroid_lat": 42.36808,
+   "centroid_lng": 19.58247,
+   "neighbors": [
+    "AL1004"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 2,
+   "hex_r": -7
+  },
+  {
+   "code": "AL1003",
+   "name_sq": "Pukë",
+   "name_en": "Puke",
+   "level": "municipality",
+   "parent_code": "AL10",
+   "centroid_lat": 42.00741,
+   "centroid_lng": 19.9053,
+   "neighbors": [
+    "AL0902",
+    "AL0903",
+    "AL1001",
+    "AL1005"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 2,
+   "hex_r": -5
+  },
+  {
+   "code": "AL1004",
+   "name_sq": "Shkodër",
+   "name_en": "Shkoder",
+   "level": "municipality",
+   "parent_code": "AL10",
+   "centroid_lat": 42.15542,
+   "centroid_lng": 19.62474,
+   "neighbors": [
+    "AL0803",
+    "AL0902",
+    "AL1002",
+    "AL1005"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 2,
+   "hex_r": -6
+  },
+  {
+   "code": "AL1005",
+   "name_sq": "Vau i Dejës",
+   "name_en": "Vau Dejes",
+   "level": "municipality",
+   "parent_code": "AL10",
+   "centroid_lat": 42.03399,
+   "centroid_lng": 19.6856,
+   "neighbors": [
+    "AL0803",
+    "AL0902",
+    "AL1001",
+    "AL1003",
+    "AL1004"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 1,
+   "hex_r": -6
+  },
+  {
+   "code": "AL11",
+   "name_sq": "Tiranë",
+   "name_en": "Tirane",
+   "level": "county",
+   "parent_code": null,
+   "centroid_lat": 41.26853,
+   "centroid_lng": 19.79353,
+   "neighbors": [],
+   "population": null,
+   "population_year": null
+  },
+  {
+   "code": "AL1101",
+   "name_sq": "Kamëz",
+   "name_en": "Kamez",
+   "level": "municipality",
+   "parent_code": "AL11",
+   "centroid_lat": 41.37222,
+   "centroid_lng": 19.78224,
+   "neighbors": [
+    "AL1104",
+    "AL1105"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 0,
+   "hex_r": -2
+  },
+  {
+   "code": "AL1102",
+   "name_sq": "Kavajë",
+   "name_en": "Kavaje",
+   "level": "municipality",
+   "parent_code": "AL11",
+   "centroid_lat": 41.18373,
+   "centroid_lng": 19.56541,
+   "neighbors": [
+    "AL0301",
+    "AL1103",
+    "AL1105"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": -1,
+   "hex_r": -1
+  },
+  {
+   "code": "AL1103",
+   "name_sq": "Rrogozhinë",
+   "name_en": "Rrogozhine",
+   "level": "municipality",
+   "parent_code": "AL11",
+   "centroid_lat": 41.09667,
+   "centroid_lng": 19.58895,
+   "neighbors": [
+    "AL0406",
+    "AL0501",
+    "AL0503",
+    "AL1102",
+    "AL1105"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": -2,
+   "hex_r": -1
+  },
+  {
+   "code": "AL1104",
+   "name_sq": "Vorë",
+   "name_en": "Vore",
+   "level": "municipality",
+   "parent_code": "AL11",
+   "centroid_lat": 41.40101,
+   "centroid_lng": 19.66981,
+   "neighbors": [
+    "AL0301",
+    "AL0302",
+    "AL0303",
+    "AL1101",
+    "AL1105"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 0,
+   "hex_r": -3
+  },
+  {
+   "code": "AL1105",
+   "name_sq": "Tiranë",
+   "name_en": "Tirana",
+   "level": "municipality",
+   "parent_code": "AL11",
+   "centroid_lat": 41.30322,
+   "centroid_lng": 19.88298,
+   "neighbors": [
+    "AL0201",
+    "AL0203",
+    "AL0204",
+    "AL0301",
+    "AL0302",
+    "AL0303",
+    "AL0403",
+    "AL0405",
+    "AL0406",
+    "AL1101",
+    "AL1102",
+    "AL1103",
+    "AL1104"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": 1,
+   "hex_r": -2
+  },
+  {
+   "code": "AL12",
+   "name_sq": "Vlorë",
+   "name_en": "Vlore",
+   "level": "county",
+   "parent_code": null,
+   "centroid_lat": 40.16471,
+   "centroid_lng": 19.79289,
+   "neighbors": [],
+   "population": null,
+   "population_year": null
+  },
+  {
+   "code": "AL1201",
+   "name_sq": "Delvinë",
+   "name_en": "Delvine",
+   "level": "municipality",
+   "parent_code": "AL12",
+   "centroid_lat": 39.99859,
+   "centroid_lng": 20.01046,
+   "neighbors": [
+    "AL0601",
+    "AL0602",
+    "AL1202",
+    "AL1203",
+    "AL1205"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": -3,
+   "hex_r": 5
+  },
+  {
+   "code": "AL1202",
+   "name_sq": "Finiq",
+   "name_en": "Finiq",
+   "level": "municipality",
+   "parent_code": "AL12",
+   "centroid_lat": 39.82845,
+   "centroid_lng": 20.15549,
+   "neighbors": [
+    "AL0601",
+    "AL1201",
+    "AL1204",
+    "AL1205"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": -2,
+   "hex_r": 6
+  },
+  {
+   "code": "AL1203",
+   "name_sq": "Himarë",
+   "name_en": "Himare",
+   "level": "municipality",
+   "parent_code": "AL12",
+   "centroid_lat": 40.14765,
+   "centroid_lng": 19.77761,
+   "neighbors": [
+    "AL0602",
+    "AL0607",
+    "AL1201",
+    "AL1205",
+    "AL1206",
+    "AL1207"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": -4,
+   "hex_r": 5
+  },
+  {
+   "code": "AL1204",
+   "name_sq": "Konispol",
+   "name_en": "Konispol",
+   "level": "municipality",
+   "parent_code": "AL12",
+   "centroid_lat": 39.70291,
+   "centroid_lng": 20.13189,
+   "neighbors": [
+    "AL1202",
+    "AL1205"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": -3,
+   "hex_r": 7
+  },
+  {
+   "code": "AL1205",
+   "name_sq": "Sarandë",
+   "name_en": "Sarande",
+   "level": "municipality",
+   "parent_code": "AL12",
+   "centroid_lat": 39.84287,
+   "centroid_lng": 19.99796,
+   "neighbors": [
+    "AL1201",
+    "AL1202",
+    "AL1203",
+    "AL1204"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": -3,
+   "hex_r": 6
+  },
+  {
+   "code": "AL1206",
+   "name_sq": "Selenicë",
+   "name_en": "Selenice",
+   "level": "municipality",
+   "parent_code": "AL12",
+   "centroid_lat": 40.39791,
+   "centroid_lng": 19.65966,
+   "neighbors": [
+    "AL0502",
+    "AL0504",
+    "AL0605",
+    "AL0607",
+    "AL1203",
+    "AL1207"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": -3,
+   "hex_r": 3
+  },
+  {
+   "code": "AL1207",
+   "name_sq": "Vlorë",
+   "name_en": "Vlore",
+   "level": "municipality",
+   "parent_code": "AL12",
+   "centroid_lat": 40.42061,
+   "centroid_lng": 19.47236,
+   "neighbors": [
+    "AL0502",
+    "AL1203",
+    "AL1206"
+   ],
+   "population": null,
+   "population_year": null,
+   "hex_q": -4,
+   "hex_r": 3
+  }
+ ]
+}

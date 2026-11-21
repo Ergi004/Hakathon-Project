@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import type { Locale } from "@/i18n/routing";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
+import { HotZonesTile } from "@/components/geo/HotZonesTile";
 import { FlagStack } from "@/components/charts/flag-stack";
 import { DashPage, EmptyPanel, Panel, StatCard } from "@/components/layout/dash";
 import { FlagBadge } from "@/components/flags/flag-badge";
@@ -136,6 +137,7 @@ export default async function CommandCentre({ params }: { params: Promise<{ loca
           </ul>
         </section>
       </div>
+      <Suspense fallback={<Skeleton className="h-48 w-full rounded-xl" />}><HotZonesTile /></Suspense>
     </DashPage>
   );
 }

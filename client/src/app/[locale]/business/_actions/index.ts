@@ -9,7 +9,6 @@ import { ACTIVE_ORG_COOKIE, requireOrgRole, requireUser } from "@/server/auth";
 import { tryAdmin } from "@/server/db";
 import { hostOf } from "@/server/detection/normalize";
 import { verifyDomainOwnership, verificationToken } from "@/server/domain-verify";
-import { sendMail } from "@/server/email";
 import { randomToken, sha256 } from "@/server/hash";
 import { createReport } from "@/server/reports";
 
@@ -114,38 +113,6 @@ export async function requestDomainTakedown(input: unknown) {
   });
 }
 
-/* B8 phishing simulations (simulated email) */
-export async function createSimulation(input: unknown) {
-  return orgAction(SECURITY, z.object({ name: z.string().trim().min(2).max(80), templateKey: z.enum(["parcel", "it_password", "invoice", "bonus"]) }), input, async ({ name, templateKey }, ctx) => {
-    const row = check(await ctx.supabase.from("simulations").insert({ org_id: ctx.org.id, name, template_key: templateKey, created_by: ctx.user.id }).select("id").single());
-    await audit({ actorId: ctx.user.id, action: "simulation.create", entity: "simulation", entityId: row.id });
-    refresh();
-    return row;
-  });
-}
-export async function launchSimulation(input: unknown) {
-  return orgAction(SECURITY, z.object({ id: z.uuid(), emails: z.array(z.email()).min(1).max(500) }), input, async ({ id, emails }, ctx) => {
-    const sim = check(await ctx.supabase.from("simulations").select("template_key, status").eq("id", id).eq("org_id", ctx.org.id).single());
-    if (sim.status !== "draft") throw new ActionError("conflict", "status");
-    const base = process.env.APP_URL ?? "http://localhost:3000";
-    for (const to of [...new Set(emails.map((e) => e.toLowerCase()))]) {
-      const t = sha256(`${id}:${to}`).slice(0, 24);
-      await sendMail({ to, subject: `[Training] ${sim.template_key}`, body: `This is a security awareness exercise.\n\nOpen: ${base}/sim/${id}?t=${t}\n\n(pixel: ${base}/api/v1/sim/${id}/open?t=${t})`, kind: "simulation", entity: "simulation", entityId: id });
-    }
-    check(await ctx.supabase.from("simulations").update({ status: "running", sent: emails.length }).eq("id", id));
-    await audit({ actorId: ctx.user.id, action: "simulation.launch", entity: "simulation", entityId: id, data: { count: emails.length } });
-    refresh();
-    return { count: emails.length };
-  });
-}
-export async function finishSimulation(input: unknown) {
-  return orgAction(SECURITY, z.object({ id: z.uuid() }), input, async ({ id }, ctx) => {
-    check(await ctx.supabase.from("simulations").update({ status: "finished" }).eq("id", id).eq("org_id", ctx.org.id));
-    refresh();
-    return null;
-  });
-}
-
 /* B9 API keys: shown once, only the hash is stored */
 export async function createApiKey(input: unknown) {
   return orgAction(MANAGE, z.object({ name: z.string().trim().min(2).max(60), scopes: z.array(z.enum(["scan", "iocs"])).min(1) }), input, async ({ name, scopes }, ctx) => {
@@ -218,22 +185,5 @@ export async function saveOrgSettings(input: unknown) {
     await audit({ actorId: ctx.user.id, action: "org.settings", entity: "organization", entityId: ctx.org.id });
     refresh();
     return null;
-  });
-}
-
-/* B11 compliance export: file in the private exports bucket, signed URL valid 10 minutes */
-export async function generateComplianceExport(input: unknown) {
-  return orgAction(["owner", "admin", "finance"], z.object({ month: z.string().regex(/^\d{4}-\d{2}$/), format: z.enum(["csv", "pdf"]) }), input, async ({ month, format }, ctx) => {
-    const db = tryAdmin();
-    if (!db) throw new ActionError("conflict", "unavailable");
-    const { buildComplianceReport } = await import("@/server/business-report");
-    const file = await buildComplianceReport(db, ctx.org, month, format);
-    const path = `${ctx.org.id}/${month}-${Date.now()}.${format}`;
-    const up = await db.storage.from("exports").upload(path, file, { contentType: format === "pdf" ? "application/pdf" : "text/csv", upsert: true });
-    if (up.error) throw new Error(up.error.message);
-    const signed = await db.storage.from("exports").createSignedUrl(path, 600);
-    if (!signed.data) throw new Error("sign");
-    await audit({ actorId: ctx.user.id, action: "org.export", entity: "organization", entityId: ctx.org.id, data: { month, format } });
-    return { url: signed.data.signedUrl };
   });
 }

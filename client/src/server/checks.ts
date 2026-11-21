@@ -7,11 +7,13 @@ import { fillMissingDomainAges, submittedHosts } from "./detection/domain-age";
 import { explain } from "./detection/explain";
 import { reviewWithGemini } from "./detection/gemini-review";
 import { loadContext } from "./detection/load-context";
-import { normalizePhone, refang } from "./detection/normalize";
+import { extractUrls, normalizePhone, refang } from "./detection/normalize";
 import { groupCandidates, type CampaignGroup } from "./detection/pattern";
 import { candidateFromStored } from "./detection/stored-features";
 import type { AnalysisResult, CheckFeatures } from "./detection/types";
 import { tryAdmin, type AdminClient } from "./db";
+import { startLiveScan } from "./intel/orchestrator";
+import { registrableDomain } from "./intel/sanitize";
 import { hashInput, type HashKind } from "./hash";
 import { generateText } from "./llm";
 import { recomputeSafetyScore } from "./badges";
@@ -20,6 +22,10 @@ export interface CheckOutcome {
   result: AnalysisResult;
   checkId: string | null;
   explanation: { text: string; source: "llm" | "template" };
+  /** Live threat-intelligence scan of the first URL, streamed by the page. */
+  scan: { scanId: string; token: string } | null;
+  /** One live scan per distinct registrable domain (up to opts.liveScans); scans[0] === scan. */
+  scans: { scanId: string; token: string; host: string }[];
 }
 
 /** Fingerprint of what was checked: never the text itself (SPEC 7). */
@@ -95,7 +101,7 @@ async function findFeatureOverlap(db: AdminClient, features: CheckFeatures): Pro
  */
 export async function runCheck(
   input: AnalysisInputDto,
-  opts: { linkUserId?: string | null; explainWithLlm?: boolean } = {},
+  opts: { linkUserId?: string | null; explainWithLlm?: boolean; liveScans?: number; deep?: boolean } = {},
 ): Promise<CheckOutcome> {
   const ctx = await loadContext();
   await fillMissingDomainAges(ctx, submittedHosts(input));
@@ -133,9 +139,31 @@ export async function runCheck(
     }
   }
 
+  // Live threat intelligence: one scan per distinct domain, first URL first.
+  const scans: CheckOutcome["scans"] = [];
+  if (checkId) {
+    const candidates = [...(input.urls ?? []), ...(input.text ? extractUrls(input.text) : [])];
+    const seen = new Set<string>();
+    for (const url of candidates) {
+      if (scans.length >= Math.max(1, opts.liveScans ?? 1)) break;
+      let host: string;
+      try {
+        host = new URL(refang(url)).hostname.toLowerCase();
+      } catch {
+        continue;
+      }
+      const domain = registrableDomain(host);
+      if (seen.has(domain)) continue;
+      seen.add(domain);
+      const started = await startLiveScan({ url, checkId, deep: opts.deep === true, requestedBy: opts.linkUserId ?? null });
+      if (started.ok) scans.push({ scanId: started.scanId, token: started.token, host: host.replace(/\./g, "[.]") });
+    }
+  }
+  const scan: CheckOutcome["scan"] = scans[0] ? { scanId: scans[0].scanId, token: scans[0].token } : null;
+
   const explanation = await explain(result, input.locale, {
     generate: opts.explainWithLlm ? generateText : undefined,
     inputHash: fp.hash,
   });
-  return { result, checkId, explanation };
+  return { result, checkId, explanation, scan, scans };
 }

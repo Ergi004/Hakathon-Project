@@ -55,6 +55,10 @@ export const reportSchema = z
     contact: z.string().trim().max(254).optional(),
     contactConsent: z.boolean().optional(),
     checkId: z.uuid().optional(),
+    /** Consent to send the link to security analysis services (tier B deep scan). */
+    deepConsent: z.boolean().optional(),
+    /** Optional municipality the citizen chose (OCHA P-code, e.g. AL0705). Never inferred. */
+    regionCode: z.string().regex(/^AL\d{4}$/).optional(),
     /** Honeypot: humans never fill it. */
     website: z.string().max(0).optional(),
     locale: z.enum(["sq", "en"]),

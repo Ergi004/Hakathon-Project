@@ -14,6 +14,8 @@ import { generateText } from "./llm";
 import { randomToken, sha256 } from "./hash";
 import { recomputeSafetyScore } from "./badges";
 import { notifyWatchMatches } from "./watchlist";
+import { startLiveScan } from "./intel/orchestrator";
+import { municipalityId } from "./geo/regions";
 
 export type CreateReportError = "unavailable" | "generic";
 
@@ -23,6 +25,7 @@ export interface CreatedReport {
   trackingToken: string;
   flag: Enums<"flag_level">;
   score: number;
+  scan: { scanId: string; token: string } | null;
 }
 
 /**
@@ -36,6 +39,7 @@ export async function createReport(
 ): Promise<{ ok: true; data: CreatedReport } | { ok: false; error: CreateReportError }> {
   const db = tryAdmin();
   if (!db) return { ok: false, error: "unavailable" };
+  const regionId = await municipalityId(db, input.regionCode);
 
   const masked = maskText(input.text ?? "");
   const sender = input.sender ? maskText(input.sender) : undefined;
@@ -87,6 +91,9 @@ export async function createReport(
         reporter_contact: input.contact && input.contactConsent ? input.contact : null,
         tracking_token_hash: sha256(token),
         consent_signal_report: input.consentSignal ?? false,
+        // Coarse, optional location chosen by the citizen; nothing is inferred from IP or text.
+        region_id: regionId,
+        region_source: regionId ? "user_selected" : null,
       })
       .select("id, protocol")
       .single();
@@ -119,7 +126,13 @@ export async function createReport(
       ipHash: meta.ipHash ?? null,
     });
 
-    return { ok: true, data: { id: report.id, protocol: report.protocol, trackingToken: token, flag: result.flag, score: result.score } };
+    let scan: CreatedReport["scan"] = null;
+    if (urls[0]) {
+      const started = await startLiveScan({ url: urls[0], reportId: report.id, deep: input.deepConsent === true || input.consentSignal === true, requestedBy: input.reporterId ?? null });
+      if (started.ok) scan = { scanId: started.scanId, token: started.token };
+    }
+
+    return { ok: true, data: { id: report.id, protocol: report.protocol, trackingToken: token, flag: result.flag, score: result.score, scan } };
   } catch (error) {
     console.error("createReport failed", error instanceof Error ? error.message : error);
     return { ok: false, error: "generic" };

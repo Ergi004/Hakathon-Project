@@ -11,8 +11,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { fmtDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { hasMinRole, requireRole } from "@/server/auth";
+import { isMunicipalityCode, regionName } from "@/lib/geo/regions";
 
-type Search = Promise<{ campaign?: string }>;
+type Search = Promise<{ campaign?: string; region?: string }>;
 const TONE: Record<string, string> = { draft: "border-flag-yellow/40 bg-flag-yellow/10", in_review: "border-primary/40 bg-primary/10 text-primary", published: "border-flag-green/40 bg-flag-green/10" };
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -21,7 +22,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 }
 
 async function Content({ searchParams }: { searchParams: Search }) {
-  const { campaign } = await searchParams;
+  const { campaign, region } = await searchParams;
   const ctx = await requireRole("soc_analyst");
   const [t, tx, locale] = await Promise.all([getTranslations("soc.advisories"), getTranslations("socx"), getLocale()]);
   const [camps, advs] = await Promise.all([
@@ -36,7 +37,7 @@ async function Content({ searchParams }: { searchParams: Search }) {
       <ul className="grid grid-cols-3 gap-3">
         {STAT.map(([s, Icon, tone]) => <li key={s}><StatCard icon={Icon} tone={tone} label={t(`statuses.${s}`)} value={all.filter((a) => a.status === s).length} /></li>)}
       </ul>
-      <AdvisoryForm campaigns={camps.data ?? []} initialCampaign={campaign} />
+      <AdvisoryForm campaigns={camps.data ?? []} initialCampaign={campaign} initialRegion={region && isMunicipalityCode(region) ? { sq: regionName(region, "sq"), en: regionName(region, "en") } : undefined} />
       <section aria-labelledby="adv-list" className="space-y-3">
         <h2 id="adv-list" className="font-display text-lg font-medium">{tx("adv.list")}</h2>
         {!all.length ? <div className="rounded-xl bg-card ring-1 ring-foreground/10"><EmptyPanel icon={Megaphone} title={t("empty")} /></div> : (

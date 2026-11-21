@@ -5,7 +5,7 @@ import { applyCookies, updateSession } from "@/server/supabase/proxy";
 
 const intl = createIntlMiddleware(routing);
 
-const PROTECTED = /^\/(sq|en)\/(citizen|business|soc|admin|dashboard)(\/|$)/;
+const PROTECTED = /^\/(sq|en)\/(citizen|business|soc|admin|dashboard|geo-briefing)(\/|$)/;
 
 /**
  * Session refresh and locale routing only. Access control lives in RLS,

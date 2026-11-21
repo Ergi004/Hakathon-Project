@@ -1,15 +1,14 @@
 "use client";
 
 import {
-  AtSign, BadgeCheck, Check, CheckCircle2, Download, FileSpreadsheet, FileText, Globe, KeyRound, Mail, MessageSquare, MonitorSmartphone,
-  Phone, Play, Plus, Send, ShieldCheck, Square, Tag, Trash2, UserPlus, type LucideIcon,
+  AtSign, BadgeCheck, Check, CheckCircle2, Globe, KeyRound, Mail, MessageSquare, MonitorSmartphone,
+  Phone, Plus, Send, ShieldCheck, Tag, Trash2, UserPlus, type LucideIcon,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
 import {
-  addBrandAsset, allowlistOwnDomain, createApiKey, createSimulation, escalateBrandAlert, finishSimulation, generateComplianceExport, getVerificationToken, inviteMember, launchSimulation,
-  removeBrandAsset, removeMember, requestDomainTakedown, revokeApiKey, saveOrgSettings, setMemberRole, updateBrandAlert, verifyBrandDomain,
+  addBrandAsset, allowlistOwnDomain, createApiKey, escalateBrandAlert, getVerificationToken, inviteMember, removeBrandAsset, removeMember, requestDomainTakedown, revokeApiKey, saveOrgSettings, setMemberRole, updateBrandAlert, verifyBrandDomain,
 } from "@/app/[locale]/business/_actions";
 import { SettingsRow } from "@/components/layout/dash";
 import { CopyButton } from "@/components/shared/copy-button";
@@ -313,119 +312,7 @@ export function NoticeComposer({ brand, campaigns }: { brand: string; campaigns:
   );
 }
 
-/* ---------------- B8 training ---------------- */
-type Sim = { id: string; name: string; template_key: string; status: string; sent: number; opened: number; clicked: number; reported: number; created_at: string };
-const TEMPLATES = ["parcel", "it_password", "invoice", "bonus"] as const;
-const TEMPLATE_ICON: Record<(typeof TEMPLATES)[number], LucideIcon> = { parcel: MessageSquare, it_password: KeyRound, invoice: FileText, bonus: Tag };
-const SIM_TONE: Record<string, string> = { draft: "border-border bg-muted", running: "border-primary/40 bg-primary/10 text-primary", finished: "border-flag-green/40 bg-flag-green/10" };
 
-export function SimulationManager({ sims, canEdit }: { sims: Sim[]; canEdit: boolean }) {
-  const t = useTranslations("biz.training");
-  const tb = useTranslations("biz");
-  const tu = useTranslations("ui");
-  const [name, setName] = useState("");
-  const [tpl, setTpl] = useState<(typeof TEMPLATES)[number]>("parcel");
-  const [emails, setEmails] = useState<Record<string, string>>({});
-  const { pending, run } = useRun();
-  const totals = sims.reduce((a, s) => ({ sent: a.sent + s.sent, clicked: a.clicked + s.clicked, reported: a.reported + s.reported }), { sent: 0, clicked: 0, reported: 0 });
-  const pct = (v: number) => (totals.sent ? `${Math.round((v / totals.sent) * 100)}%` : "–");
-
-  return (
-    <div className="space-y-6">
-      <ul className="grid grid-cols-2 gap-3 xl:grid-cols-4">
-        {[
-          { k: "sims" as const, v: sims.length },
-          { k: "sent" as const, v: totals.sent },
-          { k: "clickRate" as const, v: pct(totals.clicked) },
-          { k: "reportRate" as const, v: pct(totals.reported) },
-        ].map(({ k, v }) => (
-          <li key={k} className="rounded-xl border border-border bg-card p-4">
-            <p className="font-display text-2xl leading-none font-bold tabular-nums">{v}</p>
-            <p className="mt-1 text-xs text-muted-foreground">{tb(`tr.stats.${k}`)}</p>
-          </li>
-        ))}
-      </ul>
-
-      <div className="grid items-start gap-6 xl:grid-cols-12">
-        {canEdit && (
-          <Card className="xl:sticky xl:top-20 xl:col-span-4">
-            <CardHeader>
-              <CardTitle className="font-display text-lg">{tb("tr.create")}</CardTitle>
-              <CardDescription>{t("simulated")}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); run(() => createSimulation({ name, templateKey: tpl }), tu("saved"), () => setName("")); }}>
-                <div className="space-y-1.5">
-                  <Label htmlFor="sim-name">{t("name")}</Label>
-                  <Input id="sim-name" value={name} onChange={(e) => setName(e.target.value)} className="h-11 rounded-xl" />
-                </div>
-                <div className="space-y-1.5">
-                  <p className="text-sm font-medium">{t("template")}</p>
-                  <TileChoice label={t("template")} value={tpl} onChange={setTpl} cols="grid-cols-1 sm:grid-cols-2" options={TEMPLATES.map((k) => ({ value: k, label: t(`templates.${k}`), icon: TEMPLATE_ICON[k] }))} />
-                </div>
-                <Button type="submit" className="w-full rounded-full" disabled={pending || name.trim().length < 2}><Plus className="size-4" aria-hidden="true" />{t("new")}</Button>
-              </form>
-            </CardContent>
-          </Card>
-        )}
-
-        <div className={cn("space-y-4", canEdit ? "xl:col-span-8" : "xl:col-span-12")}>
-          {!sims.length ? (
-            <Card><CardContent className="flex flex-col items-center gap-2 py-14 text-center">
-              <span className="grid size-14 place-items-center rounded-full bg-muted"><Mail className="size-6 text-muted-foreground" aria-hidden="true" /></span>
-              <p className="font-medium">{t("empty")}</p>
-              <p className="max-w-md text-sm text-muted-foreground">{tb("tr.emptyBody")}</p>
-            </CardContent></Card>
-          ) : sims.map((s) => {
-            const steps = [["sent", s.sent], ["opened", s.opened], ["clicked", s.clicked], ["reported", s.reported]] as const;
-            return (
-              <Card key={s.id} className="gap-4 py-5">
-                <CardHeader className="px-5">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <CardTitle className="font-display text-lg">{s.name}</CardTitle>
-                    <span className="rounded-full border border-border px-2 py-0.5 text-xs text-muted-foreground">{t(`templates.${s.template_key as "parcel"}`)}</span>
-                    <span className={cn("rounded-full border px-2 py-0.5 text-xs font-medium", SIM_TONE[s.status])}>{t(`statuses.${s.status as "draft"}`)}</span>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4 px-5">
-                  <dl className="space-y-2.5" aria-label={t("funnel")}>
-                    {steps.map(([k, v]) => {
-                      const w = s.sent ? Math.min(100, (v / s.sent) * 100) : 0;
-                      return (
-                        <div key={k} className="grid grid-cols-[6rem_1fr_4.5rem] items-center gap-3 text-sm">
-                          <dt className="text-muted-foreground">{t(k)}</dt>
-                          <div className="h-2.5 overflow-hidden rounded-full bg-muted" aria-hidden="true">
-                            <div className={cn("h-full rounded-full", k === "clicked" ? "bg-flag-red" : k === "reported" ? "bg-flag-green" : "bg-primary")} style={{ width: `${k === "sent" && s.sent ? 100 : w}%` }} />
-                          </div>
-                          <dd className="text-right font-mono tabular-nums">{v}{s.sent > 0 && k !== "sent" && <span className="ml-1 text-xs text-muted-foreground">{Math.round(w)}%</span>}</dd>
-                        </div>
-                      );
-                    })}
-                  </dl>
-                  {canEdit && s.status === "draft" && (
-                    <div className="space-y-2 border-t border-border pt-4">
-                      <Label htmlFor={`em-${s.id}`}>{t("emails")}</Label>
-                      <Textarea id={`em-${s.id}`} rows={4} value={emails[s.id] ?? ""} onChange={(e) => setEmails({ ...emails, [s.id]: e.target.value })} className="rounded-xl font-mono text-xs" />
-                      <p className="text-xs text-muted-foreground">{t("emailsHint")}</p>
-                      <Button className="rounded-full" disabled={pending} onClick={() => run(() => launchSimulation({ id: s.id, emails: (emails[s.id] ?? "").split(/[\s,;]+/).filter(Boolean) }), (r) => t("launched", { count: (r as R & { data: { count: number } }).data.count }))}>
-                        <Play className="size-4" aria-hidden="true" />{t("launch")}
-                      </Button>
-                    </div>
-                  )}
-                  {canEdit && s.status === "running" && (
-                    <Button size="sm" variant="outline" className="rounded-full" disabled={pending} onClick={() => run(() => finishSimulation({ id: s.id }))}><Square className="size-4" aria-hidden="true" />{t("finish")}</Button>
-                  )}
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ---------------- B9 API keys ---------------- */
 export function ApiKeyCreator() {
   const t = useTranslations("biz.api");
   const [name, setName] = useState("");
@@ -537,52 +424,6 @@ export function MemberRow({ userId, name, role, isSelf, canEdit }: { userId: str
   );
 }
 
-/* ---------------- B11 export ---------------- */
-export function ExportForm() {
-  const t = useTranslations("biz.export");
-  const tb = useTranslations("biz");
-  const locale = useLocale();
-  const now = new Date();
-  const months = Array.from({ length: 12 }, (_, i) => { const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - i, 1)); return d.toISOString().slice(0, 7); });
-  const monthLabel = (m: string) => new Intl.DateTimeFormat(locale, { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${m}-01T00:00:00Z`));
-  const [month, setMonth] = useState(months[0]);
-  const [format, setFormat] = useState<"pdf" | "csv">("pdf");
-  const [url, setUrl] = useState<string | null>(null);
-  const { pending, run } = useRun();
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="font-display text-lg">{tb("ex.formTitle")}</CardTitle>
-        <CardDescription>{t("contents")}</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-5">
-        <div className="space-y-1.5">
-          <Label htmlFor="ex-m">{t("month")}</Label>
-          <Select value={month} onValueChange={setMonth}>
-            <SelectTrigger id="ex-m" className="h-11 data-[size=default]:h-11 w-full rounded-xl sm:w-72"><SelectValue /></SelectTrigger>
-            <SelectContent>{months.map((m) => <SelectItem key={m} value={m} className="capitalize">{monthLabel(m)}</SelectItem>)}</SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-1.5">
-          <p className="text-sm font-medium">{t("format")}</p>
-          <TileChoice label={t("format")} value={format} onChange={setFormat} cols="grid-cols-2 sm:max-w-md" options={[{ value: "pdf", label: "PDF", icon: FileText }, { value: "csv", label: "CSV", icon: FileSpreadsheet }]} />
-        </div>
-        <Button size="lg" className="rounded-full px-6" disabled={pending} onClick={() => run(() => generateComplianceExport({ month, format }), undefined, (r) => setUrl((r as R & { data: { url: string } }).data.url))}>{t("generate")}</Button>
-        {url && (
-          <Alert role="status" className="border-flag-green/40 bg-flag-green/5">
-            <CheckCircle2 className="size-4 text-flag-green" />
-            <AlertDescription className="flex flex-wrap items-center gap-3 text-foreground">
-              {t("ready")}
-              <Button asChild size="sm" className="rounded-full"><a href={url} target="_blank" rel="noopener noreferrer"><Download className="size-4" aria-hidden="true" />{t("download")}</a></Button>
-            </AlertDescription>
-          </Alert>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-
-/* ---------------- B12 settings ---------------- */
 export function OrgSettingsForm({ name, emails, retention, plan, canEdit }: { name: string; emails: string[]; retention: number; plan: string; canEdit: boolean }) {
   const t = useTranslations("biz.settings");
   const tb = useTranslations("biz");

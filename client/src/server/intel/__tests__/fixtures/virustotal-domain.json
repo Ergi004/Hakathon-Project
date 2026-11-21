@@ -1,0 +1,5 @@
+{ "data": { "id": "bad-login.example.com", "type": "domain", "attributes": {
+  "last_analysis_stats": { "harmless": 52, "malicious": 7, "suspicious": 2, "undetected": 27, "timeout": 0 },
+  "creation_date": 1763251200, "registrar": "Example Registrar, Inc.",
+  "categories": { "Forcepoint ThreatSeeker": "phishing and other frauds", "Sophos": "phishing", "BitDefender": "phishing" },
+  "whois": "Domain Name: BAD-LOGIN.EXAMPLE.COM" } } }

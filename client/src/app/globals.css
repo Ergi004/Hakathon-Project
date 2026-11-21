@@ -89,6 +89,22 @@
   --flag-red: oklch(0.58 0.23 27);
   --flag-darkred: oklch(0.42 0.2 22);
   --flag-grey: oklch(0.6 0.01 260);
+  /* Geographic heat map: sequential cool cyan → orange → red (monotonic lightness, colour-blind safe). */
+  --geo-0: oklch(0.95 0.01 230);
+  --geo-1: oklch(0.88 0.06 205);
+  --geo-2: oklch(0.8 0.1 195);
+  --geo-3: oklch(0.8 0.14 80);
+  --geo-4: oklch(0.7 0.18 50);
+  --geo-5: oklch(0.6 0.21 30);
+  --geo-6: oklch(0.47 0.19 22);
+  /* Diverging (change / difference): blue ← neutral → orange-red. */
+  --geo-neg-2: oklch(0.55 0.13 250);
+  --geo-neg-1: oklch(0.75 0.08 245);
+  --geo-mid: oklch(0.93 0.005 260);
+  --geo-pos-1: oklch(0.78 0.12 60);
+  --geo-pos-2: oklch(0.6 0.2 32);
+  --geo-stroke: oklch(1 0 0 / 0.9);
+  --geo-nodata: oklch(0.9 0.005 260);
   --sidebar: oklch(0.975 0.005 250);
   --sidebar-foreground: oklch(0.2 0.03 260);
   --sidebar-primary: oklch(0.55 0.12 215);
@@ -126,6 +142,20 @@
   --flag-red: oklch(0.65 0.23 27);
   --flag-darkred: oklch(0.5 0.21 22);
   --flag-grey: oklch(0.68 0.01 260);
+  --geo-0: oklch(0.3 0.02 240);
+  --geo-1: oklch(0.42 0.06 215);
+  --geo-2: oklch(0.55 0.09 200);
+  --geo-3: oklch(0.72 0.13 85);
+  --geo-4: oklch(0.7 0.17 55);
+  --geo-5: oklch(0.64 0.21 32);
+  --geo-6: oklch(0.56 0.22 22);
+  --geo-neg-2: oklch(0.6 0.13 250);
+  --geo-neg-1: oklch(0.45 0.08 245);
+  --geo-mid: oklch(0.32 0.01 260);
+  --geo-pos-1: oklch(0.6 0.12 60);
+  --geo-pos-2: oklch(0.66 0.2 32);
+  --geo-stroke: oklch(0.18 0.01 260 / 0.9);
+  --geo-nodata: oklch(0.26 0.01 260);
   --sidebar: oklch(0.18 0.022 260);
   --sidebar-foreground: oklch(0.97 0.005 260);
   --sidebar-primary: oklch(0.78 0.13 195);
@@ -213,6 +243,18 @@
   .animate-scan-line {
     animation: none;
   }
+}
+
+/* Geographic threat map: slow pulse for critical zones and live updates (off with reduced motion). */
+@keyframes geo-pulse { 0%, 100% { stroke-opacity: 1; stroke-width: 2.5; } 50% { stroke-opacity: 0.35; stroke-width: 5; } }
+@keyframes geo-flash { 0% { opacity: 1; } 100% { opacity: 0; } }
+.geo-pulse { animation: geo-pulse 2.4s ease-in-out infinite; }
+.geo-flash { animation: geo-flash 1.6s ease-out forwards; }
+@media (prefers-reduced-motion: reduce) { .geo-pulse, .geo-flash { animation: none; } }
+@media print {
+  .geo-noprint { display: none !important; }
+  .geo-print-page { width: 190mm; margin: 0 auto; color: #000; background: #fff; }
+  @page { size: A4; margin: 10mm; }
 }
 
 /* Landing page: the hero specimen "marks up" the scam once on load. */

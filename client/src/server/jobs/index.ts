@@ -161,6 +161,9 @@ export async function purgePrivacy(db: AdminClient) {
 }
 
 export const JOBS = {
+  "compute-geo-hotspots": async (db: AdminClient) => (await import("@/server/geo/compute")).computeGeoHotspots(db),
+  "rebuild-region-stats": async (db: AdminClient) => (await import("@/server/geo/compute")).rebuildRegionStats(db),
+  "poll-deep-scans": async (db: AdminClient) => (await import("@/server/intel/orchestrator")).continueDeepScans(db),
   "escalate-overdue": escalateOverdue,
   "evaluate-alerts": evaluateAlerts,
   "detect-lookalikes": detectLookalikes,

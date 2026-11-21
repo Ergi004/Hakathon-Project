@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
-import { AlertTriangle, BellRing, ChevronRight, FileDown, Flag, Gavel, Globe, Megaphone, MessageSquareWarning, ShieldCheck, Wand2 } from "lucide-react";
+import { AlertTriangle, BellRing, ChevronRight, Flag, Gavel, Globe, Megaphone, MessageSquareWarning, ShieldCheck, Wand2 } from "lucide-react";
 import { WeeklyBars } from "@/components/charts/weekly-bars";
 import { DashPage, EmptyPanel, StatCard } from "@/components/layout/dash";
 import { SeverityDot } from "@/components/shared/severity-dot";
@@ -30,7 +30,6 @@ async function Content() {
     { href: "/business/onboarding", label: t("ov.quickSetup"), Icon: Wand2 },
     { href: "/business/domains", label: t("ov.quickDomains"), Icon: Globe },
     { href: "/business/notices", label: t("ov.quickNotice"), Icon: Megaphone },
-    { href: "/business/reports/export", label: t("ov.quickExport"), Icon: FileDown },
   ];
   return (
     <DashPage title={ctx.org.name} subtitle={t("pages.overview")}>

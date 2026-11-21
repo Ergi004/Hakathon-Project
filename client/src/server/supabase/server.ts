@@ -21,6 +21,9 @@ export async function createClient() {
   // user's session, so never let this run during a (runtime) prerender.
   await connection();
   const cookieStore = await cookies();
+  // Session work is always request-time: supabase-js reads the clock (token expiry), which must not
+  // happen during a (runtime) prerender with cacheComponents (blocking-prerender-current-time).
+  await connection();
 
   return createServerClient<Database>(env.url, env.publishableKey, {
     cookies: {
