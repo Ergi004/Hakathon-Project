@@ -9,6 +9,11 @@ import type { Locale } from "@/i18n/routing";
 import { fmtAgo } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { requireUser } from "@/server/auth";
+import { Pager } from "@/components/shared/pager";
+import { pageCount, pageParam, pageRange } from "@/lib/pagination";
+
+const PAGE_SIZE = 25;
+type SP = Promise<{ page?: string }>;
 
 const KIND_ICON: Record<string, LucideIcon> = { phone: Phone, email: AtSign, name: UserRound };
 const HOW_ICON = [Eye, Fingerprint, ShieldAlert] as const;
@@ -18,15 +23,16 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return { title: (await getTranslations({ locale: locale as Locale, namespace: "citizen.nav" }))("watchlist") };
 }
 
-async function WatchList() {
+async function WatchList({ searchParams }: { searchParams: SP }) {
+  const page = pageParam((await searchParams).page);
   const ctx = await requireUser();
   const [t, locale] = await Promise.all([getTranslations("cit.watch"), getLocale()]);
-  const { data } = await ctx.supabase.from("user_watch_items").select("id, kind, label, last_match_at, created_at").eq("user_id", ctx.user.id).order("created_at", { ascending: false });
+  const { data, count } = await ctx.supabase.from("user_watch_items").select("id, kind, label, last_match_at, created_at", { count: "exact" }).eq("user_id", ctx.user.id).order("created_at", { ascending: false }).range(...pageRange(page, PAGE_SIZE));
   const items = data ?? [];
   return (
     <Card className="gap-0 py-0">
       <CardHeader className="border-b border-border py-5">
-        <CardTitle className="font-display text-lg">{t("watching", { count: items.length })}</CardTitle>
+        <CardTitle className="font-display text-lg">{t("watching", { count: count ?? 0 })}</CardTitle>
       </CardHeader>
       <CardContent className="p-0">
         {!items.length ? (
@@ -66,12 +72,13 @@ async function WatchList() {
             })}
           </ul>
         )}
+        <div className="border-t border-border px-5 py-3 empty:hidden"><Pager page={page} pages={pageCount(count, PAGE_SIZE)} /></div>
       </CardContent>
     </Card>
   );
 }
 
-export default async function Page({ params }: { params: Promise<{ locale: string }> }) {
+export default async function Page({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: SP }) {
   setRequestLocale((await params).locale as Locale);
   const t = await getTranslations("cit.watch");
   const how = t.raw("how") as { title: string; body: string }[];
@@ -89,7 +96,7 @@ export default async function Page({ params }: { params: Promise<{ locale: strin
             </CardHeader>
             <CardContent><WatchForm /></CardContent>
           </Card>
-          <Suspense fallback={<Skeleton className="h-64 w-full rounded-xl" />}><WatchList /></Suspense>
+          <Suspense fallback={<Skeleton className="h-64 w-full rounded-xl" />}><WatchList searchParams={searchParams} /></Suspense>
         </div>
         <aside className="lg:sticky lg:top-20 lg:col-span-5 xl:col-span-4">
           <Card>

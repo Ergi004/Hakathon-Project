@@ -11,25 +11,35 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { fmtDate } from "@/lib/format";
 import { nowMs } from "@/lib/time";
+import { Pager } from "@/components/shared/pager";
+import { pageCount, pageParam, pageRange } from "@/lib/pagination";
 import { requireRole } from "@/server/auth";
+
+const PAGE_SIZE = 50;
+type Search = Promise<{ page?: string }>;
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   return { title: (await getTranslations({ locale: locale as "sq" | "en", namespace: "soc.nav" }))("blocklist") };
 }
 
-async function List_() {
+async function List_({ searchParams }: { searchParams: Search }) {
+  const page = pageParam((await searchParams).page);
   const ctx = await requireRole("soc_analyst");
   const [t, ti, tx, locale] = await Promise.all([getTranslations("soc.blocklist"), getTranslations("ioc.types"), getTranslations("socx"), getLocale()]);
-  const { data } = await ctx.supabase.from("blocklist_entries").select("id, type, value, reason, expires_at, created_at, campaigns(code)").order("created_at", { ascending: false }).limit(1000);
   const now = nowMs();
+  const [{ data, count: total }, { count: expired }] = await Promise.all([
+    ctx.supabase.from("blocklist_entries").select("id, type, value, reason, expires_at, created_at, campaigns(code)", { count: "exact" }).order("created_at", { ascending: false }).range(...pageRange(page, PAGE_SIZE)),
+    ctx.supabase.from("blocklist_entries").select("id", { count: "exact", head: true }).lt("expires_at", new Date(now).toISOString()),
+  ]);
   const all = data ?? [];
-  const expiredN = all.filter((b) => b.expires_at && Date.parse(b.expires_at) < now).length;
+  const totalN = total ?? 0;
+  const expiredN = expired ?? 0;
   return (
     <div className="space-y-6">
     <ul className="grid grid-cols-3 gap-3">
-      <li><StatCard icon={ListX} label={tx("bl.total")} value={all.length} /></li>
-      <li><StatCard icon={ShieldBan} tone="text-flag-red" label={tx("bl.active")} value={all.length - expiredN} /></li>
+      <li><StatCard icon={ListX} label={tx("bl.total")} value={totalN} /></li>
+      <li><StatCard icon={ShieldBan} tone="text-flag-red" label={tx("bl.active")} value={totalN - expiredN} /></li>
       <li><StatCard icon={Clock} tone="text-muted-foreground" label={tx("bl.expired")} value={expiredN} /></li>
     </ul>
     <BlocklistForm />
@@ -55,16 +65,17 @@ async function List_() {
       </Table>
     </div>
     )}
+    <Pager page={page} pages={pageCount(total, PAGE_SIZE)} />
     </div>
   );
 }
 
-export default async function BlocklistPage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function BlocklistPage({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Search }) {
   setRequestLocale((await params).locale as Locale);
   const [t, tb, tx] = await Promise.all([getTranslations("soc.nav"), getTranslations("soc.blocklist"), getTranslations("socx")]);
   return (
     <DashPage title={t("blocklist")} subtitle={tx("pages.blocklist")} actions={<Button asChild variant="outline" className="rounded-full"><a href="/api/soc/export/blocklist"><Download className="size-4" aria-hidden="true" />{tb("export")}</a></Button>}>
-      <Suspense fallback={<Skeleton className="h-96 w-full rounded-xl" />}><List_ /></Suspense>
+      <Suspense fallback={<Skeleton className="h-96 w-full rounded-xl" />}><List_ searchParams={searchParams} /></Suspense>
     </DashPage>
   );
 }

@@ -11,29 +11,51 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
-import { flagForScore, type FlagLevel } from "@/lib/flags";
+import { DEFAULT_THRESHOLDS, flagForScore, type FlagLevel } from "@/lib/flags";
+import { pageCount, pageParam, pageRange } from "@/lib/pagination";
+import { Pager } from "@/components/shared/pager";
 import { fmtAgo, fmtDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { requireUser } from "@/server/auth";
 
 const KIND_ICON: Record<string, LucideIcon> = { url: Link2, text: MessageSquare, phone: Phone, qr: QrCode, email_signals: Mail };
 const RISKY: FlagLevel[] = ["orange", "red", "darkred"];
+const PAGE_SIZE = 25;
+type SP = { show?: string; page?: string };
+// Same rule as the badge: the stored flag, or the score bucket when no flag was stored.
+const RISKY_FILTER = `flag.in.(${RISKY.join(",")}),and(flag.is.null,score.gte.${DEFAULT_THRESHOLDS.orange})`;
+const SAFE_FILTER = `flag.eq.green,and(flag.is.null,score.lt.${DEFAULT_THRESHOLDS.yellow})`;
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   return { title: (await getTranslations({ locale: locale as Locale, namespace: "citizen.nav" }))("checks") };
 }
 
-async function Content({ searchParams }: { searchParams: Promise<{ show?: string }> }) {
+async function Content({ searchParams }: { searchParams: Promise<SP> }) {
   const ctx = await requireUser();
-  const [{ show }, t, locale] = await Promise.all([searchParams, getTranslations("cit.checks"), getLocale()]);
-  const { data } = await ctx.supabase.from("user_check_links").select("check_id, kind, created_at, checks(score, flag)").eq("user_id", ctx.user.id).order("created_at", { ascending: false }).limit(500);
-  const rows = (data ?? []).map((r) => {
+  const [sp, t, locale] = await Promise.all([searchParams, getTranslations("cit.checks"), getLocale()]);
+  const view = sp.show === "risky" || sp.show === "safe" ? sp.show : "all";
+  const page = pageParam(sp.page);
+  const links = () => ctx.supabase.from("user_check_links");
+  let listQ = links()
+    .select("check_id, kind, created_at, checks!inner(score, flag)", { count: "exact" })
+    .eq("user_id", ctx.user.id)
+    .order("created_at", { ascending: false })
+    .range(...pageRange(page, PAGE_SIZE));
+  if (view !== "all") listQ = listQ.or(view === "risky" ? RISKY_FILTER : SAFE_FILTER, { referencedTable: "checks" });
+  const [{ data, count: shownTotal }, total, risky, safe] = await Promise.all([
+    listQ,
+    links().select("check_id", { count: "exact", head: true }).eq("user_id", ctx.user.id),
+    links().select("check_id, checks!inner(flag)", { count: "exact", head: true }).eq("user_id", ctx.user.id).or(RISKY_FILTER, { referencedTable: "checks" }),
+    links().select("check_id, checks!inner(flag)", { count: "exact", head: true }).eq("user_id", ctx.user.id).or(SAFE_FILTER, { referencedTable: "checks" }),
+  ]);
+  const totalN = total.count ?? 0;
+  const shown = (data ?? []).map((r) => {
     const c = r.checks as { score: number; flag: FlagLevel | null } | null;
     return { ...r, score: c?.score ?? null, flag: c ? (c.flag ?? flagForScore(c.score)) : null };
   });
 
-  if (!rows.length) {
+  if (!totalN) {
     return (
       <div className="space-y-6">
         <SaveHistoryToggle on={ctx.profile.save_history} />
@@ -49,14 +71,10 @@ async function Content({ searchParams }: { searchParams: Promise<{ show?: string
     );
   }
 
-  const risky = rows.filter((r) => r.flag && RISKY.includes(r.flag)).length;
-  const safe = rows.filter((r) => r.flag === "green").length;
-  const view = show === "risky" || show === "safe" ? show : "all";
-  const shown = view === "all" ? rows : rows.filter((r) => (view === "risky" ? r.flag && RISKY.includes(r.flag) : r.flag === "green"));
   const stats = [
-    { k: "total", v: rows.length, Icon: ScanSearch, tone: "text-primary" },
-    { k: "risky", v: risky, Icon: ShieldAlert, tone: "text-flag-red" },
-    { k: "safe", v: safe, Icon: CircleCheck, tone: "text-flag-green" },
+    { k: "total", v: totalN, Icon: ScanSearch, tone: "text-primary" },
+    { k: "risky", v: risky.count ?? 0, Icon: ShieldAlert, tone: "text-flag-red" },
+    { k: "safe", v: safe.count ?? 0, Icon: CircleCheck, tone: "text-flag-green" },
   ] as const;
 
   return (
@@ -82,7 +100,7 @@ async function Content({ searchParams }: { searchParams: Promise<{ show?: string
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <UrlToggle name="show" label={t("filter")} options={(["all", "risky", "safe"] as const).map((f) => ({ value: f, label: t(`filters.${f}`) }))} />
-        <DeleteCheckButton all count={rows.length} />
+        <DeleteCheckButton all count={totalN} />
       </div>
 
       <Card className="gap-0 overflow-hidden py-0">
@@ -132,6 +150,7 @@ async function Content({ searchParams }: { searchParams: Promise<{ show?: string
           </Table>
         )}
       </Card>
+      <Pager page={page} pages={pageCount(shownTotal, PAGE_SIZE)} />
     </div>
   );
 }
@@ -146,7 +165,7 @@ function ChecksSkeleton() {
   );
 }
 
-export default async function Page({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ show?: string }> }) {
+export default async function Page({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<SP> }) {
   setRequestLocale((await params).locale as Locale);
   const t = await getTranslations("cit.checks");
   return (

@@ -93,7 +93,7 @@ async function Workspace({ params }: { params: Params }) {
 
       <UrlTabs defaultTab="workspace" tabs={[{ value: "workspace", label: ti("workspace"), content: (
       <div className="grid items-start gap-6 xl:grid-cols-[1.4fr_1fr]">
-        <div className="space-y-6">
+        <div className="min-w-0 space-y-6">
           <section className="space-y-4 rounded-xl bg-card p-5 ring-1 ring-foreground/10">
             <h2 className="font-display text-lg font-medium">{t("message")}</h2>
             {m ? (
@@ -130,7 +130,7 @@ async function Workspace({ params }: { params: Params }) {
           </section>
         </div>
 
-        <div className="space-y-6">
+        <div className="min-w-0 space-y-6">
           <section className="space-y-4 rounded-xl bg-card p-5 ring-1 ring-foreground/10">
             <h2 className="font-display text-lg font-medium">{t("reasons")}</h2>
             <ReasonList reasons={reasons} initial={8} showWeights />
@@ -189,9 +189,6 @@ async function Workspace({ params }: { params: Params }) {
     </div>
   );
 }
-
-/** Auth + report data are request-time; allow blocking navigations under Cache Components. */
-export const instant = false;
 
 export default function ReportWorkspacePage({ params }: { params: Params }) {
   return (

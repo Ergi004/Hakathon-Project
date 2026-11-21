@@ -10,10 +10,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fmtDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { Pager } from "@/components/shared/pager";
+import { pageCount, pageParam, pageRange } from "@/lib/pagination";
 import { hasMinRole, requireRole } from "@/server/auth";
 import { isMunicipalityCode, regionName } from "@/lib/geo/regions";
 
-type Search = Promise<{ campaign?: string; region?: string }>;
+type Search = Promise<{ campaign?: string; region?: string; page?: string }>;
+const PAGE_SIZE = 10;
+const STATUSES = ["draft", "in_review", "published"] as const;
 const TONE: Record<string, string> = { draft: "border-flag-yellow/40 bg-flag-yellow/10", in_review: "border-primary/40 bg-primary/10 text-primary", published: "border-flag-green/40 bg-flag-green/10" };
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -22,20 +26,24 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 }
 
 async function Content({ searchParams }: { searchParams: Search }) {
-  const { campaign, region } = await searchParams;
+  const { campaign, region, page: pageRaw } = await searchParams;
+  const page = pageParam(pageRaw);
   const ctx = await requireRole("soc_analyst");
   const [t, tx, locale] = await Promise.all([getTranslations("soc.advisories"), getTranslations("socx"), getLocale()]);
-  const [camps, advs] = await Promise.all([
+  const [camps, advs, statusCounts] = await Promise.all([
     ctx.supabase.from("campaigns").select("id, code, imitated_name, tactic").neq("status", "monitoring").order("last_seen", { ascending: false, nullsFirst: false }).limit(200),
-    ctx.supabase.from("advisories").select("id, slug, title_sq, title_en, body_sq, body_en, status, severity, published_at, created_by, campaigns(code)").order("published_at", { ascending: false, nullsFirst: true }),
+    ctx.supabase.from("advisories").select("id, slug, title_sq, title_en, body_sq, body_en, status, severity, published_at, created_by, campaigns(code)", { count: "exact" }).order("published_at", { ascending: false, nullsFirst: true }).range(...pageRange(page, PAGE_SIZE)),
+    ctx.supabase.from("advisory_status_counts").select("status, n"),
   ]);
+  const counted = new Map((statusCounts.data ?? []).map((r) => [r.status, r.n ?? 0]));
+  const byStatus = Object.fromEntries(STATUSES.map((st) => [st, counted.get(st) ?? 0])) as Record<(typeof STATUSES)[number], number>;
   const isLead = hasMinRole(ctx.profile.platform_role, "soc_lead");
   const all = advs.data ?? [];
   const STAT = [["draft", FilePen, "text-flag-yellow"], ["in_review", Eye, "text-primary"], ["published", Globe, "text-flag-green"]] as const;
   return (
     <div className="space-y-6">
       <ul className="grid grid-cols-3 gap-3">
-        {STAT.map(([s, Icon, tone]) => <li key={s}><StatCard icon={Icon} tone={tone} label={t(`statuses.${s}`)} value={all.filter((a) => a.status === s).length} /></li>)}
+        {STAT.map(([s, Icon, tone]) => <li key={s}><StatCard icon={Icon} tone={tone} label={t(`statuses.${s}`)} value={byStatus[s]} /></li>)}
       </ul>
       <AdvisoryForm campaigns={camps.data ?? []} initialCampaign={campaign} initialRegion={region && isMunicipalityCode(region) ? { sq: regionName(region, "sq"), en: regionName(region, "en") } : undefined} />
       <section aria-labelledby="adv-list" className="space-y-3">
@@ -68,6 +76,7 @@ async function Content({ searchParams }: { searchParams: Search }) {
             ))}
           </ul>
         )}
+        <Pager page={page} pages={pageCount(advs.count, PAGE_SIZE)} />
       </section>
     </div>
   );

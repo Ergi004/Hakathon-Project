@@ -11,12 +11,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Link } from "@/i18n/navigation";
 import { fmtDateTime } from "@/lib/format";
-import { nowMs } from "@/lib/time";
 import { requireRole } from "@/server/auth";
-import { getNotices, type NoticeRow } from "@/server/queries/soc";
+import { Pager } from "@/components/shared/pager";
+import { pageCount, pageParam, pageRange } from "@/lib/pagination";
+import { getNotices, getNoticeStats, NOTICES_PER_COLUMN, type NoticeRow } from "@/server/queries/soc";
 
 const COLUMNS = ["draft", "in_review", "approved", "sent", "acknowledged", "taken_down", "no_response"] as const;
-type Search = Promise<{ view?: string }>;
+type Search = Promise<{ view?: string; page?: string }>;
+const OUTBOX_PAGE = 25;
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -35,20 +37,19 @@ function Card({ n, tk }: { n: NoticeRow; tk: (k: "registrar") => string }) {
 
 async function Stats() {
   const ctx = await requireRole("soc_analyst");
-  const [notices, tx] = await Promise.all([getNotices(ctx.supabase), getTranslations("socx")]);
-  const now = nowMs();
-  const sent = notices.filter((n) => n.status === "sent");
+  const [c, tx] = await Promise.all([getNoticeStats(ctx.supabase), getTranslations("socx")]);
   const stats = [
-    { k: "open" as const, icon: FilePen, tone: "text-flag-yellow", v: notices.filter((n) => ["draft", "in_review", "approved"].includes(n.status)).length },
-    { k: "waiting" as const, icon: Send, tone: "text-primary", v: sent.length },
-    { k: "overdue" as const, icon: Clock, tone: "text-flag-red", v: sent.filter((n) => n.due_at && Date.parse(n.due_at) < now).length },
-    { k: "done" as const, icon: CheckCheck, tone: "text-flag-green", v: notices.filter((n) => n.status === "taken_down").length },
+    { k: "open" as const, icon: FilePen, tone: "text-flag-yellow", v: c.open },
+    { k: "waiting" as const, icon: Send, tone: "text-primary", v: c.waiting },
+    { k: "overdue" as const, icon: Clock, tone: "text-flag-red", v: c.overdue },
+    { k: "done" as const, icon: CheckCheck, tone: "text-flag-green", v: c.done },
   ];
   return <ul className="grid grid-cols-2 gap-3 xl:grid-cols-4">{stats.map((x) => <li key={x.k}><StatCard icon={x.icon} tone={x.tone} label={tx(`td.${x.k}`)} value={x.v} /></li>)}</ul>;
 }
 
 async function Content({ searchParams }: { searchParams: Search }) {
-  const { view = "board" } = await searchParams;
+  const { view = "board", page: pageRaw } = await searchParams;
+  const page = pageParam(pageRaw);
   const ctx = await requireRole("soc_analyst");
   const [t, tn, tk, ti, locale] = await Promise.all([getTranslations("soc.takedowns"), getTranslations("noticeStatus"), getTranslations("noticeType"), getTranslations("soc.inbox"), getLocale()]);
   const tabs = (
@@ -63,7 +64,7 @@ async function Content({ searchParams }: { searchParams: Search }) {
   );
 
   if (view === "outbox") {
-    const { data } = await ctx.supabase.from("outbox").select("id, to_address, subject, body, kind, simulated, sent_at").order("sent_at", { ascending: false }).limit(100);
+    const { data, count } = await ctx.supabase.from("outbox").select("id, to_address, subject, body, kind, simulated, sent_at", { count: "exact" }).order("sent_at", { ascending: false }).range(...pageRange(page, OUTBOX_PAGE));
     return (
       <div className="space-y-4">
         {tabs}
@@ -85,14 +86,15 @@ async function Content({ searchParams }: { searchParams: Search }) {
             ))}
           </ul>
         )}
+        <Pager page={page} pages={pageCount(count, OUTBOX_PAGE)} />
       </div>
     );
   }
 
-  const notices = await getNotices(ctx.supabase);
-  if (!notices.length) return <div className="space-y-4">{tabs}<div className="rounded-xl bg-card ring-1 ring-foreground/10"><EmptyPanel icon={Gavel} title={t("empty")} /></div></div>;
-
   if (view === "list") {
+    const list = await getNotices(ctx.supabase, { page });
+    const notices = list.rows;
+    if (!notices.length) return <div className="space-y-4">{tabs}<div className="rounded-xl bg-card ring-1 ring-foreground/10"><EmptyPanel icon={Gavel} title={t("empty")} /></div></div>;
     return (
       <div className="space-y-4">
         {tabs}
@@ -113,20 +115,30 @@ async function Content({ searchParams }: { searchParams: Search }) {
             </TableBody>
           </Table>
         </div>
+        <Pager page={list.page} pages={list.pages} />
       </div>
     );
   }
+
+  // Board: the newest cards per column, with the full count in each column header.
+  const columns = await Promise.all(
+    COLUMNS.map((col) => getNotices(ctx.supabase, { status: col === "no_response" ? ["no_response", "rejected"] : [col], size: NOTICES_PER_COLUMN })),
+  );
+  if (!columns.some((c) => c.total)) return <div className="space-y-4">{tabs}<div className="rounded-xl bg-card ring-1 ring-foreground/10"><EmptyPanel icon={Gavel} title={t("empty")} /></div></div>;
 
   return (
     <div className="space-y-4">
       {tabs}
       <div className="flex gap-3 overflow-x-auto pb-2" role="list">
-        {COLUMNS.map((col) => {
-          const items = notices.filter((n) => n.status === col || (col === "no_response" && n.status === "rejected"));
+        {COLUMNS.map((col, i) => {
+          const { rows: items, total } = columns[i];
           return (
             <section key={col} role="listitem" aria-label={tn(col)} className="min-h-48 min-w-64 flex-1 space-y-2 rounded-xl bg-muted/40 p-2.5">
-              <h2 className="flex items-center justify-between px-1 pb-1 text-sm font-medium"><span>{tn(col)}</span><span className="rounded-full bg-background px-2 py-0.5 text-xs text-muted-foreground tabular-nums">{items.length}</span></h2>
+              <h2 className="flex items-center justify-between px-1 pb-1 text-sm font-medium"><span>{tn(col)}</span><span className="rounded-full bg-background px-2 py-0.5 text-xs text-muted-foreground tabular-nums">{total}</span></h2>
               {items.map((n) => <Card key={n.id} n={n} tk={tk} />)}
+              {total > items.length && (
+                <Link href="/soc/takedowns?view=list" className="block px-1 pt-1 text-xs font-medium text-primary hover:underline">{t("list")} →</Link>
+              )}
             </section>
           );
         })}

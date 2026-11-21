@@ -44,11 +44,13 @@ export function IocTable({ rows, filename = "iocs", onReveal }: { rows: IocRow[]
           <TableBody>
             {rows.map((r, i) => (
               <TableRow key={`${r.type}:${r.value}:${i}`}>
-                <TableCell className="text-xs">{t(`ioc.types.${r.type as "domain"}`)}</TableCell>
-                <TableCell className="max-w-[16rem]">
+                <TableCell className="text-xs whitespace-nowrap">{t(`ioc.types.${r.type as "domain"}`)}</TableCell>
+                {/* w-full + max-w-0: the value column takes the remaining width and truncates instead of
+                    stretching the table (max-width alone is ignored on cells of an auto-layout table). */}
+                <TableCell className="w-full max-w-0">
                   <DefangedText value={r.value} onReveal={onReveal ? () => onReveal(r) : undefined} />
                 </TableCell>
-                <TableCell className="hidden font-mono text-xs sm:table-cell">{r.campaign ?? "—"}</TableCell>
+                <TableCell className="hidden font-mono text-xs whitespace-nowrap sm:table-cell">{r.campaign ?? "—"}</TableCell>
               </TableRow>
             ))}
           </TableBody>

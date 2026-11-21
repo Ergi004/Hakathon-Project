@@ -36,17 +36,17 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 async function Content() {
   const ctx = await requireUser();
   const [t, tb, tk, locale] = await Promise.all([getTranslations("cit"), getTranslations("cit.badges"), getTranslations("cit.checks.kinds"), getLocale()]);
-  const [recent, follows, badges, progress, installs, streak, feed] = await Promise.all([
+  const [recent, follows, badges, progress, installs, streak] = await Promise.all([
     ctx.supabase.from("user_check_links").select("check_id, kind, created_at, checks(score, flag)").eq("user_id", ctx.user.id).order("created_at", { ascending: false }).limit(5),
     ctx.supabase.from("user_follows").select("institutions(name)").eq("user_id", ctx.user.id),
     ctx.supabase.from("user_badges").select("badge").eq("user_id", ctx.user.id),
     ctx.supabase.from("user_progress").select("guide_slug", { count: "exact", head: true }).eq("user_id", ctx.user.id),
     ctx.supabase.from("extension_installs").select("id", { count: "exact", head: true }).eq("user_id", ctx.user.id),
     getStreak(ctx),
-    getThreatFeed(),
   ]);
   const followed = (follows.data ?? []).map((f) => (f.institutions as { name: string } | null)?.name).filter((x): x is string => !!x);
-  const warnings = feed.filter((c) => c.imitated_name && followed.includes(c.imitated_name) && c.status !== "resolved").slice(0, 3);
+  // Only the 3 newest unresolved campaigns for followed institutions, not the whole feed.
+  const warnings = await getThreatFeed({ institutions: followed, excludeStatus: "resolved" }, 3);
   const earned = new Set((badges.data ?? []).map((b) => b.badge));
   const p = ctx.profile;
   const score = p.safety_score;

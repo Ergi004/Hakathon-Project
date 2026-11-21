@@ -19,7 +19,7 @@ async function Content() {
   const ctx = await guardOrRedirect(() => requireActiveOrg(["owner", "admin", "comms"]));
   const [t, tb] = await Promise.all([getTranslations("biz.campaigns"), getTranslations("biz")]);
   const inst = await orgInstitutionIds(ctx);
-  const { data } = inst.length ? await ctx.supabase.from("campaigns").select("id, code, tactic, campaign_domains(domains(domain))").in("institution_id", inst).order("last_seen", { ascending: false, nullsFirst: false }) : { data: [] };
+  const { data } = inst.length ? await ctx.supabase.from("campaigns").select("id, code, tactic, campaign_domains(domains(domain))").in("institution_id", inst).order("last_seen", { ascending: false, nullsFirst: false }).limit(200) : { data: [] };
   if (!data?.length) return <Card><CardContent><EmptyPanel icon={Megaphone} title={t("empty")} body={tb("cp.emptyBody")} /></CardContent></Card>;
   return <NoticeComposer brand={ctx.org.name} campaigns={data.map((c) => ({ id: c.id, code: c.code, tactic: c.tactic, domains: (c.campaign_domains ?? []).map((cd) => (cd.domains as { domain: string } | null)?.domain).filter((x): x is string => !!x) }))} />;
 }

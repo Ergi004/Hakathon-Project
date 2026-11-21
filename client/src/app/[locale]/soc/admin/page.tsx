@@ -5,7 +5,9 @@ import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
 import { DashPage } from "@/components/layout/dash";
 import { UrlSearch } from "@/components/shared/url-search";
+import { Pager } from "@/components/shared/pager";
 import { UrlTabs } from "@/components/shared/url-tabs";
+import { pageCount, pageParam, pageRange } from "@/lib/pagination";
 import { InstitutionCard, InviteForm, NewInstitutionForm, RecipientForm, RoleSelect, SettingsForm, TemplateEditor } from "@/components/soc/admin-forms";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -18,7 +20,10 @@ import { guardOrRedirect, hasMinRole, requireRole } from "@/server/auth";
 import { GeoAdmin } from "@/components/geo/GeoAdmin";
 import { parseThresholds } from "@/server/geo/hotspots";
 
-type Search = Promise<{ action?: string }>;
+type Search = Promise<{ action?: string; tab?: string; page?: string }>;
+const TABS = ["users", "institutions", "templates", "recipients", "settings", "geo", "audit", "models"] as const;
+const PAGE_SIZE = 50;
+const none = Promise.resolve({ data: null, count: null });
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -26,23 +31,28 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 }
 
 async function Content({ searchParams }: { searchParams: Search }) {
-  const { action } = await searchParams;
+  const sp = await searchParams;
+  const { action } = sp;
+  // Only the visible tab is queried and rendered; switching tabs re-renders with ?tab=.
+  const tab = TABS.find((x) => x === sp.tab) ?? "users";
+  const page = pageParam(sp.page);
+  const on = (...keys: (typeof TABS)[number][]) => keys.includes(tab);
   const ctx = await guardOrRedirect(() => requireRole("soc_lead"));
   const isAdmin = hasMinRole(ctx.profile.platform_role, "platform_admin");
   const [t, tr, tu, locale, tg] = await Promise.all([getTranslations("soc.admin"), getTranslations("roles"), getTranslations("ui"), getLocale(), getTranslations("geo.admin")]);
   const db = ctx.supabase;
-  let auditQ = db.from("audit_log").select("id, created_at, action, entity, entity_id, actor:profiles!audit_log_actor_id_fkey(full_name)").order("created_at", { ascending: false }).limit(200);
+  let auditQ = db.from("audit_log").select("id, created_at, action, entity, entity_id, actor:profiles!audit_log_actor_id_fkey(full_name)", { count: "exact" }).order("created_at", { ascending: false }).range(...pageRange(page, PAGE_SIZE));
   if (action) auditQ = auditQ.ilike("action", `${action.replace(/[%,]/g, "")}%`);
   const [users, insts, tpls, rcps, settings, audit, models, geoRules, regions] = await Promise.all([
-    db.from("profiles").select("id, full_name, platform_role, created_at").order("platform_role", { ascending: false }).limit(500),
-    db.from("institutions").select("id, name, sector, official_domains(id, domain), official_channels(id, kind, value)").order("name"),
-    db.from("templates").select("kind, locale, version, subject, body, active").eq("active", true),
-    db.from("recipients").select("id, kind, name, abuse_email, match_pattern, sla_hours").order("kind"),
-    db.from("settings").select("key, value"),
-    auditQ,
-    db.from("model_versions").select("id, name, version, metrics, active, created_at").order("created_at", { ascending: false }),
-    db.from("geo_alert_rules").select("id, name, min_reports, min_zscore, min_spike_ratio, active, institution_id, region_id").order("created_at"),
-    db.from("regions").select("id, code"),
+    on("users") ? db.from("profiles").select("id, full_name, platform_role, created_at", { count: "exact" }).order("platform_role", { ascending: false }).order("created_at", { ascending: false }).range(...pageRange(page, PAGE_SIZE)) : none,
+    on("institutions", "geo") ? db.from("institutions").select("id, name, sector, official_domains(id, domain), official_channels(id, kind, value)").order("name") : none,
+    on("templates") ? db.from("templates").select("kind, locale, version, subject, body, active").eq("active", true) : none,
+    on("recipients") ? db.from("recipients").select("id, kind, name, abuse_email, match_pattern, sla_hours").order("kind") : none,
+    on("settings", "geo") ? db.from("settings").select("key, value") : none,
+    on("audit") ? auditQ : none,
+    on("models") ? db.from("model_versions").select("id, name, version, metrics, active, created_at").order("created_at", { ascending: false }) : none,
+    on("geo") ? db.from("geo_alert_rules").select("id, name, min_reports, min_zscore, min_spike_ratio, active, institution_id, region_id").order("created_at") : none,
+    on("geo") ? db.from("regions").select("id, code") : none,
   ]);
   const setting = (k: string) => settings.data?.find((s) => s.key === k)?.value;
   const regionCode = new Map((regions.data ?? []).map((r) => [r.id, r.code]));
@@ -73,6 +83,7 @@ async function Content({ searchParams }: { searchParams: Search }) {
           </TableBody>
         </Table>
       </div>
+      <Pager page={page} pages={pageCount(users.count, PAGE_SIZE)} />
     </div>
   );
 
@@ -97,19 +108,20 @@ async function Content({ searchParams }: { searchParams: Search }) {
           </TableBody>
         </Table>
       </div>
+      <Pager page={page} pages={pageCount(audit.count, PAGE_SIZE)} />
     </div>
   );
 
   return (
     <UrlTabs defaultTab="users" tabs={[
-      { value: "users", label: t("tabs.users"), content: usersTab },
-      { value: "institutions", label: t("tabs.institutions"), content: <div className="space-y-3"><NewInstitutionForm />{(insts.data ?? []).map((i) => <InstitutionCard key={i.id} inst={i} />)}</div> },
-      { value: "templates", label: t("tabs.templates"), content: <TemplateEditor templates={tpls.data ?? []} /> },
-      { value: "recipients", label: t("tabs.recipients"), content: <div className="space-y-2"><RecipientForm />{(rcps.data ?? []).map((r) => <RecipientForm key={r.id} r={r} />)}</div> },
-      { value: "settings", label: t("tabs.settings"), content: <SettingsForm canEdit={isAdmin} thresholds={{ ...DEFAULT_THRESHOLDS, ...((setting("thresholds") as Record<string, number>) ?? {}) }} weights={(setting("weights") as Record<string, number>) ?? { links: 30, content: 25, sender: 25, attachments: 10, reputation: 10 }} autoEscalate={Number(setting("auto_escalate_hours") ?? 24)} /> },
-      { value: "geo", label: tg("tab"), content: geoTab },
-      { value: "audit", label: t("tabs.audit"), content: auditTab },
-      { value: "models", label: t("tabs.models"), content: (
+      { value: "users", label: t("tabs.users"), content: on("users") ? usersTab : null },
+      { value: "institutions", label: t("tabs.institutions"), content: on("institutions") ? <div className="space-y-3"><NewInstitutionForm />{(insts.data ?? []).map((i) => <InstitutionCard key={i.id} inst={i} />)}</div> : null },
+      { value: "templates", label: t("tabs.templates"), content: on("templates") ? <TemplateEditor templates={tpls.data ?? []} /> : null },
+      { value: "recipients", label: t("tabs.recipients"), content: on("recipients") ? <div className="space-y-2"><RecipientForm />{(rcps.data ?? []).map((r) => <RecipientForm key={r.id} r={r} />)}</div> : null },
+      { value: "settings", label: t("tabs.settings"), content: !on("settings") ? null : <SettingsForm canEdit={isAdmin} thresholds={{ ...DEFAULT_THRESHOLDS, ...((setting("thresholds") as Record<string, number>) ?? {}) }} weights={(setting("weights") as Record<string, number>) ?? { links: 30, content: 25, sender: 25, attachments: 10, reputation: 10 }} autoEscalate={Number(setting("auto_escalate_hours") ?? 24)} /> },
+      { value: "geo", label: tg("tab"), content: on("geo") ? geoTab : null },
+      { value: "audit", label: t("tabs.audit"), content: on("audit") ? auditTab : null },
+      { value: "models", label: t("tabs.models"), content: !on("models") ? null : (
         <ul className="space-y-3">
           {(models.data ?? []).map((m) => (
             <li key={m.id} className="flex flex-wrap items-center gap-3 rounded-xl bg-card p-4 text-sm ring-1 ring-foreground/10">

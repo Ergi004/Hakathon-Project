@@ -1,8 +1,8 @@
 import "server-only";
 
-import { cacheLife, cacheTag } from "next/cache";
+import { cache } from "react";
 import type { CampaignCardData } from "@/components/shared/campaign-card";
-import { readClaimedPlace, readHostingCountry } from "@/server/detection/stored-features";
+import { pageCount, pageRange } from "@/lib/pagination";
 import { tryAdmin } from "@/server/db";
 import type { Enums } from "@/types/database";
 
@@ -54,8 +54,13 @@ function ranked(map: Map<string, number>, min = 1): { name: string; count: numbe
     .map(([name, count]) => ({ name, count }));
 }
 
+/** Trimmed non-empty string (the JSON path reads come back untyped). */
+function str(value: unknown, max = 120): string | null {
+  return typeof value === "string" && value.trim() ? value.trim().slice(0, max) : null;
+}
+
 function summarizeChecks(
-  rows: { scam_type: string | null; impersonated_brand: string | null; features: unknown; created_at: string }[],
+  rows: { scam_type: string | null; impersonated_brand: string | null; hosting: unknown; place: unknown; created_at: string }[],
 ): PatternAggregates {
   const scamTypes = new Map<string, number>();
   const brands = new Map<string, number>();
@@ -66,8 +71,8 @@ function summarizeChecks(
     bump(scamTypes, row.scam_type);
     bump(brands, row.impersonated_brand);
     bump(weeks, weekStart(row.created_at));
-    bump(hosting, readHostingCountry(row.features));
-    bump(places, readClaimedPlace(row.features));
+    bump(hosting, str(row.hosting));
+    bump(places, str(row.place));
   }
   return {
     byScamType: ranked(scamTypes).map(({ name, count }) => ({ scamType: name, count })),
@@ -80,11 +85,11 @@ function summarizeChecks(
   };
 }
 
-/** Homepage counters (SPEC 7): cached, revalidated about every minute. */
-export async function getPublicStats(): Promise<PublicStats> {
-  "use cache";
-  cacheLife("minutes");
-  cacheTag("kpis");
+/**
+ * Homepage counters (SPEC 7). Deduplicated per request; the HTTP API adds s-maxage=60.
+ * The aggregate reads only the two JSON fields it needs, not the whole `features` document.
+ */
+export const getPublicStats = cache(async (): Promise<PublicStats> => {
   const db = tryAdmin();
   if (!db) return { reportsToday: 0, activeCampaigns: 0, domainsBlocked: 0, checksTotal: 0, ...EMPTY_PATTERN_AGGREGATES };
   const since = new Date();
@@ -94,7 +99,7 @@ export async function getPublicStats(): Promise<PublicStats> {
     db.from("campaigns").select("id", { count: "exact", head: true }).in("status", ["monitoring", "confirmed", "takedown_in_progress"]),
     db.from("domains").select("id", { count: "exact", head: true }).in("status", ["threat", "taken_down"]),
     db.from("checks").select("id", { count: "exact", head: true }),
-    db.from("checks").select("scam_type, impersonated_brand, features, created_at").order("created_at", { ascending: false }).limit(AGGREGATE_CHECK_LIMIT),
+    db.from("checks").select("scam_type, impersonated_brand, created_at, hosting:features->infrastructure->>hostingCountry, place:features->>claimedPlace").order("created_at", { ascending: false }).limit(AGGREGATE_CHECK_LIMIT),
   ]);
   return {
     reportsToday: r.count ?? 0,
@@ -103,25 +108,28 @@ export async function getPublicStats(): Promise<PublicStats> {
     checksTotal: k.count ?? 0,
     ...summarizeChecks(pattern.data ?? []),
   };
-}
+});
 
 export interface FeedFilters {
   institution?: string;
+  /** Any of these imitated names (citizen "followed institutions"). */
+  institutions?: string[];
   tactic?: string;
+  status?: Enums<"campaign_status">;
+  excludeStatus?: Enums<"campaign_status">;
   month?: string; // yyyy-mm
   since?: string;
 }
 
-/** Sanitized public threat feed (SPEC 5 public_threat_feed). No reporter data. */
-export async function getThreatFeed(filters: FeedFilters = {}): Promise<CampaignCardData[]> {
-  "use cache";
-  cacheLife("minutes");
-  cacheTag("feed");
+function feedQuery(filters: FeedFilters, count = false) {
   const db = tryAdmin();
-  if (!db) return [];
-  let q = db.from("public_threat_feed").select("*").order("last_seen", { ascending: false, nullsFirst: false }).limit(200);
+  if (!db) return null;
+  let q = db.from("public_threat_feed").select("*", count ? { count: "exact" } : undefined).order("last_seen", { ascending: false, nullsFirst: false });
   if (filters.institution) q = q.eq("imitated_name", filters.institution);
+  if (filters.institutions) q = q.in("imitated_name", filters.institutions);
   if (filters.tactic) q = q.eq("tactic", filters.tactic);
+  if (filters.status) q = q.eq("status", filters.status);
+  if (filters.excludeStatus) q = q.neq("status", filters.excludeStatus);
   if (filters.since) q = q.gte("last_seen", filters.since);
   if (filters.month && /^\d{4}-\d{2}$/.test(filters.month)) {
     const [y, m] = filters.month.split("-").map(Number);
@@ -129,15 +137,45 @@ export async function getThreatFeed(filters: FeedFilters = {}): Promise<Campaign
     const end = new Date(Date.UTC(y, m, 1)).toISOString().slice(0, 10);
     q = q.lte("first_seen", end).or(`last_seen.gte.${start},last_seen.is.null`);
   }
-  const { data } = await q;
-  return (data ?? []).flatMap((c) => (c.code && c.tactic ? [{ ...c, code: c.code, tactic: c.tactic }] : []));
+  return q;
+}
+
+type FeedRow = { code: string | null; tactic: string | null } & Omit<CampaignCardData, "code" | "tactic">;
+const toCards = (rows: FeedRow[] | null): CampaignCardData[] =>
+  (rows ?? []).flatMap((c) => (c.code && c.tactic ? [{ ...c, code: c.code, tactic: c.tactic }] : []));
+
+/** Sanitized public threat feed (SPEC 5 public_threat_feed). No reporter data. */
+export async function getThreatFeed(filters: FeedFilters = {}, limit = 200): Promise<CampaignCardData[]> {
+  if (filters.institutions && !filters.institutions.length) return [];
+  const q = feedQuery(filters);
+  if (!q) return [];
+  const { data } = await q.limit(limit);
+  return toCards(data as FeedRow[] | null);
+}
+
+/** One page of the public feed plus the filtered total, for the /threats list. */
+export async function getThreatFeedPage(filters: FeedFilters, page: number, size: number) {
+  const q = feedQuery(filters, true);
+  if (!q) return { rows: [] as CampaignCardData[], total: 0, page, pages: 1 };
+  const { data, count } = await q.range(...pageRange(page, size));
+  return { rows: toCards(data as FeedRow[] | null), total: count ?? 0, page, pages: pageCount(count, size) };
+}
+
+/** Whole-feed counters for the /threats overview: one grouped request (public_threat_feed_counts). */
+export async function getThreatFeedCounts(): Promise<{ total: number; confirmed: number; takedown: number; resolved: number }> {
+  const db = tryAdmin();
+  if (!db) return { total: 0, confirmed: 0, takedown: 0, resolved: 0 };
+  const { data } = await db.from("public_threat_feed_counts").select("status, n");
+  const n = (s: string) => (data ?? []).find((r) => r.status === s)?.n ?? 0;
+  return { total: (data ?? []).reduce((sum, r) => sum + (r.n ?? 0), 0), confirmed: n("confirmed"), takedown: n("takedown_in_progress"), resolved: n("resolved") };
 }
 
 export async function getFeedFacets(): Promise<{ institutions: string[]; tactics: string[]; months: string[] }> {
-  "use cache";
-  cacheLife("minutes");
-  cacheTag("feed");
-  const all = await getThreatFeed();
+  const db = tryAdmin();
+  if (!db) return { institutions: [], tactics: [], months: [] };
+  // Only the four facet columns, not whole feed rows.
+  const { data } = await db.from("public_threat_feed").select("imitated_name, tactic, first_seen, last_seen").limit(1000);
+  const all = data ?? [];
   const months = new Set<string>();
   for (const c of all) {
     if (c.first_seen) months.add(c.first_seen.slice(0, 7));
@@ -145,7 +183,7 @@ export async function getFeedFacets(): Promise<{ institutions: string[]; tactics
   }
   return {
     institutions: [...new Set(all.map((c) => c.imitated_name).filter((x): x is string => !!x))].sort(),
-    tactics: [...new Set(all.map((c) => c.tactic))].sort(),
+    tactics: [...new Set(all.map((c) => c.tactic).filter((x): x is string => !!x))].sort(),
     months: [...months].sort().reverse(),
   };
 }
@@ -158,16 +196,15 @@ export interface PublicCampaign extends CampaignCardData {
 
 /** Public campaign page (SPEC 7 /threats/[code]): only campaigns in the public feed. */
 export async function getPublicCampaign(code: string): Promise<PublicCampaign | null> {
-  "use cache";
-  cacheLife("minutes");
-  cacheTag("feed", `campaign:${code}`);
   const db = tryAdmin();
   if (!db) return null;
   const { data: feed } = await db.from("public_threat_feed").select("*").eq("code", code).maybeSingle();
   if (!feed?.code || !feed.tactic) return null;
   const { data: camp } = await db.from("campaigns").select("id").eq("code", code).single();
-  const [msgs, adv] = await Promise.all([
-    db.from("messages").select("body_masked, received_at").eq("campaign_id", camp!.id).eq("label", "phishing").order("received_at", { ascending: true }).limit(2000),
+  // Dates only for the weekly chart; the one sample body is fetched on its own.
+  const [msgs, sample, adv] = await Promise.all([
+    db.from("messages").select("received_at").eq("campaign_id", camp!.id).eq("label", "phishing").not("received_at", "is", null).order("received_at", { ascending: true }).limit(2000),
+    db.from("messages").select("body_masked").eq("campaign_id", camp!.id).eq("label", "phishing").order("received_at", { ascending: true }).limit(1).maybeSingle(),
     db.from("advisories").select("slug, title_sq, title_en, body_sq, body_en, published_at").eq("campaign_id", camp!.id).eq("status", "published"),
   ]);
   const weeks = new Map<string, number>();
@@ -182,7 +219,7 @@ export async function getPublicCampaign(code: string): Promise<PublicCampaign | 
     ...feed,
     code: feed.code,
     tactic: feed.tactic,
-    sample: msgs.data?.[0]?.body_masked ?? null,
+    sample: sample.data?.body_masked ?? null,
     advisories: adv.data ?? [],
     weekly: [...weeks.entries()].sort().map(([week, count]) => ({ week, count })),
   };
@@ -190,8 +227,6 @@ export async function getPublicCampaign(code: string): Promise<PublicCampaign | 
 
 /** Real (masked) dataset messages for the example chips and the quiz. */
 export async function getExampleMessages(limit = 4): Promise<{ text: string; label: Enums<"msg_label">; channel: Enums<"msg_channel">; sender: string | null }[]> {
-  "use cache";
-  cacheLife("hours");
   const db = tryAdmin();
   if (!db) return [];
   const { data } = await db
@@ -211,8 +246,6 @@ export async function getExampleMessages(limit = 4): Promise<{ text: string; lab
 }
 
 export async function getQuizPool(): Promise<{ id: string; text: string; scam: boolean; channel: Enums<"msg_channel"> }[]> {
-  "use cache";
-  cacheLife("hours");
   const db = tryAdmin();
   if (!db) return [];
   const [p, l] = await Promise.all([
@@ -236,9 +269,6 @@ export interface DirectoryEntry {
 
 /** SPEC 7 /institutions: official domains, SMS senders and phone numbers. */
 export async function getInstitutionDirectory(): Promise<DirectoryEntry[]> {
-  "use cache";
-  cacheLife("hours");
-  cacheTag("institutions");
   const db = tryAdmin();
   if (!db) return [];
   const { data } = await db
@@ -256,10 +286,7 @@ export async function getInstitutionDirectory(): Promise<DirectoryEntry[]> {
 }
 
 export async function getLatestPublicCampaigns(n = 3): Promise<CampaignCardData[]> {
-  "use cache";
-  cacheLife("minutes");
-  cacheTag("feed");
-  return (await getThreatFeed()).slice(0, n);
+  return getThreatFeed({}, n);
 }
 
 export async function getPublicCheck(id: string) {

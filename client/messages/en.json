@@ -295,7 +295,10 @@
       "updated": "Updated",
       "newReport": "New report: {protocol}",
       "export": "Export CSV",
-      "empty": "No reports match these filters."
+      "empty": "No reports match these filters.",
+      "period": "Period",
+      "campaign": "Campaign",
+      "noCampaign": "Not in a campaign"
     },
     "report": {
       "message": "Message (masked)",
@@ -363,7 +366,47 @@
       "brand": "Impersonated brand",
       "patternSize": "Checks",
       "patternSizeCount": "{count} checks",
-      "firstSeen": "First seen"
+      "firstSeen": "First seen",
+      "pipeline": "Campaign pipeline",
+      "activity": "Activity",
+      "activityHint": "Last 12 weeks: {reports, plural, one {# report} other {# reports}} in campaigns, {campaigns, plural, one {# new campaign} other {# new campaigns}}.",
+      "activityReports": "Reports in campaigns",
+      "activityNew": "New campaigns",
+      "noActivity": "No campaign activity in the last 12 weeks.",
+      "srWeek": "Week of {week}: {reports} reports, {campaigns} new campaigns",
+      "topActive": "Most active",
+      "topActiveHint": "Reports in the last 30 days",
+      "topEmpty": "No campaign reports in the last 30 days.",
+      "reportsCount": "{count, plural, one {# report} other {# reports}}",
+      "matrix": "Severity × status",
+      "matrixHint": "Select a cell to filter the list.",
+      "tactics": "Tactics",
+      "tacticsHint": "Campaigns per tactic. Select one to filter.",
+      "tacticValue": "{campaigns, plural, one {# campaign} other {# campaigns}} · {messages} msgs",
+      "activeLabel": "Active in",
+      "activeAny": "Any time",
+      "activeIn": {
+        "7": "Last 7 days",
+        "30": "Last 30 days",
+        "90": "Last 90 days"
+      },
+      "sortLabel": "Sort by",
+      "sorts": {
+        "recent": "Recently active",
+        "volume": "Most messages",
+        "severity": "Highest severity",
+        "newest": "Newest"
+      },
+      "removeFilter": "Remove filter",
+      "clearFilters": "Clear all filters",
+      "emptyFiltered": "Try removing a filter.",
+      "viewLabel": "View",
+      "campaign": "Campaign",
+      "volume": "Volume",
+      "classification": "Classification",
+      "activityCol": "Last activity",
+      "unowned": "Unassigned",
+      "since": "since {date}"
     },
     "campaign": {
       "tabs": {
@@ -372,7 +415,8 @@
         "domains": "Domains and IoCs",
         "takedowns": "Takedowns",
         "notes": "Notes",
-        "advisory": "Advisory"
+        "advisory": "Advisory",
+        "reports": "Reports"
       },
       "assignOwner": "Assign owner",
       "changeStatus": "Change status",
@@ -408,7 +452,16 @@
       "weight": "Weight",
       "evidence": "Evidence",
       "noPattern": "No classified checks are linked to this campaign yet.",
-      "noSignals": "This check has no matched signals."
+      "noSignals": "This check has no matched signals.",
+      "reportBreakdown": "Reports breakdown",
+      "reportsShown": "{count, plural, one {# report} other {# reports}}",
+      "viewReports": "View reports",
+      "byFlag": "By flag",
+      "byStatus": "By status",
+      "byChannel": "By channel",
+      "openInInbox": "Open in inbox",
+      "noReports": "No reports are linked to this campaign yet.",
+      "excerpt": "Message"
     },
     "domains": {
       "class": "Class",
@@ -480,20 +533,48 @@
     "patterns": {
       "byInstitution": "Reports by institution",
       "tactics": "Tactics",
-      "registrars": "Registrar concentration",
-      "hosting": "Hosting countries",
-      "heatmap": "Reports by weekday and hour",
+      "registrars": "Registrars in these checks",
+      "nameservers": "Nameservers in these checks",
+      "hosting": "Hosting countries in these checks",
+      "heatmap": "Checks by weekday and hour",
+      "timezone": "Hours are in Europe/Tirane.",
       "channels": "Channels",
       "srPrefix": "Data: {summary}",
-      "weekdays": [
-        "Mon",
-        "Tue",
-        "Wed",
-        "Thu",
-        "Fri",
-        "Sat",
-        "Sun"
-      ]
+      "weekdays": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+      "window": "Window",
+      "days90": "90 days",
+      "days30": "30 days",
+      "days7": "7 days",
+      "kind": "What was checked",
+      "kinds": {
+        "text": "Text",
+        "url": "Link",
+        "email_signals": "Email signals",
+        "phone": "Phone",
+        "qr": "QR"
+      },
+      "coverage": "{classified} classified, {other} other, {unclassified} not classified.",
+      "list": "Repeating patterns",
+      "brand": "Brand",
+      "scamType": "Scam type",
+      "checks": "Checks",
+      "confidence": "Confidence",
+      "confidenceValue": "{value}%",
+      "seen": "Seen",
+      "connection": "Connection",
+      "place": "Place",
+      "campaigns": "Campaigns",
+      "active": "Active",
+      "quiet": "Quiet",
+      "noCampaign": "No campaign",
+      "byBrand": "Who is imitated",
+      "byScamType": "Scam type",
+      "byReason": "How they connect",
+      "reasons": {
+        "shared_exfil": "Shared collection link",
+        "shared_url": "Shared link",
+        "shared_domain": "Shared domain"
+      }
     },
     "search": {
       "placeholder": "Search messages, domains, IoCs or protocols…",
@@ -1053,7 +1134,13 @@
     "lastUpdated": "Updated {date}",
     "dateRange": "Period",
     "days": "{count} days",
-    "hoursAgo": "{count} hours ago"
+    "hoursAgo": "{count} hours ago",
+    "periodDays": {
+      "1": "Last 24 hours",
+      "7": "Last 7 days",
+      "30": "Last 30 days",
+      "90": "Last 90 days"
+    }
   },
   "reasonGroups": {
     "links": "Links",
