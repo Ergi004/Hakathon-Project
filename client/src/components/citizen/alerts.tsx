@@ -11,6 +11,7 @@ import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useCoalescedRefresh } from "@/hooks/use-coalesced-refresh";
 import { Link, useRouter } from "@/i18n/navigation";
 import { fmtAgo } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -44,20 +45,21 @@ function noteIcon(n: Note) {
 export function NotificationInbox({ items }: { items: Note[] }) {
   const t = useTranslations("cit.alerts");
   const locale = useLocale();
-  const router = useRouter();
+  const refresh = useCoalescedRefresh();
   const { pending, run } = useRun();
   const [tab, setTab] = useState<"all" | "unread">("all");
 
   useEffect(() => {
     let client: ReturnType<typeof createBrowserClient> | null = null;
     try { client = createBrowserClient(); } catch { client = null; }
-    const poll = setInterval(() => router.refresh(), 60_000);
+    // Fallback poll; skipped while the tab is hidden.
+    const poll = setInterval(refresh, 60_000);
     const ch = client
       ?.channel("citizen-notifications")
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "notifications" }, (p) => { toast((p.new as { title: string }).title); router.refresh(); })
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "notifications" }, (p) => { toast((p.new as { title: string }).title); refresh(); })
       .subscribe();
     return () => { clearInterval(poll); if (ch) client?.removeChannel(ch); };
-  }, [router]);
+  }, [refresh]);
 
   const unread = items.filter((n) => !n.read_at).length;
   const shown = tab === "unread" ? items.filter((n) => !n.read_at) : items;

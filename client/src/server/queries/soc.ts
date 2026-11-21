@@ -3,6 +3,7 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { MatchedSignal } from "@/server/detection/pattern";
 import { readClaimedPlace, readHostingCountry, readMatchedSignals } from "@/server/detection/stored-features";
+import { pageCount, pageRange } from "@/lib/pagination";
 import type { Database, Enums } from "@/types/database";
 
 type DB = SupabaseClient<Database>;
@@ -59,18 +60,13 @@ export async function getNeedsAttention(db: DB) {
   const now = new Date().toISOString();
   const today = new Date();
   today.setUTCHours(0, 0, 0, 0);
-  const [overdue, unassigned, todayReports] = await Promise.all([
+  const [overdue, unassigned, spikes] = await Promise.all([
     db.from("takedown_notices").select("id, protocol, due_at").eq("status", "sent").lt("due_at", now).order("due_at").limit(10),
     db.from("reports").select("id", { count: "exact", head: true }).in("flag", ["red", "darkred"]).is("assigned_to", null).in("status", ["received", "under_review"]),
-    db.from("reports").select("messages(institution_id, institutions(name))").gte("created_at", today.toISOString()).limit(2000),
+    // Counted in Postgres (soc_institution_spikes) instead of pulling every report of the day.
+    db.rpc("soc_institution_spikes", { p_since: today.toISOString(), p_min: 20 }),
   ]);
-  const byInst = new Map<string, number>();
-  for (const r of todayReports.data ?? []) {
-    const name = (r.messages as { institutions: { name: string } | null } | null)?.institutions?.name;
-    if (name) byInst.set(name, (byInst.get(name) ?? 0) + 1);
-  }
-  const spikes = [...byInst.entries()].filter(([, n]) => n >= 20).map(([name, count]) => ({ name, count }));
-  return { overdue: overdue.data ?? [], unassigned: unassigned.count ?? 0, spikes };
+  return { overdue: overdue.data ?? [], unassigned: unassigned.count ?? 0, spikes: spikes.data ?? [] };
 }
 
 /* ---------------------------------------------------------------- A2 inbox */
@@ -194,13 +190,18 @@ function readConfidence(value: number | string | null | undefined): number | nul
   return Number.isFinite(parsed) ? parsed : null;
 }
 
-/** Classified checks linked to each campaign. Size and dates come from those rows. */
-export async function getCampaignPatternMap(db: DB, campaignIds: string[]): Promise<Map<string, CampaignPattern>> {
-  const map = new Map<string, CampaignPattern>();
+export type CampaignPatternSummary = Pick<CampaignPattern, "scamType" | "brand" | "size" | "firstSeen" | "lastSeen">;
+
+/**
+ * Classified checks linked to each campaign on the current list page. Size and dates come from
+ * those rows. Only scalar columns are read: the list never shows the `features`-derived fields.
+ */
+export async function getCampaignPatternMap(db: DB, campaignIds: string[]): Promise<Map<string, CampaignPatternSummary>> {
+  const map = new Map<string, CampaignPatternSummary>();
   if (!campaignIds.length) return map;
   const { data } = await db
     .from("checks")
-    .select("campaign_id, scam_type, impersonated_brand, confidence, features, created_at")
+    .select("campaign_id, scam_type, impersonated_brand, created_at")
     .in("campaign_id", campaignIds)
     .not("scam_type", "is", null)
     .order("created_at", { ascending: false })
@@ -213,18 +214,13 @@ export async function getCampaignPatternMap(db: DB, campaignIds: string[]): Prom
     grouped.set(row.campaign_id, list);
   }
   for (const [campaignId, rows] of grouped) {
-    const newest = rows[0];
-    const times = rows.map((row) => row.created_at).sort();
+    // Rows are newest first.
     map.set(campaignId, {
       scamType: mode(rows.map((row) => row.scam_type)),
       brand: mode(rows.map((row) => row.impersonated_brand)),
       size: rows.length,
-      firstSeen: times[0] ?? null,
-      lastSeen: times[times.length - 1] ?? null,
-      confidence: readConfidence(newest?.confidence),
-      hostingCountry: mode(rows.map((row) => readHostingCountry(row.features))),
-      claimedPlace: mode(rows.map((row) => readClaimedPlace(row.features))),
-      matchedSignals: readMatchedSignals(newest?.features),
+      firstSeen: rows[rows.length - 1]?.created_at ?? null,
+      lastSeen: rows[0]?.created_at ?? null,
     });
   }
   return map;
@@ -255,15 +251,32 @@ export async function getCampaignPattern(db: DB, campaignId: string): Promise<Ca
   };
 }
 
-export async function getCampaigns(db: DB, f: { status?: Enums<"campaign_status">; q?: string } = {}) {
+export const CAMPAIGN_STATUSES = ["monitoring", "confirmed", "takedown_in_progress", "resolved"] as const;
+export const CAMPAIGNS_PAGE = 25;
+
+export async function getCampaigns(db: DB, f: { status?: Enums<"campaign_status">; q?: string; page?: number } = {}) {
+  const page = Math.max(1, f.page ?? 1);
   let q = db
     .from("campaigns")
-    .select("id, code, tactic, status, severity, message_count, first_seen, last_seen, is_public, source, imitated_name, institutions(name), owner:profiles!campaigns_owner_id_fkey(full_name)")
+    .select("id, code, tactic, status, severity, message_count, first_seen, last_seen, is_public, source, imitated_name, institutions(name), owner:profiles!campaigns_owner_id_fkey(full_name)", { count: "exact" })
     .order("last_seen", { ascending: false, nullsFirst: false })
-    .limit(500);
+    .range(...pageRange(page, CAMPAIGNS_PAGE));
   if (f.status) q = q.eq("status", f.status);
   if (f.q) q = q.or(`code.ilike.%${f.q.replace(/[%,()]/g, "")}%,imitated_name.ilike.%${f.q.replace(/[%,()]/g, "")}%`);
-  const { data } = await q;
+  const { data, count } = await q;
+  return { rows: data ?? [], total: count ?? 0, page, pages: pageCount(count, CAMPAIGNS_PAGE) };
+}
+
+/** Campaign counts per status (stat cards): one grouped request (campaign_status_counts). */
+export async function getCampaignStatusCounts(db: DB): Promise<Record<(typeof CAMPAIGN_STATUSES)[number], number>> {
+  const { data } = await db.from("campaign_status_counts").select("status, n");
+  const by = new Map((data ?? []).map((r) => [r.status, r.n ?? 0]));
+  return Object.fromEntries(CAMPAIGN_STATUSES.map((s) => [s, by.get(s) ?? 0])) as Record<(typeof CAMPAIGN_STATUSES)[number], number>;
+}
+
+/** Slim id/code list for pickers (merge dialog). */
+export async function getCampaignOptions(db: DB, limit = 500) {
+  const { data } = await db.from("campaigns").select("id, code, imitated_name").order("last_seen", { ascending: false, nullsFirst: false }).limit(limit);
   return data ?? [];
 }
 
@@ -328,15 +341,33 @@ export type DomainRow = Awaited<ReturnType<typeof getDomains>>["rows"][number];
 
 /* ---------------------------------------------------------------- A7/A8 takedowns */
 
-export async function getNotices(db: DB) {
-  const { data } = await db
-    .from("takedown_notices")
-    .select("id, protocol, kind, status, subject, due_at, sent_at, created_at, campaigns(code), domains(domain), recipients(name), creator:profiles!takedown_notices_created_by_fkey(full_name)")
-    .order("created_at", { ascending: false })
-    .limit(500);
-  return data ?? [];
+const NOTICE_COLUMNS = "id, protocol, kind, status, subject, due_at, sent_at, created_at, campaigns(code), domains(domain), recipients(name), creator:profiles!takedown_notices_created_by_fkey(full_name)" as const;
+export const NOTICES_PAGE = 50;
+/** Cards shown per kanban column; the column header still shows the full count. */
+export const NOTICES_PER_COLUMN = 20;
+
+export async function getNotices(db: DB, f: { page?: number; status?: Enums<"notice_status">[]; size?: number } = {}) {
+  const page = Math.max(1, f.page ?? 1);
+  const size = f.size ?? NOTICES_PAGE;
+  let q = db.from("takedown_notices").select(NOTICE_COLUMNS, { count: "exact" }).order("created_at", { ascending: false }).range(...pageRange(page, size));
+  if (f.status?.length) q = q.in("status", f.status);
+  const { data, count } = await q;
+  return { rows: data ?? [], total: count ?? 0, page, pages: pageCount(count, size) };
 }
-export type NoticeRow = Awaited<ReturnType<typeof getNotices>>[number];
+export type NoticeRow = Awaited<ReturnType<typeof getNotices>>["rows"][number];
+
+/** Takedown stat cards: one grouped request (takedown_status_counts). */
+export async function getNoticeStats(db: DB) {
+  const { data } = await db.from("takedown_status_counts").select("status, n, overdue");
+  const rows = data ?? [];
+  const n = (...statuses: string[]) => rows.filter((r) => r.status && statuses.includes(r.status)).reduce((sum, r) => sum + (r.n ?? 0), 0);
+  return {
+    open: n("draft", "in_review", "approved"),
+    waiting: n("sent"),
+    overdue: rows.find((r) => r.status === "sent")?.overdue ?? 0,
+    done: n("taken_down"),
+  };
+}
 
 export async function getNoticeDetail(db: DB, id: string) {
   const { data: n } = await db
@@ -354,33 +385,21 @@ export async function getNoticeDetail(db: DB, id: string) {
 
 /* ---------------------------------------------------------------- A9 patterns */
 
+type Ranked = { name: string; value: number }[];
+interface PatternStatsJson { byInstitution: Ranked; channels: Ranked; tactics: Ranked; registrars: Ranked; hosting: Ranked; heat: { d: number; h: number; n: number }[] }
+
+/** Threat-map aggregates, computed in Postgres (soc_pattern_stats) rather than over ~20k rows in the Worker. */
 export async function getPatterns(db: DB) {
-  const since = new Date(Date.now() - 90 * DAY).toISOString();
-  const [reports, campaigns, domains] = await Promise.all([
-    db.from("reports").select("created_at, channel, messages(institutions(name))").gte("created_at", since).limit(10000),
-    db.from("campaigns").select("tactic, message_count"),
-    db.from("domains").select("registrar, hosting_country").neq("status", "allowlisted").limit(10000),
-  ]);
-  const count = <T,>(items: T[], key: (t: T) => string | null | undefined, weight: (t: T) => number = () => 1) => {
-    const m = new Map<string, number>();
-    for (const i of items) {
-      const k = key(i);
-      if (k) m.set(k, (m.get(k) ?? 0) + weight(i));
-    }
-    return [...m.entries()].sort((a, b) => b[1] - a[1]).map(([name, value]) => ({ name, value }));
-  };
-  const rs = reports.data ?? [];
+  const { data } = await db.rpc("soc_pattern_stats", { p_days: 90 });
+  const p = (data ?? {}) as Partial<PatternStatsJson>;
   const heat = Array.from({ length: 7 }, () => Array.from({ length: 24 }, () => 0));
-  for (const r of rs) {
-    const d = new Date(r.created_at);
-    heat[(d.getDay() + 6) % 7][d.getHours()] += 1;
-  }
+  for (const c of p.heat ?? []) if (heat[c.d]?.[c.h] !== undefined) heat[c.d][c.h] = c.n;
   return {
-    byInstitution: count(rs, (r) => (r.messages as { institutions: { name: string } | null } | null)?.institutions?.name).slice(0, 10),
-    channels: count(rs, (r) => r.channel),
-    tactics: count(campaigns.data ?? [], (c) => c.tactic, (c) => c.message_count || 1).slice(0, 8),
-    registrars: count(domains.data ?? [], (d) => d.registrar).slice(0, 10),
-    hosting: count(domains.data ?? [], (d) => d.hosting_country).slice(0, 10),
+    byInstitution: p.byInstitution ?? [],
+    channels: p.channels ?? [],
+    tactics: p.tactics ?? [],
+    registrars: p.registrars ?? [],
+    hosting: p.hosting ?? [],
     heat,
   };
 }

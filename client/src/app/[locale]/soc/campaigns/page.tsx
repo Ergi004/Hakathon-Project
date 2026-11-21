@@ -18,10 +18,12 @@ import { Link } from "@/i18n/navigation";
 import { fmtDate } from "@/lib/format";
 import { asBrandCategory, asScamType } from "@/lib/pattern-labels";
 import { requireRole } from "@/server/auth";
-import { getCampaignPatternMap, getCampaigns } from "@/server/queries/soc";
+import { Pager } from "@/components/shared/pager";
+import { pageParam } from "@/lib/pagination";
+import { CAMPAIGN_STATUSES, getCampaignOptions, getCampaignPatternMap, getCampaignStatusCounts, getCampaigns } from "@/server/queries/soc";
 
-type Search = Promise<{ status?: string; q?: string; view?: string }>;
-const STATUS = ["monitoring", "confirmed", "takedown_in_progress", "resolved"] as const;
+type Search = Promise<{ status?: string; q?: string; view?: string; page?: string }>;
+const STATUS = CAMPAIGN_STATUSES;
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -32,7 +34,7 @@ async function Toolbar() {
   const ctx = await requireRole("soc_analyst");
   const [inst, camps, t, tu, ts] = await Promise.all([
     ctx.supabase.from("institutions").select("id, name").order("name"),
-    getCampaigns(ctx.supabase),
+    getCampaignOptions(ctx.supabase),
     getTranslations("soc.campaigns"),
     getTranslations("ui"),
     getTranslations("campaignStatus"),
@@ -45,7 +47,7 @@ async function Toolbar() {
       </div>
       <div className="flex flex-wrap gap-2">
         <Button asChild variant="outline" size="sm" className="rounded-full"><a href="/api/soc/export/campaigns"><Download className="size-3.5" aria-hidden="true" />{tu("exportCsv")}</a></Button>
-        <MergeDialog campaigns={camps.map((c) => ({ id: c.id, code: c.code, imitated_name: c.imitated_name }))} />
+        <MergeDialog campaigns={camps} />
         <CreateCampaignDialog institutions={inst.data ?? []} />
       </div>
     </div>
@@ -57,10 +59,10 @@ const STAT_TONE = { monitoring: "text-flag-yellow", confirmed: "text-flag-orange
 
 async function Stats() {
   const ctx = await requireRole("soc_analyst");
-  const [rows, ts] = await Promise.all([getCampaigns(ctx.supabase), getTranslations("campaignStatus")]);
+  const [counts, ts] = await Promise.all([getCampaignStatusCounts(ctx.supabase), getTranslations("campaignStatus")]);
   return (
     <ul className="grid grid-cols-2 gap-3 xl:grid-cols-4">
-      {STATUS.map((s) => <li key={s}><StatCard icon={STAT_ICON[s]} tone={STAT_TONE[s]} label={ts(s)} value={rows.filter((c) => c.status === s).length} /></li>)}
+      {STATUS.map((s) => <li key={s}><StatCard icon={STAT_ICON[s]} tone={STAT_TONE[s]} label={ts(s)} value={counts[s]} /></li>)}
     </ul>
   );
 }
@@ -68,18 +70,22 @@ async function Stats() {
 async function List_({ searchParams }: { searchParams: Search }) {
   const sp = await searchParams;
   const ctx = await requireRole("soc_analyst");
-  const [t, tx] = await Promise.all([getTranslations("soc.campaigns"), getTranslations("socx")]);
-  const ts = await getTranslations("campaignStatus");
-  const tScam = await getTranslations("scamType");
-  const tBrand = await getTranslations("brandCategory");
-  const locale = await getLocale();
   const status = STATUS.find((s) => s === sp.status);
-  const rows = await getCampaigns(ctx.supabase, { status, q: sp.q?.slice(0, 100) });
+  const [t, tx, ts, tScam, tBrand, locale, list] = await Promise.all([
+    getTranslations("soc.campaigns"),
+    getTranslations("socx"),
+    getTranslations("campaignStatus"),
+    getTranslations("scamType"),
+    getTranslations("brandCategory"),
+    getLocale(),
+    getCampaigns(ctx.supabase, { status, q: sp.q?.slice(0, 100), page: pageParam(sp.page) }),
+  ]);
+  const rows = list.rows;
   const patterns = await getCampaignPatternMap(ctx.supabase, rows.map((c) => c.id));
   const view = sp.view === "grid" ? "grid" : "table";
   const toggle = (
     <div className="flex items-center justify-between gap-3">
-    <span className="text-sm text-muted-foreground tabular-nums">{tx("results", { count: rows.length })}</span>
+    <span className="text-sm text-muted-foreground tabular-nums">{tx("results", { count: list.total })}</span>
     <div className="flex gap-1 rounded-full bg-muted p-1" role="group">
       <Button asChild size="sm" variant={view === "table" ? "secondary" : "ghost"} className="rounded-full"><Link href={`/soc/campaigns?${new URLSearchParams({ ...(sp.status ? { status: sp.status } : {}), ...(sp.q ? { q: sp.q } : {}), view: "table" })}`}><List className="size-4" aria-hidden="true" />{t("table")}</Link></Button>
       <Button asChild size="sm" variant={view === "grid" ? "secondary" : "ghost"} className="rounded-full"><Link href={`/soc/campaigns?${new URLSearchParams({ ...(sp.status ? { status: sp.status } : {}), ...(sp.q ? { q: sp.q } : {}), view: "grid" })}`}><LayoutGrid className="size-4" aria-hidden="true" />{t("grid")}</Link></Button>
@@ -149,6 +155,7 @@ async function List_({ searchParams }: { searchParams: Search }) {
           </Table>
         </div>
       )}
+      <Pager page={list.page} pages={list.pages} />
     </div>
   );
 }

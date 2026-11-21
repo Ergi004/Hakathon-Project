@@ -14,12 +14,17 @@ import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { fmtDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { pageCount, pageParam, pageRange } from "@/lib/pagination";
+import { Pager } from "@/components/shared/pager";
 import { requireUser } from "@/server/auth";
 import { PUBLIC_STATUS_ORDER } from "@/server/reports";
 import type { Enums } from "@/types/database";
 
 type Status = Enums<"report_status">;
 const CLOSED: Status[] = ["taken_down", "not_scam", "duplicate"];
+const CONFIRMED: Status[] = ["confirmed", "takedown_requested", "taken_down"];
+const PAGE_SIZE = 10;
+type SP = { show?: string; page?: string };
 const CHANNEL_ICON: Record<string, LucideIcon> = { sms: MessageSquare, email: Mail, social: Share2, web: Globe, qr: QrCode, call: Phone, other: FileText };
 const STATUS_STYLE: Record<Status, { Icon: LucideIcon; tone: string }> = {
   received: { Icon: Send, tone: "border-border bg-muted text-foreground" },
@@ -40,17 +45,30 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return { title: (await getTranslations({ locale: locale as Locale, namespace: "citizen.nav" }))("reports") };
 }
 
-async function Content({ searchParams }: { searchParams: Promise<{ show?: string }> }) {
+async function Content({ searchParams }: { searchParams: Promise<SP> }) {
   const ctx = await requireUser();
-  const [{ show }, t, ts, tc, locale] = await Promise.all([searchParams, getTranslations("cit.reports"), getTranslations("reportStatus"), getTranslations("channel"), getLocale()]);
-  const { data } = await ctx.supabase
+  const [sp, t, ts, tc, locale] = await Promise.all([searchParams, getTranslations("cit.reports"), getTranslations("reportStatus"), getTranslations("channel"), getLocale()]);
+  const view = sp.show === "open" || sp.show === "closed" ? sp.show : "all";
+  const page = pageParam(sp.page);
+  const closedList = `(${CLOSED.join(",")})`;
+  let listQ = ctx.supabase
     .from("reports")
-    .select("id, protocol, status, channel, flag, score, created_at, resolution_note, campaigns(code)")
+    .select("id, protocol, status, channel, flag, score, created_at, resolution_note, campaigns(code)", { count: "exact" })
     .eq("reporter_id", ctx.user.id)
-    .order("created_at", { ascending: false });
-  const all = data ?? [];
+    .order("created_at", { ascending: false })
+    .range(...pageRange(page, PAGE_SIZE));
+  if (view === "closed") listQ = listQ.in("status", CLOSED);
+  if (view === "open") listQ = listQ.not("status", "in", closedList);
+  const [{ data, count: shownTotal }, { data: byStatus }] = await Promise.all([
+    listQ,
+    // One grouped request for all four stat cards.
+    ctx.supabase.from("report_status_counts_by_reporter").select("status, n").eq("reporter_id", ctx.user.id),
+  ]);
+  const shown = data ?? [];
+  const n = (keep: (s: Status) => boolean) => (byStatus ?? []).reduce((sum, r) => sum + (r.status && keep(r.status) ? (r.n ?? 0) : 0), 0);
+  const total = n(() => true);
 
-  if (!all.length) {
+  if (!total) {
     return (
       <Card>
         <CardContent className="flex flex-col items-center gap-3 py-16 text-center">
@@ -63,15 +81,12 @@ async function Content({ searchParams }: { searchParams: Promise<{ show?: string
     );
   }
 
-  const isClosed = (s: Status) => CLOSED.includes(s);
   const stats = [
-    { k: "total", v: all.length, Icon: FileText, tone: "text-primary" },
-    { k: "open", v: all.filter((r) => !isClosed(r.status)).length, Icon: Hourglass, tone: "text-flag-yellow" },
-    { k: "confirmed", v: all.filter((r) => ["confirmed", "takedown_requested", "taken_down"].includes(r.status)).length, Icon: ShieldAlert, tone: "text-flag-red" },
-    { k: "takenDown", v: all.filter((r) => r.status === "taken_down").length, Icon: CircleCheck, tone: "text-flag-green" },
+    { k: "total", v: total, Icon: FileText, tone: "text-primary" },
+    { k: "open", v: n((s) => !CLOSED.includes(s)), Icon: Hourglass, tone: "text-flag-yellow" },
+    { k: "confirmed", v: n((s) => CONFIRMED.includes(s)), Icon: ShieldAlert, tone: "text-flag-red" },
+    { k: "takenDown", v: n((s) => s === "taken_down"), Icon: CircleCheck, tone: "text-flag-green" },
   ] as const;
-  const view = show === "open" || show === "closed" ? show : "all";
-  const shown = view === "all" ? all : all.filter((r) => (view === "closed") === isClosed(r.status));
 
   return (
     <div className="space-y-6">
@@ -168,6 +183,7 @@ async function Content({ searchParams }: { searchParams: Promise<{ show?: string
           })}
         </ul>
       )}
+      <Pager page={page} pages={pageCount(shownTotal, PAGE_SIZE)} />
     </div>
   );
 }
@@ -182,7 +198,7 @@ function ReportsSkeleton() {
   );
 }
 
-export default async function Page({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ show?: string }> }) {
+export default async function Page({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<SP> }) {
   setRequestLocale((await params).locale as Locale);
   const t = await getTranslations("cit.reports");
   return (

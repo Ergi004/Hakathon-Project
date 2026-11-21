@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
+import { useCoalescedRefresh } from "@/hooks/use-coalesced-refresh";
 import { useRouter } from "@/i18n/navigation";
 import { regionName } from "@/lib/geo/regions";
 import { createBrowserClient } from "@/server/supabase/client";
@@ -10,11 +11,12 @@ import { createBrowserClient } from "@/server/supabase/client";
 /**
  * Staff-only live updates (RLS limits both tables to staff): new reports and new hot spots.
  * Debounced 2 s → pulse the affected regions, refresh the server data, toast new critical zones.
- * Fallback: refetch when the window regains focus.
+ * Fallback: refetch when the window regains focus (coalesced, see useCoalescedRefresh).
  */
 export function GeoRealtime({ idToCode, locale, onPulse }: { idToCode: Record<string, string>; locale: string; onPulse: (codes: string[]) => void }) {
   const t = useTranslations("geo.live");
   const router = useRouter();
+  const refresh = useCoalescedRefresh();
   const pending = useRef({ codes: new Set<string>(), critical: new Set<string>() });
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const seenCritical = useRef(new Set<string>());
@@ -35,7 +37,7 @@ export function GeoRealtime({ idToCode, locale, onPulse }: { idToCode: Record<st
         seenCritical.current.add(c);
         toast.error(t("critical", { name: regionName(c, locale) }), { action: { label: t("open"), onClick: () => router.push(`/soc/geo/${c}`) } });
       }
-      router.refresh();
+      refresh();
     };
     const schedule = () => { if (!timer.current) timer.current = setTimeout(flush, 2000); };
 
@@ -57,14 +59,11 @@ export function GeoRealtime({ idToCode, locale, onPulse }: { idToCode: Record<st
       })
       .subscribe();
 
-    const onFocus = () => router.refresh();
-    window.addEventListener("focus", onFocus);
     return () => {
-      window.removeEventListener("focus", onFocus);
       if (timer.current) clearTimeout(timer.current);
       if (ch) client?.removeChannel(ch);
     };
-  }, [idToCode, locale, router, t]);
+  }, [idToCode, locale, router, t, refresh]);
 
   return null;
 }

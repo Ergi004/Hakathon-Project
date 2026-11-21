@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { toast } from "sonner";
+import { useCoalescedRefresh } from "@/hooks/use-coalesced-refresh";
 import { useRouter } from "@/i18n/navigation";
 import { createBrowserClient } from "@/server/supabase/client";
 
@@ -12,10 +13,12 @@ export const useSocBadge = () => useContext(BadgeContext);
 /**
  * One subscription for the SOC (SPEC 10, 13.4): new reports → toast + inbox badge,
  * notice updates → refresh. RLS applies to Realtime. Fallback: refetch on focus.
+ * Refreshes are coalesced (one server re-render per burst, none while the tab is hidden).
  */
 export function RealtimeProvider({ children }: { children: ReactNode }) {
   const t = useTranslations("soc.inbox");
   const router = useRouter();
+  const refresh = useCoalescedRefresh();
   const [inbox, setInbox] = useState(0);
 
   useEffect(() => {
@@ -25,9 +28,7 @@ export function RealtimeProvider({ children }: { children: ReactNode }) {
     } catch {
       supabase = null;
     }
-    const onFocus = () => router.refresh();
-    window.addEventListener("focus", onFocus);
-    if (!supabase) return () => window.removeEventListener("focus", onFocus);
+    if (!supabase) return;
 
     const channel = supabase
       .channel("soc-live")
@@ -35,15 +36,14 @@ export function RealtimeProvider({ children }: { children: ReactNode }) {
         const protocol = (payload.new as { protocol?: string }).protocol ?? "";
         setInbox((n) => n + 1);
         toast(t("newReport", { protocol }), { action: { label: "→", onClick: () => router.push(`/soc/inbox/${(payload.new as { id: string }).id}`) } });
-        router.refresh();
+        refresh();
       })
-      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "takedown_notices" }, () => router.refresh())
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "takedown_notices" }, () => refresh())
       .subscribe();
     return () => {
-      window.removeEventListener("focus", onFocus);
       supabase?.removeChannel(channel);
     };
-  }, [router, t]);
+  }, [router, t, refresh]);
 
   return <BadgeContext.Provider value={{ inbox, reset: () => setInbox(0) }}>{children}</BadgeContext.Provider>;
 }

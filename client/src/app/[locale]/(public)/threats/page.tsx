@@ -16,9 +16,12 @@ import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { fmtDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { getFeedFacets, getThreatFeed } from "@/server/queries/public";
+import { Pager } from "@/components/shared/pager";
+import { pageParam } from "@/lib/pagination";
+import { getFeedFacets, getThreatFeedCounts, getThreatFeedPage } from "@/server/queries/public";
 
-type Search = Promise<{ institution?: string; tactic?: string; month?: string; status?: string; view?: string }>;
+type Search = Promise<{ institution?: string; tactic?: string; month?: string; status?: string; view?: string; page?: string }>;
+const PAGE_SIZE = 24;
 
 const STATUSES = ["all", "confirmed", "takedown_in_progress", "monitoring", "resolved"] as const;
 
@@ -30,12 +33,12 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 /** Totals across the whole public feed, so the numbers do not jump while filtering. */
 async function Overview() {
-  const [all, t] = await Promise.all([getThreatFeed(), getTranslations("threats.stats")]);
+  const [c, t] = await Promise.all([getThreatFeedCounts(), getTranslations("threats.stats")]);
   const stats = [
-    { icon: Activity, label: t("total"), value: all.length, tone: "text-primary bg-primary/10" },
-    { icon: Siren, label: t("active"), value: all.filter((c) => c.status === "confirmed").length, tone: "text-flag-red bg-flag-red/12" },
-    { icon: Gavel, label: t("takedown"), value: all.filter((c) => c.status === "takedown_in_progress").length, tone: "text-flag-orange bg-flag-orange/14" },
-    { icon: ShieldCheck, label: t("resolved"), value: all.filter((c) => c.status === "resolved").length, tone: "text-flag-green bg-flag-green/12" },
+    { icon: Activity, label: t("total"), value: c.total, tone: "text-primary bg-primary/10" },
+    { icon: Siren, label: t("active"), value: c.confirmed, tone: "text-flag-red bg-flag-red/12" },
+    { icon: Gavel, label: t("takedown"), value: c.takedown, tone: "text-flag-orange bg-flag-orange/14" },
+    { icon: ShieldCheck, label: t("resolved"), value: c.resolved, tone: "text-flag-green bg-flag-green/12" },
   ];
   return (
     <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -99,12 +102,13 @@ async function Filters({ searchParams }: { searchParams: Search }) {
 async function Results({ searchParams }: { searchParams: Search }) {
   const sp = await searchParams;
   const t = await getTranslations("threats");
-  const feed = await getThreatFeed({ institution: sp.institution, tactic: sp.tactic, month: sp.month });
-  const items = sp.status && sp.status !== "all" ? feed.filter((c) => c.status === sp.status) : feed;
+  const status = STATUSES.find((s) => s !== "all" && s === sp.status) as Exclude<(typeof STATUSES)[number], "all"> | undefined;
+  const feed = await getThreatFeedPage({ institution: sp.institution, tactic: sp.tactic, month: sp.month, status }, pageParam(sp.page), PAGE_SIZE);
+  const items = feed.rows;
   if (!items.length) return <EmptyState title={t("empty")} />;
   return (
     <div className="space-y-3">
-      <p className="text-sm text-muted-foreground" aria-live="polite">{t("count", { count: items.length })}</p>
+      <p className="text-sm text-muted-foreground" aria-live="polite">{t("count", { count: feed.total })}</p>
       {sp.view === "table" ? (
         <ThreatTable items={items} />
       ) : (
@@ -114,6 +118,7 @@ async function Results({ searchParams }: { searchParams: Search }) {
           ))}
         </ul>
       )}
+      <Pager page={feed.page} pages={feed.pages} />
     </div>
   );
 }

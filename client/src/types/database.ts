@@ -3234,6 +3234,20 @@ export type Database = {
       }
     }
     Views: {
+      advisory_status_counts: {
+        Row: {
+          n: number | null
+          status: string | null
+        }
+        Relationships: []
+      }
+      campaign_status_counts: {
+        Row: {
+          n: number | null
+          status: Database["public"]["Enums"]["campaign_status"] | null
+        }
+        Relationships: []
+      }
       public_threat_feed: {
         Row: {
           code: string | null
@@ -3267,11 +3281,34 @@ export type Database = {
         }
         Relationships: []
       }
+      public_threat_feed_counts: {
+        Row: {
+          n: number | null
+          status: Database["public"]["Enums"]["campaign_status"] | null
+        }
+        Relationships: []
+      }
+      report_status_counts_by_reporter: {
+        Row: {
+          n: number | null
+          reporter_id: string | null
+          status: Database["public"]["Enums"]["report_status"] | null
+        }
+        Relationships: []
+      }
       soc_daily_volume: {
         Row: {
           day: string | null
           flag: string | null
           n: number | null
+        }
+        Relationships: []
+      }
+      takedown_status_counts: {
+        Row: {
+          n: number | null
+          overdue: number | null
+          status: Database["public"]["Enums"]["notice_status"] | null
         }
         Relationships: []
       }
@@ -3353,6 +3390,14 @@ export type Database = {
           similarity: number
         }[]
       }
+      soc_institution_spikes: {
+        Args: { p_min?: number; p_since: string }
+        Returns: {
+          count: number
+          name: string
+        }[]
+      }
+      soc_pattern_stats: { Args: { p_days?: number }; Returns: Json }
     }
     Enums: {
       app_platform_role: "user" | "soc_analyst" | "soc_lead" | "platform_admin"

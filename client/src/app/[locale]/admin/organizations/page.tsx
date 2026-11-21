@@ -17,7 +17,7 @@ async function Content() {
   const ctx = await guardOrRedirect(() => requireRole("platform_admin"));
   const t = await getTranslations("admin.orgs");
   const [orgs, insts, assets] = await Promise.all([
-    ctx.supabase.from("organizations").select("id, name, type, organization_members(user_id)").order("name"),
+    ctx.supabase.from("organizations").select("id, name, type, organization_members(count)").order("name"),
     ctx.supabase.from("institutions").select("id, name, organization_id").order("name"),
     ctx.supabase.from("brand_assets").select("org_id, value").eq("kind", "domain").not("verified_at", "is", null),
   ]);
@@ -32,7 +32,7 @@ async function Content() {
               <TableRow key={o.id}>
                 <TableCell className="font-medium">{o.name}</TableCell>
                 <TableCell className="text-xs">{o.type}</TableCell>
-                <TableCell className="text-right font-mono">{o.organization_members?.length ?? 0}</TableCell>
+                <TableCell className="text-right font-mono">{o.organization_members?.[0]?.count ?? 0}</TableCell>
                 <TableCell className="hidden font-mono text-xs md:table-cell">{(assets.data ?? []).filter((a) => a.org_id === o.id).map((a) => a.value).join(", ") || "—"}</TableCell>
                 <TableCell><OrgLinkSelect orgId={o.id} current={(insts.data ?? []).find((i) => i.organization_id === o.id)?.id ?? null} institutions={insts.data ?? []} /></TableCell>
               </TableRow>
