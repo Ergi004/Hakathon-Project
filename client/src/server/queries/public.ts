@@ -1,6 +1,5 @@
 import "server-only";
 
-import { cacheLife, cacheTag } from "next/cache";
 import type { CampaignCardData } from "@/components/shared/campaign-card";
 import { readClaimedPlace, readHostingCountry } from "@/server/detection/stored-features";
 import { tryAdmin } from "@/server/db";
@@ -82,9 +81,6 @@ function summarizeChecks(
 
 /** Homepage counters (SPEC 7): cached, revalidated about every minute. */
 export async function getPublicStats(): Promise<PublicStats> {
-  "use cache";
-  cacheLife("minutes");
-  cacheTag("kpis");
   const db = tryAdmin();
   if (!db) return { reportsToday: 0, activeCampaigns: 0, domainsBlocked: 0, checksTotal: 0, ...EMPTY_PATTERN_AGGREGATES };
   const since = new Date();
@@ -114,9 +110,6 @@ export interface FeedFilters {
 
 /** Sanitized public threat feed (SPEC 5 public_threat_feed). No reporter data. */
 export async function getThreatFeed(filters: FeedFilters = {}): Promise<CampaignCardData[]> {
-  "use cache";
-  cacheLife("minutes");
-  cacheTag("feed");
   const db = tryAdmin();
   if (!db) return [];
   let q = db.from("public_threat_feed").select("*").order("last_seen", { ascending: false, nullsFirst: false }).limit(200);
@@ -134,9 +127,6 @@ export async function getThreatFeed(filters: FeedFilters = {}): Promise<Campaign
 }
 
 export async function getFeedFacets(): Promise<{ institutions: string[]; tactics: string[]; months: string[] }> {
-  "use cache";
-  cacheLife("minutes");
-  cacheTag("feed");
   const all = await getThreatFeed();
   const months = new Set<string>();
   for (const c of all) {
@@ -158,9 +148,6 @@ export interface PublicCampaign extends CampaignCardData {
 
 /** Public campaign page (SPEC 7 /threats/[code]): only campaigns in the public feed. */
 export async function getPublicCampaign(code: string): Promise<PublicCampaign | null> {
-  "use cache";
-  cacheLife("minutes");
-  cacheTag("feed", `campaign:${code}`);
   const db = tryAdmin();
   if (!db) return null;
   const { data: feed } = await db.from("public_threat_feed").select("*").eq("code", code).maybeSingle();
@@ -190,8 +177,6 @@ export async function getPublicCampaign(code: string): Promise<PublicCampaign | 
 
 /** Real (masked) dataset messages for the example chips and the quiz. */
 export async function getExampleMessages(limit = 4): Promise<{ text: string; label: Enums<"msg_label">; channel: Enums<"msg_channel">; sender: string | null }[]> {
-  "use cache";
-  cacheLife("hours");
   const db = tryAdmin();
   if (!db) return [];
   const { data } = await db
@@ -211,8 +196,6 @@ export async function getExampleMessages(limit = 4): Promise<{ text: string; lab
 }
 
 export async function getQuizPool(): Promise<{ id: string; text: string; scam: boolean; channel: Enums<"msg_channel"> }[]> {
-  "use cache";
-  cacheLife("hours");
   const db = tryAdmin();
   if (!db) return [];
   const [p, l] = await Promise.all([
@@ -236,9 +219,6 @@ export interface DirectoryEntry {
 
 /** SPEC 7 /institutions: official domains, SMS senders and phone numbers. */
 export async function getInstitutionDirectory(): Promise<DirectoryEntry[]> {
-  "use cache";
-  cacheLife("hours");
-  cacheTag("institutions");
   const db = tryAdmin();
   if (!db) return [];
   const { data } = await db
@@ -256,9 +236,6 @@ export async function getInstitutionDirectory(): Promise<DirectoryEntry[]> {
 }
 
 export async function getLatestPublicCampaigns(n = 3): Promise<CampaignCardData[]> {
-  "use cache";
-  cacheLife("minutes");
-  cacheTag("feed");
   return (await getThreatFeed()).slice(0, n);
 }
 

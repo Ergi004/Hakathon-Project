@@ -27,9 +27,6 @@ import { CampaignGeography } from "@/components/geo/CampaignGeography";
 
 type Params = Promise<{ locale: string; id: string }>;
 
-/** Auth + campaign data are request-time; allow blocking navigations under Cache Components. */
-export const instant = false;
-
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   return { title: (await getTranslations({ locale: locale as "sq" | "en", namespace: "soc.nav" }))("campaigns") };

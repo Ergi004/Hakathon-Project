@@ -1,6 +1,5 @@
 import "server-only";
 
-import { cacheLife, cacheTag } from "next/cache";
 import { DEFAULT_THRESHOLDS, type Thresholds } from "@/lib/flags";
 import { tryAdmin } from "@/server/db";
 import type { Enums } from "@/types/database";
@@ -8,12 +7,8 @@ import { createContext, type ContextData, type DetectionContext } from "./contex
 import { hostOf } from "./normalize";
 import { countDistinctReporters, type ReportSighting } from "./reporters";
 
-/** Detection data from the database, cached for a minute (invalidated by tag "detection"). */
+/** Detection data from the database. */
 export async function loadContextData(): Promise<ContextData> {
-  "use cache";
-  cacheLife("minutes");
-  cacheTag("detection");
-
   const db = tryAdmin();
   const empty: ContextData = { institutions: [], officialDomains: [], officialChannels: [], thresholds: DEFAULT_THRESHOLDS };
   if (!db) return empty;
