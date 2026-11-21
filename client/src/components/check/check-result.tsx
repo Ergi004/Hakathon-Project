@@ -1,6 +1,7 @@
 "use client";
 
-import { CircleCheck, Flag, Share2, Sparkles } from "lucide-react";
+import { CircleCheck, Flag, Info, Share2, Sparkles } from "lucide-react";
+import type { ReactNode } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { FlagBadge } from "@/components/flags/flag-badge";
@@ -29,7 +30,13 @@ export function CheckResult({
   onReport,
   reporting,
   onReset,
+  children,
+  reportNote,
 }: {
+  /** Scan details (campaign, pattern, indicators) shown between the summary and the reasons. */
+  children?: ReactNode;
+  /** Shown instead of "Report this" when the result is below the reporting threshold. */
+  reportNote?: string;
   result: ResultView;
   checkId?: string | null;
   explanation?: string | null;
@@ -91,6 +98,8 @@ export function CheckResult({
         </div>
       )}
 
+      {children}
+
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-3">
           <h3 className="font-display text-lg font-medium">{tr("title")}</h3>
@@ -111,9 +120,16 @@ export function CheckResult({
         </div>
       </div>
 
+      {reportNote && (
+        <p className="flex items-start gap-2 rounded-xl border border-border bg-muted/40 p-3 text-sm text-muted-foreground" role="note">
+          <Info className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />
+          {reportNote}
+        </p>
+      )}
+
       <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
         {onReport && (
-          <Button onClick={onReport} disabled={reporting} size="lg" variant={result.flag === "green" ? "outline" : "default"}>
+          <Button onClick={onReport} disabled={reporting} size="lg">
             <Flag className="size-4" aria-hidden="true" />
             {reporting ? t("reporting") : t("reportThis")}
           </Button>

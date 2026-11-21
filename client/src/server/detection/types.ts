@@ -1,5 +1,6 @@
 /** Contracts from SPEC 6.2. */
 import type { FlagLevel } from "@/lib/flags";
+import type { ScanIndicators } from "./indicators";
 import type { ScamClassification, ScamFeatures } from "./pattern";
 
 export type { FlagLevel };
@@ -91,6 +92,8 @@ export interface AnalysisResult {
   };
   matchedInstitution?: { id: string; name: string };
   iocs: { type: "domain" | "url" | "phone" | "email"; value: string }[];
+  /** Every domain, link, phone and email found in the input, each with its own risk. */
+  indicators: ScanIndicators;
   modelVersion: string;
   /** Weighted pattern classification. Message text is not included. */
   classification: ScamClassification;

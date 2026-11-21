@@ -49,6 +49,7 @@ export const REASONS = {
   // reputation
   known_bad: { group: "reputation", sq: "{e} është tashmë në listën tonë të mashtrimeve të njohura.", en: "{e} is already on our list of known scams." },
   confirmed_campaign: { group: "reputation", sq: "{e} është pjesë e një fushate mashtrimi të konfirmuar.", en: "{e} is part of a confirmed scam campaign." },
+  campaign_pattern: { group: "reputation", sq: "Teksti ndjek të njëjtin model si fushata aktive e mashtrimit {e}.", en: "The text follows the same pattern as the active scam campaign {e}." },
   many_reports: { group: "reputation", sq: "Disa persona të ndryshëm e kanë raportuar {e} në 24 orët e fundit.", en: "Several different people reported {e} in the last 24 hours." },
   // live threat intelligence
   domain_age: { group: "links", sq: "Domeni u regjistrua vetëm {e} ditë më parë.", en: "The domain was registered only {e} days ago." },

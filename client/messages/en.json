@@ -1301,9 +1301,10 @@
     "description": "Paste a link, an SMS or email, a phone number, or upload a photo of a QR code. We show how risky it looks and what to do.",
     "tabs": {
       "link": "Link",
-      "message": "Message",
+      "message": "Message or email",
       "phone": "Phone",
-      "qr": "QR code"
+      "qr": "QR code",
+      "image": "Screenshot"
     },
     "labels": {
       "link": "The link you are unsure about",
@@ -1315,7 +1316,7 @@
     },
     "placeholders": {
       "link": "e.g. hxxps://pay-fine[.]al[.]example",
-      "message": "Paste the full SMS or email here…",
+      "message": "Paste the full email or SMS here: From, Subject, the text and any links…",
       "phone": "e.g. 069 123 4567",
       "sender": "e.g. Posta or +355…"
     },
@@ -1401,15 +1402,17 @@
     "summary": "Short explanation",
     "tabHints": {
       "link": "A web address from a message or site",
-      "message": "The text of an SMS, email or chat",
+      "message": "A whole SMS or email, headers included",
       "phone": "A number that called or texted you",
-      "qr": "A photo of a QR sticker or code"
+      "qr": "A photo of a QR sticker or code",
+      "image": "A picture of an SMS or email you got"
     },
     "howTo": {
       "link": "Press and hold the link, choose Copy link, then paste it here. We never open it.",
-      "message": "Copy the whole message, including any link. Add the sender if you know it.",
+      "message": "Paste the whole message. For an email, include the From and Subject lines. We read every link, domain, number and phrase, and never open the links.",
       "phone": "Type the number as you saw it, with the country code if there was one.",
-      "qr": "Take a clear photo of the code. It is read on your device and never uploaded."
+      "qr": "Take a clear photo of the code. It is read on your device and never uploaded.",
+      "image": "Upload, drop or paste (Ctrl/⌘+V) a screenshot of the SMS or email. We read its sender, text, links and any QR code, then scan everything."
     },
     "askTitle": "What do you want to check?",
     "scale": {
@@ -1422,12 +1425,33 @@
       "We never open the link you send",
       "No account needed",
       "We keep a fingerprint, not your text"
-    ]
+    ],
+    "moreDetails": "Add the sender or where you got it (optional)",
+    "channelAuto": "Detect automatically",
+    "notReportable": "Only results in the suspicious range can be reported from a scan.",
+    "noReportGreen": "No report needed: we found nothing suspicious. If it still asks for money, codes or personal details, contact the institution on its official number.",
+    "noReportYellow": "This is below the suspicious threshold, so it can't be reported from here. Stay careful and check with the institution before you act.",
+    "image": {
+      "drop": "Drop a screenshot here, paste it, or tap to choose",
+      "hint": "PNG, JPG or WebP. Tip: crop out anything unrelated to the message.",
+      "preparing": "Preparing image…",
+      "prepared": "Resized on your device and location data removed",
+      "previewAlt": "Preview of the screenshot to scan",
+      "remove": "Remove screenshot",
+      "qrFound": "QR code found:",
+      "note": "To read it, the screenshot is sent to an image-recognition service. Neither the image nor its text is stored; we keep only a fingerprint and the verdict.",
+      "reading": "Reading screenshot…",
+      "notImage": "That file isn't an image we can read. Try a PNG or JPG screenshot.",
+      "tooLarge": "That image is too large. Try a smaller screenshot or crop it.",
+      "noImage": "Add a screenshot first.",
+      "unreadable": "We couldn't read a message in this screenshot. Try a sharper, uncropped image, or paste the text in the Message tab.",
+      "unavailable": "Screenshot reading is unavailable right now. Please paste the text in the Message tab instead."
+    }
   },
   "home": {
-    "eyebrow": "National anti-fraud platform",
-    "title": "Got a message that looks off? Check it before you click.",
-    "subtitle": "Mburoja spots fake messages, sites and emails that imitate institutions, banks, the post office and public services.",
+    "eyebrow": "Free · anonymous · built for Albania",
+    "title": "You're safe here. Check any message before you trust it.",
+    "subtitle": "Paste a full email or SMS. Mburoja checks every link, domain, sender and phrase against active scam campaigns in seconds, and tells you clearly whether it's safe.",
     "stats": {
       "title": "Mburoja today",
       "reportsToday": "reports today",
@@ -1440,16 +1464,16 @@
       "title": "How it works",
       "subtitle": "Three steps, under a minute.",
       "s1": {
-        "title": "Paste or upload",
-        "body": "A link, SMS, email, phone number or photo of a QR code. No account needed."
+        "title": "Paste the whole message",
+        "body": "A full email with its From and Subject lines, an SMS, a link, a phone number or a QR photo. No account needed."
       },
       "s2": {
-        "title": "We analyse it",
-        "body": "We check the domain, content, sender and known campaigns. We keep a fingerprint, not the text."
+        "title": "We scan every part of it",
+        "body": "Each link and domain gets its own risk, the sender is checked, and the whole text is compared with known scam campaigns. We keep a fingerprint, never the text."
       },
       "s3": {
         "title": "You decide safely",
-        "body": "Get a clear verdict, the reasons and next steps. Report it for blocking in one click."
+        "body": "See the verdict, the campaign it belongs to and why. If it's suspicious, report it for blocking in one click."
       }
     },
     "scams": {
@@ -1557,6 +1581,11 @@
       },
       "caption": "Every check explains what it found, in plain words.",
       "headerCta": "Check a message"
+    },
+    "assure": {
+      "private": "Your message is never stored",
+      "anonymous": "No account, fully anonymous",
+      "campaigns": "Matched against live scam campaigns"
     }
   },
   "report": {
@@ -2813,6 +2842,92 @@
       "titleEn": "Warning: active scams in the {name} area",
       "bodySq": "Po marrim raportime për mesazhe mashtruese në zonën e {name}. Mos klikoni lidhjet dhe mos paguani. Kontrolloni çdo mesazh në Mburoja.",
       "bodyEn": "We are receiving reports of fraudulent messages in the {name} area. Do not click links or pay. Check any message on Mburoja."
+    }
+  },
+  "scan": {
+    "level": {
+      "official": "Official",
+      "no_signals": "No warning signs",
+      "low": "Low risk",
+      "suspicious": "Suspicious",
+      "high": "High risk",
+      "malicious": "Known malicious"
+    },
+    "readTitle": "What we scanned",
+    "readAs": "We read this as",
+    "kind": {
+      "email": "An email",
+      "message": "A text message (SMS or chat)",
+      "link": "A link",
+      "phone": "A phone number",
+      "qr": "A link from a QR code"
+    },
+    "from": "From",
+    "subject": "Subject",
+    "counts": {
+      "domains": "{count, plural, =0 {No domains} one {# domain} other {# domains}}",
+      "links": "{count, plural, =0 {No links} one {# link} other {# links}}",
+      "phones": "{count, plural, =0 {No phone numbers} one {# phone number} other {# phone numbers}}",
+      "emails": "{count, plural, =0 {No email addresses} one {# email address} other {# email addresses}}"
+    },
+    "campaign": {
+      "known": "Part of a known scam campaign",
+      "similar": "Matches a known campaign's pattern · {pct}% text match",
+      "severity": "Severity",
+      "stats": "{count, plural, one {# message} other {# messages}} seen · active since {since} · last seen {last}",
+      "meaning": {
+        "monitoring": "Analysts are watching this campaign and collecting reports.",
+        "confirmed": "Analysts have confirmed this campaign is a scam.",
+        "takedown_in_progress": "Analysts confirmed it and are getting its sites taken down.",
+        "resolved": "This campaign was stopped, but copies of its messages can still circulate."
+      },
+      "open": "See the public campaign page",
+      "none": "This doesn't match any scam campaign we know of."
+    },
+    "pattern": {
+      "title": "Pattern recognition",
+      "type": "Scam type",
+      "brand": "Imitates",
+      "confidence": "Pattern confidence",
+      "none": "We didn't recognise a known scam pattern in the text."
+    },
+    "domains": {
+      "title": "Domains and links",
+      "hint": "Each domain is checked on its own",
+      "risk": "Risk {risk}/100",
+      "imitates": "Imitates {target}",
+      "cls": {
+        "typosquat": "misspelling",
+        "homoglyph": "lookalike letters",
+        "combosquat": "brand name with extra words",
+        "subdomain_trick": "subdomain trick"
+      },
+      "age": "{count, plural, one {Registered # day ago} other {Registered # days ago}}",
+      "hosting": "Hosted in {country}",
+      "inCampaign": "Used in campaign {code}",
+      "unverified": "Not an official domain we know of",
+      "links": "{count, plural, one {# link on this domain} other {# links on this domain}}"
+    },
+    "contacts": {
+      "title": "Phone numbers and email addresses"
+    },
+    "shot": {
+      "title": "What we read from your screenshot",
+      "hint": "Image recognition can misread text. Check that it matches your message.",
+      "edit": "Correct the text and scan again",
+      "brands": "Names and logos seen",
+      "brandsNote": "Names and logos are shown for context. They don't change the score.",
+      "qrRead": "{count, plural, one {QR code read and scanned} other {# QR codes read and scanned}}",
+      "qrSeen": "A QR code is visible but couldn't be read",
+      "kind": {
+        "sms": "SMS",
+        "email": "Email",
+        "chat": "Chat message",
+        "social": "Social media message",
+        "webpage": "Web page",
+        "other": "Message",
+        "qr_only": "QR code only"
+      }
     }
   }
 }

@@ -1,10 +1,11 @@
 import { hashInput } from "@/server/hash";
 import { isConfirmed, matchByIoc } from "./campaigns";
-import { channelKey, iocKey, type BlocklistHit, type DetectionContext, type IocKind } from "./context";
+import { buildIndicators } from "./indicators";
+import { channelKey, iocKey, type BlocklistHit, type CampaignRef, type DetectionContext, type IocKind } from "./context";
 import { scoreAttachments } from "./attachments";
 import { parseHost, scoreDomain, type LookalikeClass } from "./domain-score";
 import { fuse } from "./fusion";
-import { defang, extractPhones, extractUrls, foldText, hostOf, normalizePhone, normalizeText, parseSender } from "./normalize";
+import { defang, extractEmails, extractPhones, extractUrls, foldText, hostOf, normalizePhone, normalizeText, parseSender } from "./normalize";
 import type { GeminiClue, GeminiReview } from "./gemini-review";
 import { classifyScam, extractFeatures, type BrandCategory, type HostSignal } from "./pattern";
 import { REASONS, reason, type ReasonCode } from "./reasons";
@@ -61,8 +62,25 @@ export const POINTS = {
   attachmentDoubleExt: 8,
   knownBad: 10,
   confirmedCampaign: 10,
+  /** The text closely matches messages of a confirmed campaign (trigram similarity ≥ PATTERN.signal). */
+  campaignPattern: 8,
   manyReports: 6,
 } as const;
+
+/** Text-pattern campaign matching (pg_trgm similarity of masked bodies). */
+export const PATTERN = {
+  /** Shown to the citizen as "matches the pattern of campaign X". */
+  show: 0.5,
+  /** Also adds the campaign_pattern reason when the campaign is confirmed. */
+  signal: 0.6,
+} as const;
+
+export interface PatternMatch {
+  id: string;
+  code: string;
+  status: CampaignRef["status"];
+  similarity: number;
+}
 
 const LOOKALIKE_CODE: Record<LookalikeClass, ReasonCode> = {
   typosquat: "lookalike_typosquat",
@@ -80,6 +98,11 @@ export interface AnalyzeOptions {
    * yields null and changes nothing. The model cannot clear a finding.
    */
   gemini?: (text: string, hosts: string[]) => Promise<GeminiReview | null>;
+  /**
+   * Optional text-pattern lookup against campaign messages. Runs in parallel with the rest of
+   * the analysis; a failure or timeout yields null and changes nothing.
+   */
+  patternMatch?: (text: string) => Promise<PatternMatch | null>;
 }
 
 /** Keep the strongest reason per code. */
@@ -283,6 +306,9 @@ export async function analyze(
 ): Promise<AnalysisResult> {
   const reasons = new Map<string, Reason>();
   const text = normalizeText([input.subject, input.text].filter(Boolean).join("\n"));
+  // Started now, awaited before fusion, so the database round trip overlaps the local scoring.
+  const patternPending: Promise<PatternMatch | null> =
+    opts.patternMatch && text && input.kind !== "phone" ? opts.patternMatch(text).catch(() => null) : Promise.resolve(null);
   let floor = false;
   let cap = false;
   const listings: BlocklistHit[] = [];
@@ -530,6 +556,12 @@ export async function analyze(
     }
   }
 
+  // ---- Pattern recognition: the whole text against known campaign messages ------
+  const pattern = await patternPending;
+  if (pattern && pattern.similarity >= PATTERN.signal && isConfirmed(pattern)) {
+    addReason(reasons, reason("campaign_pattern", POINTS.campaignPattern, pattern.code));
+  }
+
   // ---- Fusion ---------------------------------------------------------------------
   const analysed = Boolean(text || hosts.length || input.sender || phone);
   const listing = listingOverrides(listings, opts.now ?? new Date());
@@ -566,8 +598,20 @@ export async function analyze(
   const confidence = scoreConfidence(confidencePenalties);
   const verdict = verdictFor(fused.flag, fired, confidence, input.headers, listing.label);
 
-  const campaign = matchByIoc(iocList, ctx);
+  const iocCampaign = matchByIoc(iocList, ctx);
+  const campaign: AnalysisResult["campaign"] = iocCampaign
+    ? { id: iocCampaign.id, code: iocCampaign.code, matchType: "known", confidence: 1 }
+    : pattern && pattern.similarity >= PATTERN.show
+      ? { id: pattern.id, code: pattern.code, matchType: "similar", confidence: Math.round(pattern.similarity * 100) / 100 }
+      : undefined;
   const inst = institutionId ? ctx.institutions.get(institutionId) : undefined;
+  const indicators = buildIndicators({
+    hosts, allUrls, officialHosts, hostSignals, ctx, reasons: [...reasons.values()],
+    phones: input.kind === "phone" ? (phone ? [phone] : []) : extractPhones(text),
+    emails: [...new Set([...(senderParts?.address ? [senderParts.address] : []), ...extractEmails(text)])],
+    officialSenderId: s.officialInstitutionId,
+    senderAddress: senderParts?.address,
+  });
   return {
     ...fused,
     verdict,
@@ -576,7 +620,8 @@ export async function analyze(
     signals,
     classification,
     features: { ...extractedEarly, claimedPlace: placeNamedInLure(input, ctx) },
-    ...(campaign ? { campaign: { id: campaign.id, code: campaign.code, matchType: "known" as const, confidence: 1 } } : {}),
+    ...(campaign ? { campaign } : {}),
+    indicators,
     ...(inst ? { matchedInstitution: { id: inst.id, name: inst.name } } : {}),
     iocs: [
       ...hosts.filter((h) => !officialHosts.has(h)).map((h) => ({ type: "domain" as const, value: defang(h) })),

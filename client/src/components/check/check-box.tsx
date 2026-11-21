@@ -1,10 +1,10 @@
 "use client";
 
 import jsQR from "jsqr";
-import { Fingerprint, ImageUp, Info, Link2, Loader2, MessageSquareText, Phone, QrCode, ScanSearch } from "lucide-react";
+import { Fingerprint, ImageUp, Info, Link2, Loader2, MessageSquareText, Phone, QrCode, ScanSearch, ScanText } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRef, useState, useTransition } from "react";
-import { reportFromCheck, checkAction, type CheckError } from "@/app/[locale]/(public)/check/actions";
+import { reportFromCheck, checkAction, checkImageAction, type ImageCheckError } from "@/app/[locale]/(public)/check/actions";
 import { DefangedText } from "@/components/shared/defanged-text";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -16,21 +16,24 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Link } from "@/i18n/navigation";
 import { CHANNELS } from "@/lib/schemas/analysis";
-import { flagForScore } from "@/lib/flags";
+import { flagForScore, isReportable } from "@/lib/flags";
 import { cn } from "@/lib/utils";
 import type { CheckOutcome } from "@/server/checks";
 import { LiveScan } from "@/components/intel/live-scan";
 import { CheckResult } from "./check-result";
+import { ScanDetails } from "./scan-details";
+import { ScreenshotInput, type PreparedShot } from "./screenshot-input";
 
-type Tab = "link" | "message" | "phone" | "qr";
+type Tab = "link" | "message" | "image" | "phone" | "qr";
 export interface CheckExample {
   label: string;
-  tab: Tab;
+  tab: Exclude<Tab, "image">;
   value: string;
   sender?: string;
 }
 
-const TAB_ICON = { link: Link2, message: MessageSquareText, phone: Phone, qr: QrCode } as const;
+/** Message first: it takes a whole email or SMS, and also recognises a bare link or number. */
+const TAB_ICON = { message: MessageSquareText, image: ScanText, link: Link2, phone: Phone, qr: QrCode } as const;
 
 /** Glowing command-bar checker (SPEC 3, 7). Used on / and /check. */
 export function CheckBox({ examples = [], hero = false }: { examples?: CheckExample[]; hero?: boolean }) {
@@ -38,12 +41,14 @@ export function CheckBox({ examples = [], hero = false }: { examples?: CheckExam
   const tc = useTranslations("channel");
   const ti = useTranslations("intel");
   const locale = useLocale() as "sq" | "en";
-  const [tab, setTab] = useState<Tab>("link");
-  const [values, setValues] = useState<Record<Tab, string>>({ link: "", message: "", phone: "", qr: "" });
+  const [tab, setTab] = useState<Tab>("message");
+  const [values, setValues] = useState<Record<Tab, string>>({ link: "", message: "", image: "", phone: "", qr: "" });
+  const [shot, setShot] = useState<PreparedShot | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
   const [sender, setSender] = useState("");
-  const [channel, setChannel] = useState<(typeof CHANNELS)[number]>("sms");
+  const [channel, setChannel] = useState<(typeof CHANNELS)[number] | "auto">("auto");
   const [qrError, setQrError] = useState(false);
-  const [error, setError] = useState<CheckError | "empty" | null>(null);
+  const [error, setError] = useState<ImageCheckError | "empty" | "noImage" | "notReportable" | null>(null);
   const [outcome, setOutcome] = useState<CheckOutcome | null>(null);
   const [report, setReport] = useState<{ protocol: string; trackingToken: string } | null>(null);
   const [baseScore, setBaseScore] = useState<number | null>(null);
@@ -54,9 +59,42 @@ export function CheckBox({ examples = [], hero = false }: { examples?: CheckExam
   const value = values[tab];
   const setValue = (v: string) => setValues((s) => ({ ...s, [tab]: v }));
 
-  function submit(e?: React.FormEvent, override?: { tab: Tab; value: string; sender?: string }) {
+  function submitImage() {
+    if (!shot) {
+      setError("noImage");
+      return;
+    }
+    setError(null);
+    setReport(null);
+    startTransition(async () => {
+      const res = await checkImageAction({ image: shot.dataUrl, qrUrls: shot.qrUrls, locale });
+      if (res.ok) {
+        setOutcome(res.data);
+        setBaseScore(res.data.result.score);
+        requestAnimationFrame(() => resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
+      } else setError(res.error);
+    });
+  }
+
+  /** Recognition can misread: move the transcript into the message box so the citizen can fix it. */
+  function editTranscript() {
+    const s = outcome?.detected.screenshot;
+    if (!s) return;
+    const asEmail = outcome?.detected.kind === "email";
+    // Rebuild the header lines for an email so the message box reads them again.
+    const text = asEmail ? [s.sender && `From: ${s.sender}`, s.subject && `Subject: ${s.subject}`, "", s.body].filter((x) => x !== null).join("\n") : s.body;
+    setValues((v) => ({ ...v, message: text }));
+    if (!asEmail && s.sender) setSender(s.sender);
+    setTab("message");
+    setOutcome(null);
+    setReport(null);
+    requestAnimationFrame(() => formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
+  }
+
+  function submit(e?: React.FormEvent, override?: { tab: Exclude<Tab, "image">; value: string; sender?: string }) {
     e?.preventDefault();
-    const activeTab = override?.tab ?? tab;
+    if (!override && tab === "image") return submitImage();
+    const activeTab = override?.tab ?? (tab as Exclude<Tab, "image">);
     const activeValue = (override?.value ?? value).trim();
     if (!activeValue) {
       setError("empty");
@@ -69,7 +107,7 @@ export function CheckBox({ examples = [], hero = false }: { examples?: CheckExam
         tab: activeTab,
         value: activeValue,
         sender: activeTab === "message" ? (override?.sender ?? sender) || undefined : undefined,
-        channel: activeTab === "message" ? channel : undefined,
+        channel: activeTab === "message" && channel !== "auto" ? channel : undefined,
         locale,
       });
       if (res.ok) {
@@ -83,17 +121,32 @@ export function CheckBox({ examples = [], hero = false }: { examples?: CheckExam
   function onReport() {
     startReporting(async () => {
       const isText = tab === "message";
-      const res = await reportFromCheck({
+      const textChannel = channel !== "auto" ? channel : outcome?.detected.kind === "email" ? "email" : "sms";
+      const s = outcome?.detected.screenshot;
+      const res = await reportFromCheck(
+        tab === "image" && s
+          ? {
+              // A screenshot is reported as what recognition read from it; the image itself is never sent on.
+              category: "other",
+              channel: s.messageKind === "qr_only" ? "qr" : outcome?.detected.kind === "email" ? "email" : "sms",
+              text: s.body || undefined,
+              url: s.qrLinks[0],
+              sender: s.sender ?? undefined,
+              checkId: outcome?.checkId ?? undefined,
+              locale,
+            }
+          : {
         category: "other",
-        channel: tab === "qr" ? "qr" : tab === "phone" ? "call" : isText ? channel : "web",
+        channel: tab === "qr" ? "qr" : tab === "phone" ? "call" : isText ? textChannel : "web",
         text: isText ? value : undefined,
         url: tab === "link" || tab === "qr" ? value : undefined,
         sender: tab === "phone" ? value : isText ? sender || undefined : undefined,
         checkId: outcome?.checkId ?? undefined,
         locale,
-      });
+            },
+      );
       if (res.ok) setReport(res.data);
-      else setError(res.error === "rateLimited" ? "rateLimited" : "error");
+      else setError(res.error === "rateLimited" ? "rateLimited" : res.error === "notReportable" ? "notReportable" : "error");
     });
   }
 
@@ -120,13 +173,15 @@ export function CheckBox({ examples = [], hero = false }: { examples?: CheckExam
   function reset() {
     setOutcome(null);
     setReport(null);
-    setValues({ link: "", message: "", phone: "", qr: "" });
+    setValues({ link: "", message: "", image: "", phone: "", qr: "" });
+    setShot(null);
     setSender("");
   }
 
   return (
     <div className="space-y-6">
       <form
+        ref={formRef}
         onSubmit={submit}
         className={cn(
           "glass-card relative rounded-3xl p-4 md:p-6",
@@ -136,7 +191,7 @@ export function CheckBox({ examples = [], hero = false }: { examples?: CheckExam
       >
         <Tabs value={tab} onValueChange={(v) => { setTab(v as Tab); setError(null); }}>
           <p id="chk-ask" className="mb-1 font-display text-base font-medium md:text-lg">{t("askTitle")}</p>
-          <TabsList aria-labelledby="chk-ask" className="grid w-full grid-cols-2 gap-2 bg-transparent p-0 group-data-horizontal/tabs:h-auto sm:grid-cols-4">
+          <TabsList aria-labelledby="chk-ask" className="grid w-full grid-cols-2 gap-2 bg-transparent p-0 group-data-horizontal/tabs:h-auto sm:grid-cols-5">
             {(Object.keys(TAB_ICON) as Tab[]).map((k) => {
               const Icon = TAB_ICON[k];
               return (
@@ -149,7 +204,7 @@ export function CheckBox({ examples = [], hero = false }: { examples?: CheckExam
                     <Icon className="size-4 text-primary md:size-5" aria-hidden="true" />
                     {t(`tabs.${k}`)}
                   </span>
-                  <span className="hidden text-xs leading-snug font-normal sm:block">{t(`tabHints.${k}`)}</span>
+                  <span className="hidden text-xs leading-snug font-normal sm:line-clamp-2">{t(`tabHints.${k}`)}</span>
                 </TabsTrigger>
               );
             })}
@@ -161,14 +216,20 @@ export function CheckBox({ examples = [], hero = false }: { examples?: CheckExam
           </p>
 
           <div className="mt-3 space-y-3">
+            <TabsContent value="image" className="mt-0 space-y-2">
+              <ScreenshotInput value={shot} onChange={(v) => { setShot(v); setError(null); }} active={tab === "image"} />
+              <p className="flex gap-2 text-xs text-muted-foreground"><Info className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />{t("image.note")}</p>
+            </TabsContent>
             <TabsContent value="link" className="mt-0 space-y-1.5">
               <Label htmlFor="chk-link" className="sr-only">{t("labels.link")}</Label>
               <Input id="chk-link" value={values.link} onChange={(e) => setValue(e.target.value)} placeholder={t("placeholders.link")} inputMode="url" autoComplete="off" spellCheck={false} className="h-14 rounded-xl px-4 font-mono text-base md:text-lg" />
             </TabsContent>
             <TabsContent value="message" className="mt-0 space-y-3">
               <Label htmlFor="chk-msg" className="sr-only">{t("labels.message")}</Label>
-              <Textarea id="chk-msg" value={values.message} onChange={(e) => setValue(e.target.value)} placeholder={t("placeholders.message")} rows={6} className="min-h-40 rounded-xl px-4 py-3 text-base md:text-lg" />
-              <div className="grid gap-3 sm:grid-cols-2">
+              <Textarea id="chk-msg" value={values.message} onChange={(e) => setValue(e.target.value)} placeholder={t("placeholders.message")} rows={7} className="min-h-44 rounded-xl px-4 py-3 text-base md:text-lg" />
+              <details className="group rounded-xl border border-border bg-background/40 px-3 py-2 [&[open]]:pb-3">
+              <summary className="cursor-pointer text-sm font-medium text-muted-foreground hover:text-foreground">{t("moreDetails")}</summary>
+              <div className="mt-3 grid gap-3 sm:grid-cols-2">
                 <div className="space-y-1.5">
                   <Label htmlFor="chk-sender">{t("labels.sender")}</Label>
                   <Input id="chk-sender" value={sender} onChange={(e) => setSender(e.target.value)} placeholder={t("placeholders.sender")} autoComplete="off" className="h-11 rounded-xl" />
@@ -178,6 +239,7 @@ export function CheckBox({ examples = [], hero = false }: { examples?: CheckExam
                   <Select value={channel} onValueChange={(v) => setChannel(v as typeof channel)}>
                     <SelectTrigger id="chk-channel" className="h-11 w-full rounded-xl data-[size=default]:h-11"><SelectValue /></SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="auto">{t("channelAuto")}</SelectItem>
                       {CHANNELS.filter((c) => c !== "qr").map((c) => (
                         <SelectItem key={c} value={c}>{tc(c)}</SelectItem>
                       ))}
@@ -185,6 +247,7 @@ export function CheckBox({ examples = [], hero = false }: { examples?: CheckExam
                   </Select>
                 </div>
               </div>
+              </details>
             </TabsContent>
             <TabsContent value="phone" className="mt-0">
               <Label htmlFor="chk-phone" className="sr-only">{t("labels.phone")}</Label>
@@ -214,7 +277,7 @@ export function CheckBox({ examples = [], hero = false }: { examples?: CheckExam
           </p>
           <Button type="submit" size="lg" disabled={pending} className="h-12 rounded-xl text-base sm:min-w-44">
             {pending ? <Loader2 className="size-5 animate-spin" aria-hidden="true" /> : <ScanSearch className="size-5" aria-hidden="true" />}
-            {pending ? t("checking") : t("submit")}
+            {pending ? (tab === "image" ? t("image.reading") : t("checking")) : t("submit")}
           </Button>
         </div>
       </form>
@@ -244,7 +307,7 @@ export function CheckBox({ examples = [], hero = false }: { examples?: CheckExam
 
       {error && (
         <Alert variant={error === "empty" ? "default" : "destructive"} role="alert">
-          <AlertDescription>{t(`states.${error === "invalid" ? "invalid" : error}`)}</AlertDescription>
+          <AlertDescription>{error === "notReportable" ? t("notReportable") : error === "noImage" || error === "unreadable" || error === "unavailable" ? t(`image.${error}`) : t(`states.${error === "invalid" ? "invalid" : error}`)}</AlertDescription>
         </Alert>
       )}
 
@@ -282,10 +345,13 @@ export function CheckBox({ examples = [], hero = false }: { examples?: CheckExam
               result={outcome.result}
               checkId={outcome.checkId}
               explanation={outcome.explanation.text}
-              onReport={report ? undefined : onReport}
+              onReport={report || !isReportable(outcome.result.flag) ? undefined : onReport}
+              reportNote={!report && !isReportable(outcome.result.flag) && outcome.result.flag !== "grey" ? t(outcome.result.flag === "green" ? "noReportGreen" : "noReportYellow") : undefined}
               reporting={reporting}
               onReset={reset}
-            />
+            >
+              <ScanDetails outcome={outcome} onEditTranscript={outcome.detected.screenshot ? editTranscript : undefined} />
+            </CheckResult>
             {outcome.scan && (
               <>
                 {baseScore !== null && outcome.result.score > baseScore && (

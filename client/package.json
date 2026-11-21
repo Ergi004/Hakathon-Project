@@ -31,7 +31,8 @@
     "ext:typecheck": "tsc --noEmit -p extension/tsconfig.json",
     "seed:alerts": "tsx scripts/seed-citizen-alerts.ts",
     "seed:domains": "tsx scripts/seed-domains.ts",
-    "seed:business": "tsx scripts/seed-business.ts"
+    "seed:business": "tsx scripts/seed-business.ts",
+    "seed:campaigns": "tsx scripts/seed-campaigns.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.11.0",

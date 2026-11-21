@@ -8,6 +8,24 @@ import { hostOf } from "./normalize";
 import { countDistinctReporters, type ReportSighting } from "./reporters";
 
 const CONTEXT_TTL_MS = 60_000;
+/** PostgREST returns at most this many rows per request (Supabase "max rows"), whatever .limit() asks. */
+const PAGE = 1000;
+
+/**
+ * Up to `cap` rows of a query, fetched as parallel 1000-row pages. `.limit(n)` alone is silently
+ * cut to 1000 by the API, which dropped most campaign IoCs and known hashes from detection.
+ * The query must have a stable (unique) order so pages do not overlap.
+ */
+async function fetchAll<T>(page: (from: number, to: number) => PromiseLike<{ data: T[] | null; count: number | null }>, cap: number): Promise<{ data: T[] }> {
+  const first = await page(0, Math.min(cap, PAGE) - 1);
+  const rows = first.data ?? [];
+  const total = Math.min(cap, first.count ?? rows.length);
+  if (rows.length >= total) return { data: rows.slice(0, cap) };
+  const starts = [];
+  for (let from = PAGE; from < total; from += PAGE) starts.push(from);
+  const rest = await Promise.all(starts.map((from) => page(from, Math.min(total, from + PAGE) - 1)));
+  return { data: rows.concat(...rest.map((r) => r.data ?? [])).slice(0, cap) };
+}
 let contextCache: { at: number; data: ContextData } | null = null;
 
 /** Detection data from the database, reused in this isolate for one minute. */
@@ -32,11 +50,12 @@ async function loadContextDataFresh(): Promise<ContextData> {
     db.from("institutions").select("id, name, slug"),
     db.from("official_domains").select("domain, institution_id").eq("verified", true),
     db.from("official_channels").select("kind, value, institution_id"),
-    db.from("domains").select("domain, registered_at, age_days, registrar, nameserver, hosting_country, privacy, status").neq("status", "allowlisted").limit(5000),
-    db.from("certificates").select("domain_id, not_before, san, domains(domain)").limit(5000),
-    db.from("iocs").select("type, value, campaigns!inner(id, code, status)").limit(10000),
-    db.from("blocklist_entries").select("type, value, reason, expires_at, created_at"),
-    db.from("known_hashes").select("hash").limit(20000),
+    // Newest first, so the cap keeps the most relevant rows.
+    fetchAll((f, t) => db.from("domains").select("domain, registered_at, age_days, registrar, nameserver, hosting_country, privacy, status", { count: "exact" }).neq("status", "allowlisted").order("first_seen_at", { ascending: false }).order("domain").range(f, t), 5000),
+    fetchAll((f, t) => db.from("certificates").select("domain_id, not_before, san, domains(domain)", { count: "exact" }).order("not_before", { ascending: false, nullsFirst: false }).order("cert_id").range(f, t), 5000),
+    fetchAll((f, t) => db.from("iocs").select("type, value, campaigns!inner(id, code, status)", { count: "exact" }).order("id").range(f, t), 10000),
+    fetchAll((f, t) => db.from("blocklist_entries").select("type, value, reason, expires_at, created_at", { count: "exact" }).order("id").range(f, t), 10000),
+    fetchAll((f, t) => db.from("known_hashes").select("hash", { count: "exact" }).order("last_seen", { ascending: false }).order("hash").range(f, t), 20000),
     db.from("settings").select("key, value").in("key", ["thresholds"]),
     db.from("reports").select("id, reporter_id, messages(urls)").gte("created_at", since).limit(1000),
     db.from("audit_log").select("entity_id, ip_hash").eq("action", "report.create").gte("created_at", since).limit(1000),

@@ -9,6 +9,12 @@ import { reviewWithGemini } from "./detection/gemini-review";
 import { loadContext } from "./detection/load-context";
 import { extractUrls, normalizePhone, refang } from "./detection/normalize";
 import { groupCandidates, type CampaignGroup } from "./detection/pattern";
+import { maskText } from "./detection/masks";
+import type { ScreenshotContext } from "./detection/screenshot";
+import { PATTERN, type PatternMatch } from "./detection";
+import { supabaseCampaignRepo } from "./campaign-repo";
+import { isReportable } from "@/lib/flags";
+import type { Enums } from "@/types/database";
 import { candidateFromStored } from "./detection/stored-features";
 import type { AnalysisResult, CheckFeatures } from "./detection/types";
 import { tryAdmin, type AdminClient } from "./db";
@@ -18,8 +24,39 @@ import { hashInput, type HashKind } from "./hash";
 import { generateText } from "./llm";
 import { recomputeSafetyScore } from "./badges";
 
+/** The campaign a scan matched, as shown to the citizen. No reporter or message data. */
+export interface ScanCampaign {
+  code: string;
+  name: string | null;
+  tactic: string;
+  status: Enums<"campaign_status">;
+  severity: Enums<"severity">;
+  messageCount: number;
+  firstSeen: string | null;
+  lastSeen: string | null;
+  /** "known": a link, domain or number is already linked to it. "similar": the text follows its pattern. */
+  matchType: "known" | "similar";
+  /** 0–1: 1 for an exact indicator match, the text similarity otherwise. */
+  confidence: number;
+  /** Public campaign page (/threats/[code]) when the campaign is in the public feed. */
+  isPublic: boolean;
+}
+
+/** What the scan read the input as. */
+export interface ScanDetected {
+  kind: "email" | "message" | "link" | "phone" | "qr";
+  sender: string | null;
+  subject: string | null;
+  /** Set when the input was a screenshot: what image recognition read from it. */
+  screenshot?: ScreenshotContext;
+}
+
 export interface CheckOutcome {
   result: AnalysisResult;
+  campaign: ScanCampaign | null;
+  detected: ScanDetected;
+  /** True when the score is in the suspicious band or above (see REPORTABLE_FLAGS). */
+  canReport: boolean;
   checkId: string | null;
   explanation: { text: string; source: "llm" | "template" };
   /** Live threat-intelligence scan of the first URL, streamed by the page. */
@@ -44,6 +81,43 @@ export function fingerprint(input: AnalysisInputDto): { kind: "url" | "text" | "
     default:
       return { kind: "text", hash: pick("text", input.text ?? "") };
   }
+}
+
+/** Pattern lookups that take longer than this are skipped: a scan never waits on them. */
+const PATTERN_TIMEOUT_MS = 2500;
+
+/** Trigram similarity of the masked text against campaign messages of the last 180 days. */
+function patternLookup(db: AdminClient): (text: string) => Promise<PatternMatch | null> {
+  const repo = supabaseCampaignRepo(db);
+  return async (text) => {
+    const masked = maskText(text).slice(0, 4000);
+    const timeout = new Promise<null>((resolve) => setTimeout(() => resolve(null), PATTERN_TIMEOUT_MS));
+    const hit = await Promise.race([repo.findSimilarBody(masked, 0.45, 180), timeout]);
+    return hit ? { id: hit.id, code: hit.code, status: hit.status, similarity: hit.similarity } : null;
+  };
+}
+
+async function loadScanCampaign(db: AdminClient, match: NonNullable<AnalysisResult["campaign"]>): Promise<ScanCampaign | null> {
+  if (!match.id || match.matchType === "new_candidate") return null;
+  const { data: c } = await db
+    .from("campaigns")
+    .select("code, tactic, status, severity, message_count, first_seen, last_seen, is_public, imitated_name, institutions(name)")
+    .eq("id", match.id)
+    .maybeSingle();
+  if (!c) return null;
+  return {
+    code: c.code,
+    name: (c.institutions as { name: string } | null)?.name ?? c.imitated_name,
+    tactic: c.tactic,
+    status: c.status,
+    severity: c.severity,
+    messageCount: c.message_count,
+    firstSeen: c.first_seen,
+    lastSeen: c.last_seen,
+    matchType: match.matchType,
+    confidence: match.confidence,
+    isPublic: c.is_public && c.status !== "monitoring",
+  };
 }
 
 /** How many recent feature rows a new check may be compared with. */
@@ -101,17 +175,19 @@ async function findFeatureOverlap(db: AdminClient, features: CheckFeatures): Pro
  */
 export async function runCheck(
   input: AnalysisInputDto,
-  opts: { linkUserId?: string | null; explainWithLlm?: boolean; liveScans?: number; deep?: boolean } = {},
+  opts: { linkUserId?: string | null; explainWithLlm?: boolean; liveScans?: number; deep?: boolean; detected?: ScanDetected } = {},
 ): Promise<CheckOutcome> {
   const ctx = await loadContext();
   await fillMissingDomainAges(ctx, submittedHosts(input));
   const fp = fingerprint(input);
+  const db = tryAdmin();
   const result = await analyze(input, ctx, {
     gemini: (body, linkHosts) => reviewWithGemini(body, generateText, `detect:${fp.hash}`, linkHosts),
+    patternMatch: db ? patternLookup(db) : undefined,
   });
+  const campaign = db && result.campaign ? await loadScanCampaign(db, result.campaign) : null;
 
   let checkId: string | null = null;
-  const db = tryAdmin();
   if (db) {
     const featureOverlap = await findFeatureOverlap(db, result.features);
     const { data } = await db
@@ -122,7 +198,8 @@ export async function runCheck(
         score: result.score,
         flag: result.flag,
         reasons: result.reasons as unknown as Json,
-        campaign_id: result.campaign?.id ?? null,
+        // Shown matches start at PATTERN.show; only exact or strong pattern matches are stored as links.
+        campaign_id: result.campaign && (result.campaign.matchType === "known" || result.campaign.confidence >= PATTERN.signal) ? (result.campaign.id ?? null) : null,
         model_version: result.modelVersion,
         features: { ...result.features, featureOverlap } as unknown as Json,
         scam_type: result.classification.scamType,
@@ -165,5 +242,10 @@ export async function runCheck(
     generate: opts.explainWithLlm ? generateText : undefined,
     inputHash: fp.hash,
   });
-  return { result, checkId, explanation, scan, scans };
+  const detected: ScanDetected = opts.detected ?? {
+    kind: input.kind === "url" ? "link" : input.kind === "phone" ? "phone" : input.kind === "qr" ? "qr" : input.channel === "email" ? "email" : "message",
+    sender: input.sender ?? null,
+    subject: input.subject ?? null,
+  };
+  return { result, campaign, detected, canReport: isReportable(result.flag), checkId, explanation, scan, scans };
 }

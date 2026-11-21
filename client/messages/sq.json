@@ -1301,9 +1301,10 @@
     "description": "Ngjit një link, një SMS ose email, një numër telefoni ose ngarko një foto të kodit QR. Të tregojmë sa i rrezikshëm duket dhe çfarë të bësh.",
     "tabs": {
       "link": "Link",
-      "message": "Mesazh",
+      "message": "Mesazh ose email",
       "phone": "Telefon",
-      "qr": "Kod QR"
+      "qr": "Kod QR",
+      "image": "Pamje ekrani"
     },
     "labels": {
       "link": "Lidhja që dyshon",
@@ -1315,7 +1316,7 @@
     },
     "placeholders": {
       "link": "p.sh. hxxps://pagesa-gjoba[.]al[.]example",
-      "message": "Ngjit këtu SMS-in ose email-in e plotë…",
+      "message": "Ngjit këtu emailin ose SMS-në e plotë: Nga, Tema, tekstin dhe linket…",
       "phone": "p.sh. 069 123 4567",
       "sender": "p.sh. Posta ose +355…"
     },
@@ -1401,15 +1402,17 @@
     "summary": "Shpjegim i shkurtër",
     "tabHints": {
       "link": "Një adresë interneti nga një mesazh ose faqe",
-      "message": "Teksti i një SMS-je, emaili ose bisede",
+      "message": "Një SMS ose email i plotë, me gjithë kokën",
       "phone": "Një numër që ju telefonoi ose ju shkroi",
-      "qr": "Foto e një ngjitëseje ose kodi QR"
+      "qr": "Foto e një ngjitëseje ose kodi QR",
+      "image": "Një foto e SMS-së ose emailit që more"
     },
     "howTo": {
       "link": "Mbani shtypur lidhjen, zgjidhni Kopjo lidhjen dhe ngjiteni këtu. Ne nuk e hapim kurrë.",
-      "message": "Kopjoni të gjithë mesazhin, bashkë me lidhjen nëse ka. Shtoni dërguesin nëse e dini.",
+      "message": "Ngjit mesazhin e plotë. Për një email, përfshi rreshtat Nga dhe Tema. Lexojmë çdo link, domen, numër dhe frazë, dhe nuk i hapim kurrë linket.",
       "phone": "Shkruajeni numrin siç e patë, me prefiksin e shtetit nëse kishte.",
-      "qr": "Bëni një foto të qartë të kodit. Lexohet në pajisjen tuaj dhe nuk ngarkohet kurrë."
+      "qr": "Bëni një foto të qartë të kodit. Lexohet në pajisjen tuaj dhe nuk ngarkohet kurrë.",
+      "image": "Ngarko, tërhiq ose ngjit (Ctrl/⌘+V) një pamje ekrani të SMS-së ose emailit. Lexojmë dërguesin, tekstin, linket dhe çdo kod QR, pastaj i skanojmë të gjitha."
     },
     "askTitle": "Çfarë doni të kontrolloni?",
     "scale": {
@@ -1422,12 +1425,33 @@
       "Nuk e hapim kurrë lidhjen që dërgoni",
       "Nuk nevojitet llogari",
       "Ruajmë një gjurmë, jo tekstin tuaj"
-    ]
+    ],
+    "moreDetails": "Shto dërguesin ose ku e more (opsionale)",
+    "channelAuto": "Zbulo automatikisht",
+    "notReportable": "Nga një skanim mund të raportohen vetëm rezultatet në zonën e dyshimtë.",
+    "noReportGreen": "Nuk ka nevojë për raport: nuk gjetëm asgjë të dyshimtë. Nëse prapë kërkon para, kode ose të dhëna personale, kontakto institucionin në numrin zyrtar.",
+    "noReportYellow": "Ky rezultat është nën pragun e dyshimtë, ndaj nuk mund të raportohet nga këtu. Ki kujdes dhe verifiko me institucionin para se të veprosh.",
+    "image": {
+      "drop": "Tërhiq këtu një pamje ekrani, ngjite, ose prek për ta zgjedhur",
+      "hint": "PNG, JPG ose WebP. Këshillë: prit çdo gjë që nuk lidhet me mesazhin.",
+      "preparing": "Po përgatitet imazhi…",
+      "prepared": "U zvogëlua në pajisjen tënde dhe u hoqën të dhënat e vendndodhjes",
+      "previewAlt": "Parapamje e pamjes së ekranit për skanim",
+      "remove": "Hiq pamjen e ekranit",
+      "qrFound": "U gjet kod QR:",
+      "note": "Për ta lexuar, pamja e ekranit dërgohet te një shërbim njohjeje imazhi. As imazhi, as teksti i tij nuk ruhen; mbajmë vetëm një gjurmë dhe vlerësimin.",
+      "reading": "Po lexohet pamja e ekranit…",
+      "notImage": "Ky skedar nuk është imazh që mund ta lexojmë. Provo një pamje ekrani PNG ose JPG.",
+      "tooLarge": "Imazhi është shumë i madh. Provo një pamje më të vogël ose prite.",
+      "noImage": "Shto fillimisht një pamje ekrani.",
+      "unreadable": "Nuk arritëm të lexojmë një mesazh në këtë pamje ekrani. Provo një imazh më të qartë, ose ngjit tekstin te skeda Mesazh.",
+      "unavailable": "Leximi i pamjeve të ekranit nuk është i disponueshëm tani. Të lutem ngjit tekstin te skeda Mesazh."
+    }
   },
   "home": {
-    "eyebrow": "Platformë kombëtare kundër mashtrimeve",
-    "title": "Një mesazh të duket i dyshimtë? Kontrolloje para se të klikosh.",
-    "subtitle": "Mburoja dallon mesazhet, faqet dhe emailet e rreme që imitojnë institucionet, bankat, postën dhe shërbimet publike.",
+    "eyebrow": "Falas · anonim · ndërtuar për Shqipërinë",
+    "title": "Këtu je i sigurt. Kontrollo çdo mesazh para se t'i besosh.",
+    "subtitle": "Ngjit një email ose SMS të plotë. Mburoja kontrollon çdo link, domen, dërgues dhe frazë kundrejt fushatave aktive të mashtrimit brenda pak sekondash, dhe të thotë qartë nëse është i sigurt.",
     "stats": {
       "title": "Mburoja sot",
       "reportsToday": "raporte sot",
@@ -1440,16 +1464,16 @@
       "title": "Si funksionon",
       "subtitle": "Tre hapa, më pak se një minutë.",
       "s1": {
-        "title": "Ngjit ose ngarko",
-        "body": "Një link, SMS, email, numër telefoni ose foto të kodit QR. Nuk të duhet llogari."
+        "title": "Ngjit mesazhin e plotë",
+        "body": "Një email të plotë me rreshtat Nga dhe Tema, një SMS, një link, një numër telefoni ose foto të kodit QR. Nuk të duhet llogari."
       },
       "s2": {
-        "title": "Ne e analizojmë",
-        "body": "Kontrollojmë domenin, përmbajtjen, dërguesin dhe fushatat e njohura. Ruajmë vetëm një gjurmë, jo tekstin."
+        "title": "E skanojmë çdo pjesë",
+        "body": "Çdo link dhe domen merr rrezikun e vet, dërguesi kontrollohet dhe i gjithë teksti krahasohet me fushatat e njohura. Ruajmë një gjurmë, kurrë tekstin."
       },
       "s3": {
         "title": "Ti vendos të sigurt",
-        "body": "Merr një vlerësim të qartë, arsyet dhe hapat e radhës. Me një klik e raporton për bllokim."
+        "body": "Shiko vlerësimin, fushatën ku bën pjesë dhe arsyet. Nëse është i dyshimtë, raportoje për bllokim me një klik."
       }
     },
     "scams": {
@@ -1557,6 +1581,11 @@
       },
       "caption": "Çdo kontroll shpjegon me fjalë të thjeshta çfarë gjeti.",
       "headerCta": "Kontrollo një mesazh"
+    },
+    "assure": {
+      "private": "Mesazhi yt nuk ruhet kurrë",
+      "anonymous": "Pa llogari, plotësisht anonim",
+      "campaigns": "Krahasohet me fushatat aktive të mashtrimit"
     }
   },
   "report": {
@@ -2813,6 +2842,92 @@
       "titleEn": "Warning: active scams in the {name} area",
       "bodySq": "Po marrim raportime për mesazhe mashtruese në zonën e {name}. Mos klikoni lidhjet dhe mos paguani. Kontrolloni çdo mesazh në Mburoja.",
       "bodyEn": "We are receiving reports of fraudulent messages in the {name} area. Do not click links or pay. Check any message on Mburoja."
+    }
+  },
+  "scan": {
+    "level": {
+      "official": "Zyrtar",
+      "no_signals": "Pa shenja paralajmëruese",
+      "low": "Rrezik i ulët",
+      "suspicious": "I dyshimtë",
+      "high": "Rrezik i lartë",
+      "malicious": "I njohur si keqdashës"
+    },
+    "readTitle": "Çfarë skanuam",
+    "readAs": "E lexuam si",
+    "kind": {
+      "email": "Një email",
+      "message": "Një mesazh teksti (SMS ose chat)",
+      "link": "Një link",
+      "phone": "Një numër telefoni",
+      "qr": "Një link nga kodi QR"
+    },
+    "from": "Nga",
+    "subject": "Tema",
+    "counts": {
+      "domains": "{count, plural, =0 {Asnjë domen} one {# domen} other {# domene}}",
+      "links": "{count, plural, =0 {Asnjë link} one {# link} other {# linke}}",
+      "phones": "{count, plural, =0 {Asnjë numër telefoni} one {# numër telefoni} other {# numra telefoni}}",
+      "emails": "{count, plural, =0 {Asnjë adresë emaili} one {# adresë emaili} other {# adresa emaili}}"
+    },
+    "campaign": {
+      "known": "Pjesë e një fushate të njohur mashtrimi",
+      "similar": "Përputhet me modelin e një fushate të njohur · {pct}% ngjashmëri teksti",
+      "severity": "Rëndësia",
+      "stats": "{count, plural, one {# mesazh} other {# mesazhe}} të parë · aktive që nga {since} · parë së fundi {last}",
+      "meaning": {
+        "monitoring": "Analistët po e ndjekin këtë fushatë dhe po mbledhin raporte.",
+        "confirmed": "Analistët e kanë konfirmuar këtë fushatë si mashtrim.",
+        "takedown_in_progress": "Analistët e konfirmuan dhe po kërkojnë heqjen e faqeve të saj.",
+        "resolved": "Kjo fushatë u ndal, por kopje të mesazheve të saj mund të qarkullojnë ende."
+      },
+      "open": "Shiko faqen publike të fushatës",
+      "none": "Nuk përputhet me asnjë fushatë mashtrimi që njohim."
+    },
+    "pattern": {
+      "title": "Njohja e modelit",
+      "type": "Lloji i mashtrimit",
+      "brand": "Imiton",
+      "confidence": "Besueshmëria e modelit",
+      "none": "Nuk njohëm asnjë model të njohur mashtrimi në tekst."
+    },
+    "domains": {
+      "title": "Domenet dhe linket",
+      "hint": "Çdo domen kontrollohet veçmas",
+      "risk": "Rreziku {risk}/100",
+      "imitates": "Imiton {target}",
+      "cls": {
+        "typosquat": "gabim shkrimi",
+        "homoglyph": "shkronja të ngjashme",
+        "combosquat": "emër marke me fjalë të shtuara",
+        "subdomain_trick": "mashtrim me nëndomen"
+      },
+      "age": "{count, plural, one {Regjistruar # ditë më parë} other {Regjistruar # ditë më parë}}",
+      "hosting": "Strehuar në {country}",
+      "inCampaign": "Përdorur në fushatën {code}",
+      "unverified": "Nuk është domen zyrtar që njohim",
+      "links": "{count, plural, one {# link në këtë domen} other {# linke në këtë domen}}"
+    },
+    "contacts": {
+      "title": "Numrat e telefonit dhe adresat e emailit"
+    },
+    "shot": {
+      "title": "Çfarë lexuam nga pamja e ekranit",
+      "hint": "Njohja e imazhit mund ta lexojë gabim tekstin. Kontrollo që përputhet me mesazhin tënd.",
+      "edit": "Korrigjo tekstin dhe skano përsëri",
+      "brands": "Emra dhe logo të parë",
+      "brandsNote": "Emrat dhe logot shfaqen për kontekst. Nuk e ndryshojnë pikëzimin.",
+      "qrRead": "{count, plural, one {Kodi QR u lexua dhe u skanua} other {# kode QR u lexuan dhe u skanuan}}",
+      "qrSeen": "Duket një kod QR, por nuk u lexua dot",
+      "kind": {
+        "sms": "SMS",
+        "email": "Email",
+        "chat": "Mesazh chat-i",
+        "social": "Mesazh rrjeti social",
+        "webpage": "Faqe interneti",
+        "other": "Mesazh",
+        "qr_only": "Vetëm kod QR"
+      }
     }
   }
 }

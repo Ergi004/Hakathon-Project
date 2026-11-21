@@ -31,3 +31,10 @@ export const FLAG_STYLES: Record<FlagLevel, { text: string; bg: string; border: 
   darkred: { text: "text-flag-darkred", bg: "bg-flag-darkred/14", border: "border-flag-darkred/50", stroke: "stroke-flag-darkred" },
   grey: { text: "text-flag-grey", bg: "bg-flag-grey/12", border: "border-flag-grey/40", stroke: "stroke-flag-grey" },
 };
+
+/**
+ * Flags at or above the "suspicious" band. A scan offers "Report this" only for these; a green
+ * (or yellow) result is not sent to the SOC from the checker. Enforced again on the server.
+ */
+export const REPORTABLE_FLAGS: readonly FlagLevel[] = ["orange", "red", "darkred"];
+export const isReportable = (flag: FlagLevel | null | undefined): boolean => !!flag && REPORTABLE_FLAGS.includes(flag);
