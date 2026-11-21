@@ -27,6 +27,11 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ tabl
     }
     if (sp.get("assigned") === "none") q = q.is("assigned_to", null);
     if (sp.get("assigned") === "me") q = q.eq("assigned_to", session.user.id);
+    const campaign = sp.get("campaign");
+    if (campaign === "none") q = q.is("campaign_id", null);
+    else if (campaign && /^[0-9a-f-]{36}$/i.test(campaign)) q = q.eq("campaign_id", campaign);
+    const period = Number(sp.get("period"));
+    if ([1, 7, 30, 90].includes(period)) q = q.gte("created_at", new Date(Date.now() - period * 86_400_000).toISOString());
     rows = ((await q).data ?? []).map((r) => ({ ...r, campaign: (r.campaigns as { code: string } | null)?.code ?? "", campaigns: undefined }));
     columns = ["protocol", "status", "flag", "score", "channel", "source", "campaign", "created_at"];
   } else if (table === "campaigns") {

@@ -15,7 +15,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { CHANNELS } from "@/lib/schemas/analysis";
 import { FLAG_LEVELS } from "@/lib/flags";
 import { requireRole } from "@/server/auth";
-import { getInbox, type InboxFilters } from "@/server/queries/soc";
+import { getCampaignOptions, getInbox, PERIOD_DAYS, type InboxFilters } from "@/server/queries/soc";
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 type Search = Promise<Record<string, string | undefined>>;
 const STATUSES = ["received", "under_review", "confirmed", "not_scam", "takedown_requested", "taken_down", "duplicate"] as const;
@@ -31,18 +33,22 @@ function pick<T extends string>(v: string | undefined, allowed: readonly T[]): T
 }
 
 async function Filters() {
+  const ctx = await requireRole("soc_analyst");
+  const campaigns = await getCampaignOptions(ctx.supabase);
   const t = await getTranslations("soc.inbox");
   const tu = await getTranslations("ui");
   const ts = await getTranslations("reportStatus");
   const tf = await getTranslations("flags");
   const tc = await getTranslations("channel");
   return (
-    <div className="grid gap-3 rounded-xl bg-card p-4 ring-1 ring-foreground/10 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 2xl:items-end [&_button[role=combobox]]:w-full">
-      <UrlSearch label={t("search")} className="sm:col-span-2 lg:col-span-3 2xl:col-span-1" />
+    <div className="grid gap-3 rounded-xl bg-card p-4 ring-1 ring-foreground/10 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-8 2xl:items-end [&_button[role=combobox]]:w-full">
+      <UrlSearch label={t("search")} className="sm:col-span-2 lg:col-span-4 2xl:col-span-1" />
+      <UrlSelect name="campaign" label={t("campaign")} anyLabel={tu("all")} options={[{ value: "none", label: t("noCampaign") }, ...campaigns.map((c) => ({ value: c.id, label: `${c.code} · ${c.imitated_name ?? "—"}` }))]} />
       <UrlSelect name="status" label={t("status")} anyLabel={tu("all")} options={STATUSES.map((s) => ({ value: s, label: ts(s) }))} />
       <UrlSelect name="flag" label={t("flag")} anyLabel={tu("all")} options={FLAG_LEVELS.map((f) => ({ value: f, label: tf(f) }))} />
       <UrlSelect name="channel" label={t("channel")} anyLabel={tu("all")} options={CHANNELS.map((c) => ({ value: c, label: tc(c) }))} />
       <UrlSelect name="source" label={t("source")} anyLabel={tu("all")} options={SOURCES.map((s) => ({ value: s, label: s.replace(/_/g, " ") }))} />
+      <UrlSelect name="period" label={t("period")} anyLabel={tu("all")} options={PERIOD_DAYS.map((d) => ({ value: String(d), label: tu(`periodDays.${d}`) }))} />
       <UrlSelect name="assigned" label={t("assigned")} anyLabel={t("anyone")} options={[{ value: "me", label: t("me") }, { value: "none", label: t("unassignedOnly") }]} />
     </div>
   );
@@ -59,6 +65,8 @@ async function Results({ searchParams }: { searchParams: Search }) {
     channel: pick(sp.channel, CHANNELS),
     source: pick(sp.source, SOURCES),
     assigned: pick(sp.assigned, ["me", "none"] as const),
+    campaign: sp.campaign === "none" || (sp.campaign && UUID.test(sp.campaign)) ? sp.campaign : undefined,
+    days: (PERIOD_DAYS as readonly number[]).includes(Number(sp.period)) ? Number(sp.period) : undefined,
     page: Number(sp.page) || 1,
   };
   const [data, views] = await Promise.all([

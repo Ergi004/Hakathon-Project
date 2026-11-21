@@ -1,6 +1,7 @@
 import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { cache } from "react";
 import type { MatchedSignal } from "@/server/detection/pattern";
 import { readClaimedPlace, readHostingCountry, readMatchedSignals } from "@/server/detection/stored-features";
 import { pageCount, pageRange } from "@/lib/pagination";
@@ -78,12 +79,20 @@ export interface InboxFilters {
   channel?: Enums<"msg_channel">;
   source?: Enums<"report_source">;
   assigned?: "me" | "none";
+  /** A campaign id, or "none" for reports not linked to any campaign. */
+  campaign?: string;
+  /** Only reports created in the last N days. */
+  days?: number;
   page?: number;
+  size?: number;
 }
 export const INBOX_PAGE = 50;
+/** Period filter values (days) shared by the inbox and the campaign reports tab. */
+export const PERIOD_DAYS = [1, 7, 30, 90] as const;
 
 export async function getInbox(db: DB, f: InboxFilters, userId: string) {
   const page = Math.max(1, f.page ?? 1);
+  const size = f.size ?? INBOX_PAGE;
   let q = db
     .from("reports")
     .select(
@@ -91,8 +100,11 @@ export async function getInbox(db: DB, f: InboxFilters, userId: string) {
       { count: "exact" },
     )
     .order("created_at", { ascending: false })
-    .range((page - 1) * INBOX_PAGE, page * INBOX_PAGE - 1);
+    .range(...pageRange(page, size));
   if (f.status) q = q.eq("status", f.status);
+  if (f.campaign === "none") q = q.is("campaign_id", null);
+  else if (f.campaign) q = q.eq("campaign_id", f.campaign);
+  if (f.days) q = q.gte("created_at", new Date(Date.now() - f.days * DAY).toISOString());
   if (f.flag) q = q.eq("flag", f.flag);
   if (f.channel) q = q.eq("channel", f.channel);
   if (f.source) q = q.eq("source", f.source);
@@ -125,7 +137,7 @@ export async function getInbox(db: DB, f: InboxFilters, userId: string) {
     })),
     total: count ?? 0,
     page,
-    pages: Math.max(1, Math.ceil((count ?? 0) / INBOX_PAGE)),
+    pages: pageCount(count, size),
   };
 }
 export type InboxRow = Awaited<ReturnType<typeof getInbox>>["rows"][number];
@@ -254,17 +266,82 @@ export async function getCampaignPattern(db: DB, campaignId: string): Promise<Ca
 export const CAMPAIGN_STATUSES = ["monitoring", "confirmed", "takedown_in_progress", "resolved"] as const;
 export const CAMPAIGNS_PAGE = 25;
 
-export async function getCampaigns(db: DB, f: { status?: Enums<"campaign_status">; q?: string; page?: number } = {}) {
+export const CAMPAIGN_SEVERITIES = ["critical", "high", "medium", "low"] as const;
+export const CAMPAIGN_SORTS = ["recent", "volume", "severity", "newest"] as const;
+export type CampaignSort = (typeof CAMPAIGN_SORTS)[number];
+
+export interface CampaignFilters {
+  status?: Enums<"campaign_status">;
+  severity?: Enums<"severity">;
+  tactic?: string;
+  institutionId?: string;
+  /** Seen in the last N days. */
+  activeDays?: number;
+  q?: string;
+  sort?: CampaignSort;
+  page?: number;
+}
+
+export async function getCampaigns(db: DB, f: CampaignFilters = {}) {
   const page = Math.max(1, f.page ?? 1);
   let q = db
     .from("campaigns")
-    .select("id, code, tactic, status, severity, message_count, first_seen, last_seen, is_public, source, imitated_name, institutions(name), owner:profiles!campaigns_owner_id_fkey(full_name)", { count: "exact" })
-    .order("last_seen", { ascending: false, nullsFirst: false })
-    .range(...pageRange(page, CAMPAIGNS_PAGE));
+    .select("id, code, tactic, status, severity, message_count, first_seen, last_seen, is_public, source, imitated_name, institutions(name), owner:profiles!campaigns_owner_id_fkey(full_name)", { count: "exact" });
+  // Severity is an enum declared low → critical, so descending puts critical first.
+  if (f.sort === "volume") q = q.order("message_count", { ascending: false });
+  else if (f.sort === "severity") q = q.order("severity", { ascending: false });
+  else if (f.sort === "newest") q = q.order("first_seen", { ascending: false, nullsFirst: false });
+  q = q.order("last_seen", { ascending: false, nullsFirst: false }).order("code").range(...pageRange(page, CAMPAIGNS_PAGE));
   if (f.status) q = q.eq("status", f.status);
+  if (f.severity) q = q.eq("severity", f.severity);
+  if (f.tactic) q = q.eq("tactic", f.tactic);
+  if (f.institutionId) q = q.eq("institution_id", f.institutionId);
+  if (f.activeDays) q = q.gte("last_seen", new Date(Date.now() - f.activeDays * DAY).toISOString().slice(0, 10));
   if (f.q) q = q.or(`code.ilike.%${f.q.replace(/[%,()]/g, "")}%,imitated_name.ilike.%${f.q.replace(/[%,()]/g, "")}%`);
   const { data, count } = await q;
   return { rows: data ?? [], total: count ?? 0, page, pages: pageCount(count, CAMPAIGNS_PAGE) };
+}
+export type CampaignListRow = Awaited<ReturnType<typeof getCampaigns>>["rows"][number];
+
+export interface CampaignOverview {
+  weekly: { week: string; reports: number; campaigns: number }[];
+  top: { id: string; code: string; name: string | null; severity: Enums<"severity">; status: Enums<"campaign_status">; n: number }[];
+  matrix: { severity: Enums<"severity">; status: Enums<"campaign_status">; n: number }[];
+  tactics: { name: string; campaigns: number; messages: number }[];
+}
+
+/** Whole-panel campaign insights in one round trip (soc_campaign_overview); deduplicated per request. */
+export const getCampaignOverview = cache(async (db: DB, weeks = 12): Promise<CampaignOverview> => {
+  const { data } = await db.rpc("soc_campaign_overview", { p_weeks: weeks });
+  const o = (data ?? {}) as Partial<CampaignOverview>;
+  return { weekly: o.weekly ?? [], top: o.top ?? [], matrix: o.matrix ?? [], tactics: o.tactics ?? [] };
+});
+
+export interface CampaignReportBreakdown {
+  total: number;
+  byStatus: { key: ReportStatus; n: number }[];
+  byFlag: { key: Enums<"flag_level">; n: number }[];
+  byChannel: { key: Enums<"msg_channel"> | "unknown"; n: number }[];
+}
+
+/** One campaign's reports counted by status, flag and channel (campaign_report_counts). */
+export async function getCampaignReportBreakdown(db: DB, campaignId: string): Promise<CampaignReportBreakdown> {
+  const { data } = await db.from("campaign_report_counts").select("status, flag, channel, n").eq("campaign_id", campaignId);
+  const rows = data ?? [];
+  const tally = <K extends string>(key: (r: (typeof rows)[number]) => K | null) => {
+    const m = new Map<K, number>();
+    for (const r of rows) {
+      const k = key(r);
+      if (k) m.set(k, (m.get(k) ?? 0) + (r.n ?? 0));
+    }
+    return [...m.entries()].map(([k, n]) => ({ key: k, n })).sort((a, b) => b.n - a.n);
+  };
+  return {
+    total: rows.reduce((sum, r) => sum + (r.n ?? 0), 0),
+    byStatus: tally((r) => r.status),
+    byFlag: tally((r) => r.flag as Enums<"flag_level"> | null),
+    byChannel: tally((r) => r.channel ?? "unknown"),
+  };
 }
 
 /** Campaign counts per status (stat cards): one grouped request (campaign_status_counts). */

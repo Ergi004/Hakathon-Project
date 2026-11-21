@@ -22,18 +22,23 @@ import { hasMinRole, requireRole } from "@/server/auth";
 import { IntelCell } from "@/components/intel/intel-cell";
 import { VerdictChip } from "@/components/intel/intel-panel";
 import { latestVerdicts } from "@/server/intel/staff-view";
-import { getCampaignDetail, getCampaignPattern, getStaff } from "@/server/queries/soc";
+import { getCampaignDetail, getCampaignPattern, getCampaignReportBreakdown, getStaff } from "@/server/queries/soc";
+import { CampaignReports, type ReportSearch } from "@/components/soc/campaign-reports";
+import { FlagBreakdown, RankedBars } from "@/components/soc/campaign-insights";
+import { Panel } from "@/components/layout/dash";
+import { BarChart3 } from "lucide-react";
 import { CampaignGeography } from "@/components/geo/CampaignGeography";
 
 type Params = Promise<{ locale: string; id: string }>;
+type Search = Promise<ReportSearch & { tab?: string }>;
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   return { title: (await getTranslations({ locale: locale as "sq" | "en", namespace: "soc.nav" }))("campaigns") };
 }
 
-async function Workspace({ params }: { params: Params }) {
-  const { id } = await params;
+async function Workspace({ params, searchParams }: { params: Params; searchParams: Search }) {
+  const [{ id }, sp] = await Promise.all([params, searchParams]);
   const t = await getTranslations("soc.campaign");
   const tScam = await getTranslations("scamType");
   const tBrand = await getTranslations("brandCategory");
@@ -46,7 +51,9 @@ async function Workspace({ params }: { params: Params }) {
   const locale = await getLocale();
   if (!z.uuid().safeParse(id).success) return <EmptyState title="404" />;
   const ctx = await requireRole("soc_analyst");
-  const [d, staff, pattern] = await Promise.all([getCampaignDetail(ctx.supabase, id), getStaff(ctx.supabase), getCampaignPattern(ctx.supabase, id)]);
+  const [d, staff, pattern, breakdown] = await Promise.all([getCampaignDetail(ctx.supabase, id), getStaff(ctx.supabase), getCampaignPattern(ctx.supabase, id), getCampaignReportBreakdown(ctx.supabase, id)]);
+  const tr = await getTranslations("reportStatus");
+  const tch = await getTranslations("channel");
   if (!d) return <EmptyState title="404" />;
   const c = d.campaign;
   const isLead = hasMinRole(ctx.profile.platform_role, "soc_lead");
@@ -101,14 +108,44 @@ async function Workspace({ params }: { params: Params }) {
     </section>
   );
 
+  const reportsHref = (patch: Record<string, string>) => `/soc/campaigns/${c.id}?${new URLSearchParams({ tab: "reports", ...patch })}`;
+  const breakdownPanel = breakdown.total > 0 && (
+    <Panel
+      title={t("reportBreakdown")}
+      icon={BarChart3}
+      description={t("reportsShown", { count: breakdown.total })}
+      action={<Button asChild variant="ghost" size="sm"><Link href={reportsHref({})}>{t("viewReports")}</Link></Button>}
+    >
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <h4 className="text-xs font-medium tracking-wide text-muted-foreground uppercase">{t("byFlag")}</h4>
+          <FlagBreakdown rows={breakdown.byFlag} total={breakdown.total} />
+        </div>
+        <div className="grid gap-6 md:grid-cols-2">
+          <div className="space-y-1">
+            <h4 className="px-2 text-xs font-medium tracking-wide text-muted-foreground uppercase">{t("byStatus")}</h4>
+            <RankedBars empty="—" rows={breakdown.byStatus.map((x) => ({ key: x.key, label: tr(x.key), value: x.n, valueLabel: String(x.n), href: reportsHref({ status: x.key }) }))} />
+          </div>
+          <div className="space-y-1">
+            <h4 className="px-2 text-xs font-medium tracking-wide text-muted-foreground uppercase">{t("byChannel")}</h4>
+            <RankedBars empty="—" barClass="bg-chart-2" rows={breakdown.byChannel.map((x) => ({ key: x.key, label: x.key === "unknown" ? "—" : tch(x.key), value: x.n, valueLabel: String(x.n), href: x.key === "unknown" ? undefined : reportsHref({ channel: x.key }) }))} />
+          </div>
+        </div>
+      </div>
+    </Panel>
+  );
+
   const overview = (
     <div className="space-y-5">
-      {patternSection}
       <dl className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        {[[t("reports"), d.reportCount], [t("domainsCount"), d.domains.length], ["IoC", d.iocs.length], [t("notices"), d.notices.length]].map(([k, v]) => (
-          <div key={String(k)} className="rounded-xl bg-card p-4 ring-1 ring-foreground/10"><dt className="text-xs text-muted-foreground">{k}</dt><dd className="font-display text-2xl font-bold tabular-nums">{v}</dd></div>
+        {([[t("reports"), d.reportCount, "reports"], [t("domainsCount"), d.domains.length, "domains"], ["IoC", d.iocs.length, "domains"], [t("notices"), d.notices.length, "takedowns"]] as const).map(([k, v, tab]) => (
+          <Link key={String(k)} href={`/soc/campaigns/${c.id}?tab=${tab}`} scroll={false} className="rounded-xl bg-card p-4 ring-1 ring-foreground/10 transition-shadow hover:ring-primary/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none">
+            <dt className="text-xs text-muted-foreground">{k}</dt><dd className="font-display text-2xl font-bold tabular-nums">{v}</dd>
+          </Link>
         ))}
       </dl>
+      {breakdownPanel}
+      {patternSection}
       {d.weekly.length > 1 && (
         <section className="space-y-4 rounded-xl bg-card p-5 ring-1 ring-foreground/10">
           <h3 className="font-display text-lg font-medium">{t("timeline")}</h3>
@@ -211,6 +248,7 @@ async function Workspace({ params }: { params: Params }) {
       </div>
       <UrlTabs defaultTab="overview" tabs={[
         { value: "overview", label: t("tabs.overview"), content: overview },
+        { value: "reports", label: `${t("tabs.reports")} (${d.reportCount})`, content: sp.tab === "reports" ? <CampaignReports db={ctx.supabase} userId={ctx.user.id} campaignId={c.id} sp={sp} /> : null },
         { value: "messages", label: `${t("tabs.messages")} (${d.messages.length})`, content: <MessagesSplit campaignId={c.id} messages={d.messages} /> },
         { value: "domains", label: t("tabs.domains"), content: domainsTab },
         { value: "geography", label: tg("tab"), content: <Suspense fallback={<Skeleton className="h-64 w-full" />}><CampaignGeography campaign={{ id: c.id, code: c.code, target_region_id: c.target_region_id, institution_id: c.institution_id }} /></Suspense> },
@@ -222,11 +260,11 @@ async function Workspace({ params }: { params: Params }) {
   );
 }
 
-export default function CampaignWorkspacePage({ params }: { params: Params }) {
+export default function CampaignWorkspacePage({ params, searchParams }: { params: Params; searchParams: Search }) {
   return (
     <div className="mx-auto w-full max-w-[100rem] space-y-4">
       <Suspense fallback={null}><Back /></Suspense>
-      <Suspense fallback={<div className="space-y-3"><Skeleton className="h-20 w-full" /><Skeleton className="h-96 w-full" /></div>}><Workspace params={params} /></Suspense>
+      <Suspense fallback={<div className="space-y-3"><Skeleton className="h-20 w-full" /><Skeleton className="h-96 w-full" /></div>}><Workspace params={params} searchParams={searchParams} /></Suspense>
     </div>
   );
 }

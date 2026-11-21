@@ -3241,6 +3241,16 @@ export type Database = {
         }
         Relationships: []
       }
+      campaign_report_counts: {
+        Row: {
+          campaign_id: string | null
+          channel: Database["public"]["Enums"]["msg_channel"] | null
+          flag: string | null
+          n: number | null
+          status: Database["public"]["Enums"]["report_status"] | null
+        }
+        Relationships: []
+      }
       campaign_status_counts: {
         Row: {
           n: number | null
@@ -3390,6 +3400,7 @@ export type Database = {
           similarity: number
         }[]
       }
+      soc_campaign_overview: { Args: { p_weeks?: number }; Returns: Json }
       soc_institution_spikes: {
         Args: { p_min?: number; p_since: string }
         Returns: {

@@ -295,7 +295,10 @@
       "updated": "U përditësua",
       "newReport": "Raport i ri: {protocol}",
       "export": "Eksporto CSV",
-      "empty": "Asnjë raport nuk përputhet me filtrat."
+      "empty": "Asnjë raport nuk përputhet me filtrat.",
+      "period": "Periudha",
+      "campaign": "Fushata",
+      "noCampaign": "Jo në fushatë"
     },
     "report": {
       "message": "Mesazhi (i maskuar)",
@@ -363,7 +366,47 @@
       "brand": "Marka e imituar",
       "patternSize": "Kontrollime",
       "patternSizeCount": "{count} kontrollime",
-      "firstSeen": "Parë së pari"
+      "firstSeen": "Parë së pari",
+      "pipeline": "Rrjedha e fushatave",
+      "activity": "Aktiviteti",
+      "activityHint": "12 javët e fundit: {reports, plural, one {# raport} other {# raporte}} në fushata, {campaigns, plural, one {# fushatë e re} other {# fushata të reja}}.",
+      "activityReports": "Raporte në fushata",
+      "activityNew": "Fushata të reja",
+      "noActivity": "Asnjë aktivitet fushatash në 12 javët e fundit.",
+      "srWeek": "Java e {week}: {reports} raporte, {campaigns} fushata të reja",
+      "topActive": "Më aktivet",
+      "topActiveHint": "Raporte në 30 ditët e fundit",
+      "topEmpty": "Asnjë raport fushate në 30 ditët e fundit.",
+      "reportsCount": "{count, plural, one {# raport} other {# raporte}}",
+      "matrix": "Rëndësia × statusi",
+      "matrixHint": "Zgjidhni një qelizë për të filtruar listën.",
+      "tactics": "Taktikat",
+      "tacticsHint": "Fushata sipas taktikës. Zgjidhni njërën për të filtruar.",
+      "tacticValue": "{campaigns, plural, one {# fushatë} other {# fushata}} · {messages} mesazhe",
+      "activeLabel": "Aktive në",
+      "activeAny": "Çdo kohë",
+      "activeIn": {
+        "7": "7 ditët e fundit",
+        "30": "30 ditët e fundit",
+        "90": "90 ditët e fundit"
+      },
+      "sortLabel": "Rendit sipas",
+      "sorts": {
+        "recent": "Aktive së fundi",
+        "volume": "Më shumë mesazhe",
+        "severity": "Rëndësia më e lartë",
+        "newest": "Më të rejat"
+      },
+      "removeFilter": "Hiq filtrin",
+      "clearFilters": "Pastro të gjithë filtrat",
+      "emptyFiltered": "Provoni të hiqni një filtër.",
+      "viewLabel": "Pamja",
+      "campaign": "Fushata",
+      "volume": "Vëllimi",
+      "classification": "Klasifikimi",
+      "activityCol": "Aktiviteti i fundit",
+      "unowned": "Pa përgjegjës",
+      "since": "që nga {date}"
     },
     "campaign": {
       "tabs": {
@@ -372,7 +415,8 @@
         "domains": "Domenet dhe IoC",
         "takedowns": "Bllokimet",
         "notes": "Shënimet",
-        "advisory": "Paralajmërimi"
+        "advisory": "Paralajmërimi",
+        "reports": "Raportet"
       },
       "assignOwner": "Cakto përgjegjësin",
       "changeStatus": "Ndrysho statusin",
@@ -408,7 +452,16 @@
       "weight": "Pesha",
       "evidence": "Prova",
       "noPattern": "Ende nuk ka kontrollime të klasifikuara të lidhura me këtë fushatë.",
-      "noSignals": "Ky kontrollim nuk ka sinjale të përputhura."
+      "noSignals": "Ky kontrollim nuk ka sinjale të përputhura.",
+      "reportBreakdown": "Ndarja e raporteve",
+      "reportsShown": "{count, plural, one {# raport} other {# raporte}}",
+      "viewReports": "Shiko raportet",
+      "byFlag": "Sipas flamurit",
+      "byStatus": "Sipas statusit",
+      "byChannel": "Sipas kanalit",
+      "openInInbox": "Hape në kutinë hyrëse",
+      "noReports": "Ende asnjë raport i lidhur me këtë fushatë.",
+      "excerpt": "Mesazhi"
     },
     "domains": {
       "class": "Klasa",
@@ -1053,7 +1106,13 @@
     "lastUpdated": "Përditësuar më {date}",
     "dateRange": "Periudha",
     "days": "{count} ditë",
-    "hoursAgo": "{count} orë më parë"
+    "hoursAgo": "{count} orë më parë",
+    "periodDays": {
+      "1": "24 orët e fundit",
+      "7": "7 ditët e fundit",
+      "30": "30 ditët e fundit",
+      "90": "90 ditët e fundit"
+    }
   },
   "reasonGroups": {
     "links": "Lidhjet",
