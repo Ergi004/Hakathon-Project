@@ -17,6 +17,8 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fmtAgo, fmtDate } from "@/lib/format";
 import { nowMs } from "@/lib/time";
+import { pageCount, pageParam, pageRange } from "@/lib/pagination";
+import { Pager } from "@/components/shared/pager";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -43,17 +45,25 @@ curl_setopt_array($ch, [
 $result = json_decode(curl_exec($ch), true);`,
 };
 
-async function Content() {
+const PAGE_SIZE = 10;
+type SP = { page?: string };
+
+async function Content({ searchParams }: { searchParams: Promise<SP> }) {
+  const page = pageParam((await searchParams).page);
   const ctx = await guardOrRedirect(() => requireActiveOrg(["owner", "admin"]));
   const [t, tb, locale] = await Promise.all([getTranslations("biz.api"), getTranslations("biz"), getLocale()]);
-  const { data: keys } = await ctx.supabase.from("api_keys").select("id, name, prefix, scopes, last_used_at, revoked_at, created_at").eq("org_id", ctx.org.id).order("created_at", { ascending: false });
+  // Stats and usage cover all keys; only the list below is paginated.
+  const [{ data: allKeys }, { data: keys, count: keyTotal }] = await Promise.all([
+    ctx.supabase.from("api_keys").select("id, revoked_at").eq("org_id", ctx.org.id),
+    ctx.supabase.from("api_keys").select("id, name, prefix, scopes, last_used_at, revoked_at, created_at", { count: "exact" }).eq("org_id", ctx.org.id).order("created_at", { ascending: false }).order("id").range(...pageRange(page, PAGE_SIZE)),
+  ]);
   const since = new Date(nowMs() - 30 * 86_400_000).toISOString().slice(0, 10);
-  const { data: usage } = (keys ?? []).length ? await ctx.supabase.from("api_usage").select("day, calls").in("key_id", (keys ?? []).map((k) => k.id)).gte("day", since) : { data: [] };
+  const { data: usage } = (allKeys ?? []).length ? await ctx.supabase.from("api_usage").select("day, calls").in("key_id", (allKeys ?? []).map((k) => k.id)).gte("day", since) : { data: [] };
   const byDay = new Map<string, number>();
   for (const u of usage ?? []) byDay.set(u.day, (byDay.get(u.day) ?? 0) + u.calls);
   const days = Array.from({ length: 30 }, (_, i) => { const d = new Date(nowMs() - (29 - i) * 86_400_000).toISOString().slice(0, 10); return { day: d, count: byDay.get(d) ?? 0 }; });
   const total = days.reduce((a, d) => a + d.count, 0);
-  const active = (keys ?? []).filter((k) => !k.revoked_at).length;
+  const active = (allKeys ?? []).filter((k) => !k.revoked_at).length;
 
   return (
     <div className="grid items-start gap-6 xl:grid-cols-12">
@@ -69,6 +79,7 @@ async function Content() {
             {!(keys ?? []).length ? (
               <EmptyPanel icon={KeyRound} title={t("empty")} />
             ) : (
+              <>
               <ul className="divide-y divide-border">
                 {keys!.map((k) => (
                   <li key={k.id} className={cn("flex flex-wrap items-center gap-3 px-5 py-4 text-sm", k.revoked_at && "opacity-60")}>
@@ -88,6 +99,8 @@ async function Content() {
                   </li>
                 ))}
               </ul>
+              <div className="px-5 py-3 empty:hidden"><Pager page={page} pages={pageCount(keyTotal, PAGE_SIZE)} /></div>
+              </>
             )}
           </CardContent>
         </Card>
@@ -126,12 +139,12 @@ async function Content() {
   );
 }
 
-export default async function Page({ params }: { params: Promise<{ locale: string }> }) {
+export default async function Page({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<SP> }) {
   setRequestLocale((await params).locale as Locale);
   const [t, tb] = await Promise.all([getTranslations("business.nav"), getTranslations("biz")]);
   return (
     <DashPage title={t("api")} subtitle={tb("pages.api")}>
-      <Suspense fallback={<Skeleton className="h-96 w-full rounded-xl" />}><Content /></Suspense>
+      <Suspense fallback={<Skeleton className="h-96 w-full rounded-xl" />}><Content searchParams={searchParams} /></Suspense>
     </DashPage>
   );
 }

@@ -70,7 +70,8 @@ function domainClass(value: string | undefined): Enums["domain_class"] {
   if (v.includes("typo")) return "typosquat";
   if (v.includes("homo")) return "homoglyph";
   if (v.includes("combo")) return "combosquat";
-  if (/legit|ligj|zyrtar|official/.test(v)) return "legitimate";
+  // The dataset labels legitimate domains "legjitim" (Albanian).
+  if (/legit|legj|ligj|zyrtar|official/.test(v)) return "legitimate";
   return "unknown";
 }
 
@@ -538,13 +539,16 @@ async function main() {
   }
   const piiLeaks = allBodies.filter(containsPii).length;
   const orphanPhishing = messages.filter((m) => m.label === "phishing" && !m.campaign_id).length;
+  // The v2 dataset contains one-off phishing messages without a campaign (fushata_id empty), so the
+  // expectation is "as many as the source has", not 0. A higher number would mean a lost campaign link.
+  const sourceOrphans = msgRows.filter((r) => labelById.get(r[M.id]) === 1 && !(M.campaign && r[M.campaign]?.trim())).length;
 
   const checks = [
     { check: "campaigns = A_fushatat rows", expected: campRows.length, actual: await count("campaigns"), ok: (await count("campaigns")) >= campRows.length },
     { check: activity.sample ? "messages >= sample" : "messages = A_mesazhet rows", expected: msgRows.length, actual: await count("messages"), ok: activity.sample ? (await count("messages")) >= msgRows.length : (await count("messages")) === msgRows.length },
     { check: "certificates = B_ct_log rows", expected: ctRows.length, actual: await count("certificates"), ok: (await count("certificates")) === ctRows.length },
     { check: "domains >= B_whois rows", expected: whoisRows.length, actual: await count("domains"), ok: (await count("domains")) >= whoisRows.length },
-    { check: "phishing messages without campaign", expected: 0, actual: orphanPhishing, ok: orphanPhishing === 0 },
+    { check: "phishing messages without campaign (as in source)", expected: sourceOrphans, actual: orphanPhishing, ok: orphanPhishing <= sourceOrphans },
     { check: "message bodies with PII patterns", expected: 0, actual: piiLeaks, ok: piiLeaks === 0 },
   ];
   console.table(checks);

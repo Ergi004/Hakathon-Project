@@ -2,7 +2,7 @@
 
 import { Bell, ChevronDown, ChevronsUpDown, LogOut, Settings } from "lucide-react";
 import { useTranslations } from "next-intl";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -34,7 +34,7 @@ import { Link, usePathname } from "@/i18n/navigation";
 import type { NavGroup, NavIcon as NavIconName } from "@/lib/nav";
 import { cn } from "@/lib/utils";
 import { useSocBadge } from "@/components/soc/realtime-provider";
-import { SidebarMenuBadge, SidebarSeparator } from "@/components/ui/sidebar";
+import { SidebarMenuBadge, SidebarSeparator, useSidebar } from "@/components/ui/sidebar";
 import { signOut } from "@/server/auth-actions";
 import { LanguageSwitch } from "./language-switch";
 import { NavIcon } from "./nav-icon";
@@ -115,9 +115,22 @@ export function AppShell({
       <Sidebar collapsible="icon">
         <SidebarHeader className="gap-3 p-3">
           <Link href="/" className="flex items-center gap-2 rounded-md px-1 py-1 outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring">
-            <Logo label={t("appName")} className="group-data-[collapsible=icon]:[&>span:last-child]:hidden" />
+            <Logo
+              label={t("appName")}
+              className={cn(
+                "[&>span:last-child]:whitespace-nowrap [&>span:last-child]:transition-[opacity,visibility] [&>span:last-child]:duration-150 [&>span:last-child]:delay-100 [&>span:last-child]:ease-out",
+                "group-data-[collapsible=icon]:[&>span:last-child]:invisible group-data-[collapsible=icon]:[&>span:last-child]:opacity-0 group-data-[collapsible=icon]:[&>span:last-child]:delay-0",
+                "motion-reduce:[&>span:last-child]:transition-none",
+              )}
+            />
           </Link>
-          <div className="flex items-center gap-2.5 rounded-lg border border-sidebar-border bg-sidebar-accent/50 px-2.5 py-2 group-data-[collapsible=icon]:hidden">
+          <div
+            className={cn(
+              "flex max-h-20 items-center gap-2.5 overflow-hidden rounded-lg border border-sidebar-border bg-sidebar-accent/50 px-2.5 py-2",
+              "transition-[max-height,opacity,padding,margin,border-color,visibility] duration-200 ease-out motion-reduce:transition-none",
+              "group-data-[collapsible=icon]:invisible group-data-[collapsible=icon]:-mt-3 group-data-[collapsible=icon]:max-h-0 group-data-[collapsible=icon]:border-transparent group-data-[collapsible=icon]:py-0 group-data-[collapsible=icon]:opacity-0",
+            )}
+          >
             <span className="grid size-8 shrink-0 place-items-center rounded-md bg-primary/15 text-primary">
               <NavIcon name={items[0]?.icon ?? "layout"} className="size-4" />
             </span>
@@ -127,21 +140,24 @@ export function AppShell({
             </div>
           </div>
         </SidebarHeader>
-        <SidebarSeparator className="mx-0 group-data-[collapsible=icon]:hidden" />
+        <SidebarSeparator className="mx-0 transition-opacity duration-200 ease-out group-data-[collapsible=icon]:opacity-0 motion-reduce:transition-none" />
         <SidebarContent className="gap-0 py-1">
           {groupItems(items).map(({ group, items: groupList }, gi) => {
             const label = group ? t(`navGroups.${group}`) : areaTitle;
             const groupActive = groupList.some((i) => i.href === active);
             return (
-              <Collapsible key={group ?? gi} defaultOpen className="group/collapsible">
+              <NavGroupCollapsible key={group ?? gi}>
                 <SidebarGroup className="py-1.5">
-                  <SidebarGroupLabel asChild className="h-7 text-[11px] font-semibold group-data-[collapsible=icon]:hidden tracking-wide text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-foreground">
+                  <SidebarGroupLabel asChild className="h-7 text-[11px] font-semibold tracking-wide text-sidebar-foreground/60 transition-[margin,opacity,color,background-color,visibility] duration-200 ease-out hover:bg-sidebar-accent hover:text-sidebar-foreground group-data-[collapsible=icon]:invisible motion-reduce:transition-none">
                     <CollapsibleTrigger className="w-full">
                       <span className={cn(groupActive && "text-sidebar-foreground")}>{label}</span>
-                      <ChevronDown className="ml-auto size-3.5 transition-transform group-data-[state=closed]/collapsible:-rotate-90" aria-hidden="true" />
+                      <ChevronDown className="ml-auto size-3.5 transition-transform duration-200 ease-out group-data-[state=closed]/collapsible:-rotate-90 motion-reduce:transition-none" aria-hidden="true" />
                     </CollapsibleTrigger>
                   </SidebarGroupLabel>
-                  <CollapsibleContent forceMount className="data-[state=closed]:hidden group-data-[collapsible=icon]:!block">
+                  {/* shadcn CollapsibleContent + tw-animate-css keyframes (height from Radix's measured
+                      --radix-collapsible-content-height). Radix plays the closing animation, then unmounts the
+                      content, so closed items leave the tab order and the accessibility tree. */}
+                  <CollapsibleContent className="overflow-hidden data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up motion-reduce:animate-none">
                     <SidebarGroupContent className="pt-0.5">
                       <SidebarMenu className="gap-0.5">
                         {groupList.map((item) => {
@@ -153,7 +169,16 @@ export function AppShell({
                                 asChild
                                 isActive={isActive}
                                 tooltip={item.label}
-                                className="h-9 data-[active=true]:bg-primary/12 data-[active=true]:font-medium data-[active=true]:text-primary"
+                                className={cn(
+                                  "h-9 data-[active=true]:bg-primary/12 data-[active=true]:font-medium data-[active=true]:text-primary",
+                                  // Minimal hover motion: colours fade in, icon nudges right and lifts, label follows.
+                                  // Width/height/padding stay in the list so collapsing still animates.
+                                  "transition-[background-color,color,width,height,padding] duration-150 ease-out",
+                                  "[&>svg]:transition-transform [&>svg]:duration-200 [&>svg]:ease-out [&>span]:transition-transform [&>span]:duration-200 [&>span]:ease-out",
+                                  "data-[active=false]:hover:[&>svg]:translate-x-0.5 data-[active=false]:hover:[&>svg]:scale-110 data-[active=false]:hover:[&>span]:translate-x-px",
+                                  "group-data-[collapsible=icon]:data-[active=false]:hover:[&>svg]:translate-x-0",
+                                  "motion-reduce:transition-none motion-reduce:[&>svg]:transition-none motion-reduce:[&>span]:transition-none motion-reduce:hover:[&>svg]:transform-none motion-reduce:hover:[&>span]:transform-none",
+                                )}
                               >
                                 <Link href={item.href} aria-current={isActive ? "page" : undefined}>
                                   <NavIcon name={item.icon} />
@@ -172,7 +197,7 @@ export function AppShell({
                     </SidebarGroupContent>
                   </CollapsibleContent>
                 </SidebarGroup>
-              </Collapsible>
+              </NavGroupCollapsible>
             );
           })}
         </SidebarContent>
@@ -290,5 +315,20 @@ export function AppShell({
         )}
       </SidebarInset>
     </SidebarProvider>
+  );
+}
+
+/**
+ * One sidebar nav group as a shadcn Collapsible (controlled). While the sidebar is collapsed to
+ * icons the group is forced open so every icon stays reachable; the user's choice is restored on expand.
+ */
+function NavGroupCollapsible({ children }: { children: ReactNode }) {
+  const { state, isMobile } = useSidebar();
+  const [open, setOpen] = useState(true);
+  const iconOnly = state === "collapsed" && !isMobile;
+  return (
+    <Collapsible open={open || iconOnly} onOpenChange={setOpen} className="group/collapsible">
+      {children}
+    </Collapsible>
   );
 }

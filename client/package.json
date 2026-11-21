@@ -29,7 +29,9 @@
     "seed:takedowns": "tsx scripts/seed-takedowns.ts",
     "ext:build": "node scripts/build-extension.mjs",
     "ext:typecheck": "tsc --noEmit -p extension/tsconfig.json",
-    "seed:alerts": "tsx scripts/seed-citizen-alerts.ts"
+    "seed:alerts": "tsx scripts/seed-citizen-alerts.ts",
+    "seed:domains": "tsx scripts/seed-domains.ts",
+    "seed:business": "tsx scripts/seed-business.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.11.0",

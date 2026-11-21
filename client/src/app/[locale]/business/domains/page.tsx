@@ -12,8 +12,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { Locale } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
+import { pageCount, pageParam, pageRange } from "@/lib/pagination";
+import { Pager } from "@/components/shared/pager";
 import { guardOrRedirect, requireActiveOrg } from "@/server/auth";
 import { latestVerdicts } from "@/server/intel/staff-view";
+import { orgInstitutionIds } from "@/server/queries/business";
 
 const STATUS_TONE: Record<string, string> = {
   threat: "border-flag-red/40 bg-flag-red/10",
@@ -29,23 +32,34 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return { title: (await getTranslations({ locale: locale as Locale, namespace: "business.nav" }))("domains") };
 }
 
-async function Content({ searchParams }: { searchParams: Promise<{ show?: string }> }) {
-  const { show } = await searchParams;
+const PAGE_SIZE = 25;
+type SP = { show?: string; page?: string };
+
+async function Content({ searchParams }: { searchParams: Promise<SP> }) {
+  const { show, page: pageRaw } = await searchParams;
   const ctx = await guardOrRedirect(() => requireActiveOrg(["owner", "admin", "security"]));
   const [t, tb, td, tc] = await Promise.all([getTranslations("biz.domains"), getTranslations("biz"), getTranslations("soc.domains"), getTranslations("domainClass")]);
-  const { data } = await ctx.supabase.from("domains").select("id, domain, class, age_days, registrar, hosting_country, risk_score, status").order("risk_score", { ascending: false, nullsFirst: false }).limit(500);
-  const all = data ?? [];
-  if (!all.length) return <Card><CardContent><EmptyPanel icon={Globe} title={t("empty")} /></CardContent></Card>;
+  const inst = await orgInstitutionIds(ctx);
+  if (!inst.length) return <Card><CardContent><EmptyPanel icon={Globe} title={t("empty")} /></CardContent></Card>;
   const view = ["threat", "watching", "allowlisted"].includes(show ?? "") ? show : "all";
-  const shown = view === "all" ? all : all.filter((d) => d.status === view);
-  const n = (s: string) => all.filter((d) => d.status === s).length;
+  const page = pageParam(pageRaw);
+  // Explicit institution filter (indexed) on top of RLS; stat cards count everything, the list is one page.
+  const base = () => ctx.supabase.from("domains").select("id", { count: "exact", head: true }).in("imitates_institution_id", inst);
+  let q = ctx.supabase.from("domains").select("id, domain, class, age_days, registrar, hosting_country, risk_score, status", { count: "exact" }).in("imitates_institution_id", inst).order("risk_score", { ascending: false, nullsFirst: false }).order("id").range(...pageRange(page, PAGE_SIZE));
+  if (view !== "all") q = q.eq("status", view!);
+  const [{ data, count: filtered }, totalQ, threatQ, watchingQ, downQ] = await Promise.all([q, base(), base().eq("status", "threat"), base().eq("status", "watching"), base().eq("status", "taken_down")]);
+  const totalAll = totalQ.count ?? 0;
+  if (!totalAll) return <Card><CardContent><EmptyPanel icon={Globe} title={t("empty")} /></CardContent></Card>;
+  const shown = data ?? [];
+  const stat = { threat: threatQ.count ?? 0, watching: watchingQ.count ?? 0, taken_down: downQ.count ?? 0 };
+  const n = (s: keyof typeof stat) => stat[s];
   // Live threat intelligence (read-only for businesses): latest verdict, domain age, subdomains.
   const [intel, ti] = await Promise.all([latestVerdicts(ctx.supabase, shown.map((d) => d.domain)), getTranslations("intel")]);
 
   return (
     <div className="space-y-6">
       <ul className="grid grid-cols-2 gap-3 xl:grid-cols-4">
-        <li><StatCard icon={Globe} label={tb("dm.stats.total")} value={all.length} /></li>
+        <li><StatCard icon={Globe} label={tb("dm.stats.total")} value={totalAll} /></li>
         <li><StatCard icon={ShieldAlert} tone="text-flag-red" label={tb("dm.stats.threat")} value={n("threat")} /></li>
         <li><StatCard icon={Eye} tone="text-flag-yellow" label={tb("dm.stats.watching")} value={n("watching")} /></li>
         <li><StatCard icon={CircleCheck} tone="text-flag-green" label={tb("dm.stats.takenDown")} value={n("taken_down")} /></li>
@@ -101,11 +115,12 @@ async function Content({ searchParams }: { searchParams: Promise<{ show?: string
           </div>
         )}
       </Card>
+      <Pager page={page} pages={pageCount(filtered, PAGE_SIZE)} />
     </div>
   );
 }
 
-export default async function Page({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ show?: string }> }) {
+export default async function Page({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<SP> }) {
   setRequestLocale((await params).locale as Locale);
   const [t, tb] = await Promise.all([getTranslations("business.nav"), getTranslations("biz")]);
   return (

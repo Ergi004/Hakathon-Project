@@ -224,7 +224,23 @@ export async function seedActivity(a: ActivityInput) {
 
   type Rep = TablesInsert<"reports"> & { _ext: string };
   const reports: Rep[] = [];
+  // Re-runs keep each report's protocol (dates shift with "now", so numbering by date would reassign
+  // protocols and break the unique constraint and existing links). New reports continue after the
+  // highest number already used in that year.
+  const existingProtocol = new Map<string, string>();
   const perYear = new Map<number, number>();
+  const plannedIds = a.sampled.map((r) => stableId(`activity:${r[a.cols.msgId]}`));
+  for (const part of chunks(plannedIds, 300)) {
+    for (const r of must(await db.from("reports").select("id, protocol").in("id", part), "existing protocols")) existingProtocol.set(r.id, r.protocol);
+  }
+  for (let from = 0; ; from += 1000) {
+    const page = must(await db.from("reports").select("protocol").like("protocol", "SOC-%").range(from, from + 999), "protocols");
+    for (const { protocol } of page) {
+      const m = protocol.match(/^SOC-(\d{4})\/(\d+)$/);
+      if (m) perYear.set(Number(m[1]), Math.max(perYear.get(Number(m[1])) ?? 100_000, Number(m[2])));
+    }
+    if (page.length < 1000) break;
+  }
   const ordered = [...a.sampled].sort((x, y) => a.dates.get(x[a.cols.msgId])!.getTime() - a.dates.get(y[a.cols.msgId])!.getTime());
   for (const r of ordered) {
     const ext = r[a.cols.msgId];
@@ -245,13 +261,18 @@ export async function seedActivity(a: ActivityInput) {
       : s < 0.45 ? "confirmed" : s < 0.6 ? "takedown_requested" : s < 0.85 ? "taken_down" : s < 0.93 ? "duplicate" : "not_scam";
     const src = rand();
     const source: Enums["report_source"] = src < 0.68 ? "citizen_report" : src < 0.86 ? "extension" : src < 0.95 ? "citizen_check" : "business";
-    const year = created.getUTCFullYear();
-    const seq = (perYear.get(year) ?? 100_000) + 1;
-    perYear.set(year, seq);
+    const id = stableId(`activity:${ext}`);
+    let protocol = existingProtocol.get(id);
+    if (!protocol) {
+      const year = created.getUTCFullYear();
+      const seq = (perYear.get(year) ?? 100_000) + 1;
+      perYear.set(year, seq);
+      protocol = `SOC-${year}/${String(seq).padStart(6, "0")}`;
+    }
     reports.push({
       _ext: ext,
-      id: stableId(`activity:${ext}`),
-      protocol: `SOC-${year}/${String(seq).padStart(6, "0")}`,
+      id,
+      protocol,
       source,
       status,
       channel: m.channel,

@@ -192,10 +192,8 @@
       "domains": "Domenet imituese",
       "reports": "Raportet e klientëve",
       "notices": "Njoftimet për klientët",
-      "training": "Simulimet e phishing-ut",
       "api": "API dhe çelësat",
       "team": "Ekipi",
-      "export": "Raporti i përputhshmërisë",
       "settings": "Cilësimet"
     }
   },
@@ -1940,34 +1938,6 @@
       "out": "Dërgimi nuk është pjesë e platformës: kopjoje dhe përdore në kanalet e tua.",
       "chars": "{count} karaktere"
     },
-    "training": {
-      "new": "Simulim i ri",
-      "name": "Emri",
-      "template": "Shablloni",
-      "templates": {
-        "parcel": "Pako e ndalur",
-        "it_password": "Fjalëkalimi skadon (IT)",
-        "invoice": "Faturë e papaguar",
-        "bonus": "Bonus nga burimet njerëzore"
-      },
-      "emails": "Email-et e punonjësve (një për rresht)",
-      "emailsHint": "Email-et përdoren vetëm për dërgim (i simuluar) dhe nuk ruhen.",
-      "launch": "Nis simulimin",
-      "launched": "Simulimi u nis për {count} punonjës (i simuluar).",
-      "funnel": "Rezultatet",
-      "sent": "Dërguar",
-      "opened": "Hapur",
-      "clicked": "Klikuar",
-      "reported": "Raportuar",
-      "statuses": {
-        "draft": "Draft",
-        "running": "Në proces",
-        "finished": "Përfunduar"
-      },
-      "finish": "Përfundo",
-      "empty": "Asnjë simulim ende.",
-      "simulated": "Asnjë email i vërtetë nuk dërgohet nëse SIMULATE_EMAIL nuk është false."
-    },
     "api": {
       "new": "Çelës i ri",
       "name": "Emri i çelësit",
@@ -1995,14 +1965,6 @@
       "lastOwner": "Organizata duhet të ketë të paktën një pronar.",
       "empty": "Asnjë anëtar."
     },
-    "export": {
-      "month": "Muaji",
-      "format": "Formati",
-      "generate": "Gjenero raportin",
-      "ready": "Raporti është gati. Lidhja vlen 10 minuta.",
-      "download": "Shkarko",
-      "contents": "Përmban incidentet, kohët e bllokimit dhe trendin për muajin e zgjedhur."
-    },
     "settings": {
       "profile": "Profili i organizatës",
       "name": "Emri",
@@ -2019,10 +1981,8 @@
       "domains": "Domene që ngjajnë me tuajat, të renditura sipas rrezikut. Kërkoni heqjen ose lejoni variantet tuaja.",
       "reports": "Çfarë raportuan qytetarët për markën tuaj. Anonime: shfaqen vetëm teksti i maskuar dhe statusi.",
       "notices": "Paralajmërime gati për klientët, në shqip dhe anglisht. Ndryshojini dhe kopjojini.",
-      "training": "Testoni stafin me emaile phishing të simuluara dhe shihni kush klikon dhe kush raporton.",
       "api": "Çelësat për API-në e skanimit, përdorimi në 30 ditët e fundit dhe kod për të filluar.",
       "team": "Kush ka akses në panelin e markës dhe çfarë mund të bëjë.",
-      "export": "Raport mujor i incidenteve dhe kohëve të heqjes për auditime dhe rregullatorë.",
       "settings": "Profili i organizatës, kush njoftohet dhe sa kohë i ruajmë të dhënat."
     },
     "ov": {
@@ -2031,7 +1991,6 @@
       "quick": "Veprime të shpejta",
       "quickSetup": "Konfigurimi i markës",
       "quickNotice": "Paralajmëro klientët",
-      "quickExport": "Raporti mujor",
       "quickDomains": "Domene të ngjashme",
       "last30": "30 ditët e fundit"
     },
@@ -2081,16 +2040,6 @@
       "channelHint": "Zgjidhni ku do ta publikoni.",
       "sms": "160 karaktere hyjnë në një SMS."
     },
-    "tr": {
-      "create": "Krijoni një simulim",
-      "stats": {
-        "sims": "Simulime",
-        "sent": "Emaile të dërguara",
-        "clickRate": "Shkalla e klikimeve",
-        "reportRate": "Shkalla e raportimeve"
-      },
-      "emptyBody": "Krijoni një simulim, shtoni emailet e punonjësve dhe nisni atë për të parë kush klikon."
-    },
     "ap": {
       "keys": "Çelësat",
       "calls": "Thirrje (30 ditë)",
@@ -2111,16 +2060,6 @@
         "contact": "Merr përshkallëzimet nga SOC."
       }
     },
-    "ex": {
-      "formTitle": "Gjeneroni një raport",
-      "includes": [
-        "Incidentet dhe njoftimet e muajit",
-        "Koha nga zbulimi te heqja",
-        "Fushatat dhe domenet e ngjashme",
-        "Tendenca krahasuar me muajin e kaluar"
-      ],
-      "includesTitle": "Çfarë përmban raporti"
-    },
     "st": {
       "profileHint": "Emri që shohin klientët dhe SOC.",
       "planTitle": "Plani",
@@ -2136,19 +2075,6 @@
       "whyBody": "Sa më shumë të dimë për domenet, dërguesit dhe llogaritë tuaja zyrtare, aq më shpejt dallojmë imitimet. Domenet e verifikuara i lejojnë SOC-ut të lidhë markën tuaj me fushatat.",
       "count": "{count, plural, =0 {Asgjë e shtuar} one {# i shtuar} other {# të shtuara}}"
     }
-  },
-  "sim": {
-    "title": "Ky ishte një ushtrim sigurie",
-    "body": "Organizata jote po teston sa mirë njihen mesazhet mashtruese. Nuk ndodhi asgjë e keqe dhe nuk u mor asnjë e dhënë.",
-    "signs": "Çfarë duhej të të bënte të dyshoje",
-    "signsItems": [
-      "Nxitimi: „sot”, „menjëherë”.",
-      "Lidhja nuk të çonte në domenin zyrtar.",
-      "Të kërkohej të hyje ose të paguaje përmes një lidhjeje."
-    ],
-    "report": "Do ta kisha raportuar",
-    "reported": "Faleminderit! Kjo është gjëja e duhur për t'u bërë.",
-    "learn": "Mëso më shumë"
   },
   "cit": {
     "home": {

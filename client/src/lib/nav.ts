@@ -78,8 +78,6 @@ export const BUSINESS_NAV = [
   { key: "domains", group: "monitor", href: "/business/domains", icon: "globe" },
   { key: "reports", group: "respond", href: "/business/reports", icon: "file" },
   { key: "notices", group: "respond", href: "/business/notices", icon: "megaphone" },
-  { key: "export", group: "respond", href: "/business/reports/export", icon: "download" },
-  { key: "training", group: "people", href: "/business/training", icon: "graduation" },
   { key: "team", group: "people", href: "/business/team", icon: "users" },
   { key: "onboarding", group: "setup", href: "/business/onboarding", icon: "wand" },
   { key: "api", group: "setup", href: "/business/api", icon: "key" },

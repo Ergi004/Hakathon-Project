@@ -13,6 +13,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import type { Locale } from "@/i18n/routing";
 import { fmtAgo, fmtDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { pageCount, pageParam, pageRange } from "@/lib/pagination";
+import { Pager } from "@/components/shared/pager";
 import { guardOrRedirect, requireActiveOrg } from "@/server/auth";
 
 const STATUSES = ["new", "acknowledged", "escalated", "resolved"] as const;
@@ -25,7 +27,8 @@ const STATUS_TONE: Record<string, string> = {
   resolved: "border-flag-green/40 bg-flag-green/10",
 };
 
-type SP = { severity?: string; status?: string };
+type SP = { severity?: string; status?: string; page?: string };
+const PAGE_SIZE = 15;
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -36,17 +39,24 @@ async function Content({ searchParams }: { searchParams: Promise<SP> }) {
   const sp = await searchParams;
   const ctx = await guardOrRedirect(() => requireActiveOrg(["owner", "admin", "security"]));
   const [t, tb, ts, td, tu, locale] = await Promise.all([getTranslations("biz.alerts"), getTranslations("biz"), getTranslations("severity"), getTranslations("soc.domains"), getTranslations("ui"), getLocale()]);
-  const { data } = await ctx.supabase
-    .from("brand_alerts")
-    .select("id, title, severity, status, created_at, domains(domain, registrar, hosting_country, age_days, registered_at, class), campaigns(code)")
-    .eq("org_id", ctx.org.id)
-    .order("created_at", { ascending: false })
-    .limit(300);
-  const all = data ?? [];
   const status = STATUSES.includes(sp.status as "new") ? sp.status : undefined;
   const severity = SEVERITIES.includes(sp.severity as "low") ? sp.severity : undefined;
-  const shown = all.filter((a) => (!status || a.status === status) && (!severity || a.severity === severity));
-  const count = (s: string) => all.filter((a) => a.status === s).length;
+  const page = pageParam(sp.page);
+  // Filters run in the query so every page is correct; the stat cards count the whole org.
+  let q = ctx.supabase
+    .from("brand_alerts")
+    .select("id, title, severity, status, created_at, domains(domain, registrar, hosting_country, age_days, registered_at, class), campaigns(code)", { count: "exact" })
+    .eq("org_id", ctx.org.id)
+    .order("created_at", { ascending: false })
+    .range(...pageRange(page, PAGE_SIZE));
+  if (status) q = q.eq("status", status);
+  if (severity) q = q.eq("severity", severity as "low");
+  const counts = await Promise.all(STATUSES.map((s) => ctx.supabase.from("brand_alerts").select("id", { count: "exact", head: true }).eq("org_id", ctx.org.id).eq("status", s)));
+  const { data, count: total } = await q;
+  const shown = data ?? [];
+  const byStatus = new Map(STATUSES.map((s, i) => [s, counts[i].count ?? 0]));
+  const orgTotal = [...byStatus.values()].reduce((a, b) => a + b, 0);
+  const count = (s: string) => byStatus.get(s as "new") ?? 0;
   const statIcon = { new: BellRing, acknowledged: Eye, escalated: Send, resolved: CheckCheck } as const;
   const statTone = { new: "text-primary", acknowledged: "text-flag-yellow", escalated: "text-flag-orange", resolved: "text-flag-green" } as const;
 
@@ -66,7 +76,7 @@ async function Content({ searchParams }: { searchParams: Promise<SP> }) {
       </div>
 
       {!shown.length ? (
-        <Card><CardContent><EmptyPanel icon={ShieldCheck} tone="text-flag-green" title={t("empty")} body={all.length ? undefined : tb("al.emptyBody")} /></CardContent></Card>
+        <Card><CardContent><EmptyPanel icon={ShieldCheck} tone="text-flag-green" title={t("empty")} body={orgTotal ? undefined : tb("al.emptyBody")} /></CardContent></Card>
       ) : (
         <ul className="space-y-3">
           {shown.map((a) => {
@@ -105,6 +115,7 @@ async function Content({ searchParams }: { searchParams: Promise<SP> }) {
           })}
         </ul>
       )}
+      <Pager page={page} pages={pageCount(total, PAGE_SIZE)} />
     </div>
   );
 }

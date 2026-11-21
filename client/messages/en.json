@@ -192,10 +192,8 @@
       "domains": "Lookalike domains",
       "reports": "Customer reports",
       "notices": "Customer notices",
-      "training": "Phishing simulations",
       "api": "API and keys",
       "team": "Team",
-      "export": "Compliance export",
       "settings": "Settings"
     }
   },
@@ -1940,34 +1938,6 @@
       "out": "Sending is not part of the platform: copy it and use it in your own channels.",
       "chars": "{count} characters"
     },
-    "training": {
-      "new": "New simulation",
-      "name": "Name",
-      "template": "Template",
-      "templates": {
-        "parcel": "Parcel on hold",
-        "it_password": "Password expiring (IT)",
-        "invoice": "Unpaid invoice",
-        "bonus": "HR bonus"
-      },
-      "emails": "Employee emails (one per line)",
-      "emailsHint": "Emails are used only to send (simulated) and are not stored.",
-      "launch": "Launch simulation",
-      "launched": "Simulation launched for {count} employees (simulated).",
-      "funnel": "Results",
-      "sent": "Sent",
-      "opened": "Opened",
-      "clicked": "Clicked",
-      "reported": "Reported",
-      "statuses": {
-        "draft": "Draft",
-        "running": "Running",
-        "finished": "Finished"
-      },
-      "finish": "Finish",
-      "empty": "No simulations yet.",
-      "simulated": "No real email is sent unless SIMULATE_EMAIL is false."
-    },
     "api": {
       "new": "New key",
       "name": "Key name",
@@ -1995,14 +1965,6 @@
       "lastOwner": "The organization needs at least one owner.",
       "empty": "No members."
     },
-    "export": {
-      "month": "Month",
-      "format": "Format",
-      "generate": "Generate report",
-      "ready": "The report is ready. The link is valid for 10 minutes.",
-      "download": "Download",
-      "contents": "Includes incidents, takedown times and the trend for the selected month."
-    },
     "settings": {
       "profile": "Organization profile",
       "name": "Name",
@@ -2019,10 +1981,8 @@
       "domains": "Domains that look like yours, ranked by risk. Request a takedown or allowlist your own variants.",
       "reports": "What citizens reported about your brand. Anonymised: only masked text and status are shown.",
       "notices": "Ready-to-use warnings for your customers, in Albanian and English. Edit and copy them.",
-      "training": "Test your staff with simulated phishing emails and see who clicks and who reports.",
       "api": "Keys for the scan API, usage over the last 30 days and code to get started.",
       "team": "Who has access to your brand dashboard and what they can do.",
-      "export": "A monthly report of incidents and takedown times for audits and regulators.",
       "settings": "Your organization profile, who gets notified and how long we keep data."
     },
     "ov": {
@@ -2031,7 +1991,6 @@
       "quick": "Quick actions",
       "quickSetup": "Brand setup",
       "quickNotice": "Warn customers",
-      "quickExport": "Monthly report",
       "quickDomains": "Lookalike domains",
       "last30": "Last 30 days"
     },
@@ -2081,16 +2040,6 @@
       "channelHint": "Pick where you will publish it.",
       "sms": "160 characters fit in one SMS."
     },
-    "tr": {
-      "create": "Create a simulation",
-      "stats": {
-        "sims": "Simulations",
-        "sent": "Emails sent",
-        "clickRate": "Click rate",
-        "reportRate": "Report rate"
-      },
-      "emptyBody": "Create a simulation, add employee emails and launch it to see who clicks."
-    },
     "ap": {
       "keys": "Keys",
       "calls": "Calls (30 days)",
@@ -2111,16 +2060,6 @@
         "contact": "Receives escalations from the SOC."
       }
     },
-    "ex": {
-      "formTitle": "Generate a report",
-      "includes": [
-        "Incidents and alerts in the month",
-        "Time from detection to takedown",
-        "Campaigns and lookalike domains",
-        "Trend compared to the previous month"
-      ],
-      "includesTitle": "What the report contains"
-    },
     "st": {
       "profileHint": "The name customers and the SOC see.",
       "planTitle": "Plan",
@@ -2136,19 +2075,6 @@
       "whyBody": "The more we know about your official domains, senders and accounts, the faster we spot imitations. Verified domains also let the SOC link your brand to campaigns.",
       "count": "{count, plural, =0 {Nothing added} one {# added} other {# added}}"
     }
-  },
-  "sim": {
-    "title": "This was a security exercise",
-    "body": "Your organization is testing how well scam messages are spotted. Nothing bad happened and no data was taken.",
-    "signs": "What should have made you suspicious",
-    "signsItems": [
-      "Urgency: “today”, “immediately”.",
-      "The link did not go to the official domain.",
-      "You were asked to log in or pay through a link."
-    ],
-    "report": "I would have reported it",
-    "reported": "Thank you! That is exactly the right thing to do.",
-    "learn": "Learn more"
   },
   "cit": {
     "home": {

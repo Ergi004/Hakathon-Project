@@ -78,7 +78,19 @@ async function main() {
   const notices: TablesInsert<"takedown_notices">[] = [];
   const events: TablesInsert<"notice_events">[] = [];
   const outbox: TablesInsert<"outbox">[] = [];
+  // Re-runs keep each notice's protocol (campaign dates can shift between runs); new notices continue
+  // after the highest number already used in that year.
   const perYear = new Map<number, number>();
+  const existingProtocol = new Map<string, string>();
+  for (let from = 0; ; from += 1000) {
+    const page = must(await db.from("takedown_notices").select("id, protocol").range(from, from + 999), "existing notices");
+    for (const n of page) {
+      existingProtocol.set(n.id, n.protocol);
+      const m = n.protocol.match(/^SOC-(\d{4})\/(\d+)$/);
+      if (m) perYear.set(Number(m[1]), Math.max(perYear.get(Number(m[1])) ?? 200_000, Number(m[2])));
+    }
+    if (page.length < 1000) break;
+  }
   const ev = (noticeId: string, kind: string, at: number, actor: string | null, note: string | null = null) =>
     events.push({ id: stableId(`notice-event:${noticeId}:${kind}`), notice_id: noticeId, kind, actor_id: actor, note, created_at: new Date(Math.min(at, now)).toISOString() });
 
@@ -118,9 +130,12 @@ async function main() {
       const lead = pick(leads);
 
       const year = new Date(created).getUTCFullYear();
-      const seq = (perYear.get(year) ?? 200_000) + 1;
-      perYear.set(year, seq);
-      const protocol = `SOC-${year}/${seq}`;
+      let protocol = existingProtocol.get(id);
+      if (!protocol) {
+        const seq = (perYear.get(year) ?? 200_000) + 1;
+        perYear.set(year, seq);
+        protocol = `SOC-${year}/${seq}`;
+      }
       const t = tpl.get(`${kind}.${locale}`)!;
       const vars = {
         protocol,
